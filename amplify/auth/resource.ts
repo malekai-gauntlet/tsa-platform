@@ -19,10 +19,6 @@ export const auth = defineAuth({
   },
   userAttributes: {
     // Core TSA user attributes (custom attribute names must be ≤20 chars)
-    'custom:role': {
-      dataType: 'String',
-      mutable: true,
-    },
     'custom:firstName': {
       dataType: 'String', 
       mutable: true,

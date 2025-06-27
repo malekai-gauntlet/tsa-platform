@@ -12,8 +12,8 @@ export default function LoginPage() {
     <div className="login-container">
       <div className="login-wrapper">
         <div className="login-header">
-          <h1>TSA Platform</h1>
-          <p>Texas Sports Academy</p>
+          <h1>Login Portal</h1>
+          <p>Welcome to Texas Sports Academy</p>
         </div>
         
         <Authenticator
@@ -68,7 +68,14 @@ export default function LoginPage() {
           box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
           padding: 40px;
           width: 100%;
-          max-width: 400px;
+          max-width: 600px;
+        }
+
+        @media (max-width: 640px) {
+          .login-wrapper {
+            max-width: 90%;
+            padding: 30px 20px;
+          }
         }
 
         .login-header {
