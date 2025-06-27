@@ -1,35 +1,34 @@
+import type { Map } from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
-import { VECTOR_TILES, DISTRICT_STYLES } from '@/lib/constants/mapConfig';
+import { vectorTiles, districtStyles, fogConfig } from '@/lib/constants/mapbox';
 
 /**
  * Sets up TSA district layers on the map
  */
-export function setupDistrictLayers(map: mapboxgl.Map) {
+export function setupDistrictLayers(map: Map): void {
   // Add vector tiles source with enhanced error handling
   map.addSource('districts', {
     type: 'vector',
-    url: `mapbox://${VECTOR_TILES.tilesetId}`,
+    url: `mapbox://${vectorTiles.tilesetId}`,
     // Optional: Add timeout for tile requests
     timeout: 30000
   });
   
   // Monitor source loading with specific error handling
   map.on('sourcedata', (e) => {
-    if (e.sourceId === 'districts') {
-      if (e.isSourceLoaded) {
-        console.log('✅ TSA districts vector tiles loaded successfully');
-      }
+    if (e.sourceId === 'districts' && e.isSourceLoaded) {
+      console.log('✅ TSA districts vector tiles loaded successfully');
     }
   });
 
   // Enhanced error handling for vector tile loading issues
   map.on('error', (e) => {
     const error = e.error;
-    if (error?.message?.includes('districts') || error?.message?.includes(VECTOR_TILES.tilesetId)) {
+    if (error?.message?.includes('districts') || error?.message?.includes(vectorTiles.tilesetId)) {
       console.error('🚨 Vector tiles error:', {
         message: error.message,
-        tileset: VECTOR_TILES.tilesetId,
-        sourceLayer: VECTOR_TILES.sourceLayer,
+        tileset: vectorTiles.tilesetId,
+        sourceLayer: vectorTiles.sourceLayer,
         // Common Vector Tiles API errors from documentation:
         // 401: Invalid/missing token
         // 403: Account issue or URL restrictions
@@ -50,11 +49,11 @@ export function setupDistrictLayers(map: mapboxgl.Map) {
     id: 'districts-fill',
     type: 'fill',
     source: 'districts',
-    'source-layer': VECTOR_TILES.sourceLayer,
+    'source-layer': vectorTiles.sourceLayer,
     layout: {},
     paint: {
-      'fill-color': DISTRICT_STYLES.fill.color,
-      'fill-opacity': DISTRICT_STYLES.fill.opacity
+      'fill-color': districtStyles.fill.color,
+      'fill-opacity': districtStyles.fill.opacity
     }
   });
 
@@ -63,11 +62,11 @@ export function setupDistrictLayers(map: mapboxgl.Map) {
     id: 'districts-line',
     type: 'line',
     source: 'districts',
-    'source-layer': VECTOR_TILES.sourceLayer,
+    'source-layer': vectorTiles.sourceLayer,
     layout: {},
     paint: {
-      'line-color': DISTRICT_STYLES.line.color,
-      'line-width': DISTRICT_STYLES.line.width
+      'line-color': districtStyles.line.color,
+      'line-width': districtStyles.line.width
     }
   });
 }
@@ -75,10 +74,10 @@ export function setupDistrictLayers(map: mapboxgl.Map) {
 /**
  * Sets up district interactions (click and hover)
  */
-export function setupDistrictInteractions(map: mapboxgl.Map) {
+export function setupDistrictInteractions(map: Map): void {
   // Click handler for district popups
   map.on('click', 'districts-fill', (e) => {
-    if (e.features && e.features[0]) {
+    if (e.features?.[0]) {
       const properties = e.features[0].properties;
       const coordinates = e.lngLat;
 
@@ -109,12 +108,6 @@ export function setupDistrictInteractions(map: mapboxgl.Map) {
 /**
  * Sets up atmospheric effects for the map
  */
-export function setupAtmosphericEffects(map: mapboxgl.Map) {
-  map.setFog({
-    'horizon-blend': 0.3,
-    'color': '#f8f8f8',
-    'high-color': '#add8e6',
-    'space-color': '#d8f2ff',
-    'star-intensity': 0.0
-  });
+export function setupAtmosphericEffects(map: Map): void {
+  map.setFog(fogConfig);
 } 

@@ -1,34 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { generateClient } from "aws-amplify/data";
 import { signOut } from "aws-amplify/auth";
-import type { Schema } from "@/amplify/data/resource";
-import "./../app/app.css";
+import "@/app/app.css";
 import "@aws-amplify/ui-react/styles.css";
 import Link from "next/link";
 
-const client = generateClient<Schema>();
-
 export default function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  function listTodos() {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }
-
-  useEffect(() => {
-    listTodos();
-  }, []);
-
-  function createTodo() {
-    client.models.Todo.create({
-      content: window.prompt("Todo content"),
-    });
-  }
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -42,7 +19,7 @@ export default function App() {
     <div className="main-dashboard">
       <main>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h1>TSA Platform</h1>
+          <h1>Texas Sports Academy Platform</h1>
           <button 
             onClick={handleSignOut}
             style={{
@@ -59,38 +36,60 @@ export default function App() {
           </button>
         </div>
         
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '30px' }}>
+          <p style={{ fontSize: '18px', color: '#6b7280', marginBottom: '20px' }}>
+            Welcome to the Texas Sports Academy management platform. Access your coaching tools and resources below.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
           <Link 
             href="/map" 
             style={{
-              display: 'inline-block',
-              padding: '12px 24px',
+              display: 'block',
+              padding: '20px',
               backgroundColor: '#2563eb',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '8px',
+              borderRadius: '12px',
               fontWeight: '500',
-              marginRight: '10px'
+              textAlign: 'center',
+              transition: 'transform 0.2s'
             }}
           >
             🗺️ View TSA Districts Map
           </Link>
+
+          <Link 
+            href="/coach" 
+            style={{
+              display: 'block',
+              padding: '20px',
+              backgroundColor: '#059669',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '12px',
+              fontWeight: '500',
+              textAlign: 'center',
+              transition: 'transform 0.2s'
+            }}
+          >
+            👨‍🏫 Coach Dashboard
+          </Link>
         </div>
 
-        <h2>Management Tasks</h2>
-        <button onClick={createTodo}>+ new task</button>
-        <ul>
-          {todos.map((todo) => (
-            <li key={todo.id}>{todo.content}</li>
-          ))}
-        </ul>
-        <div>
-          🥳 TSA Platform successfully hosted.
-          <br />
-          <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
-            Review next steps of this tutorial.
-          </a>
+        <div style={{ 
+          padding: '20px', 
+          backgroundColor: '#f3f4f6', 
+          borderRadius: '12px',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ color: '#374151', marginBottom: '10px' }}>Platform Status</h3>
+          <p style={{ color: '#6b7280', margin: 0 }}>
+            🥳 TSA Platform successfully hosted and ready for use.
+          </p>
         </div>
+
       </main>
     </div>
   );

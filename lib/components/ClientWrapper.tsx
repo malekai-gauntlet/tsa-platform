@@ -37,7 +37,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
         components={{
           Header() {
             return (
-              <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+              <div style={{ textAlign: 'center' }}>
                 <Image
                   src="/logo.svg"
                   alt="Texas Sports Academy"
@@ -89,10 +89,8 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
 
         /* Contact info styling - now inside the form */
         .contact-info {
-          margin-top: 1.5rem;
           text-align: center;
           padding-top: 1rem;
-          border-top: 1px solid #e5e7eb;
         }
 
         .contact-info p {

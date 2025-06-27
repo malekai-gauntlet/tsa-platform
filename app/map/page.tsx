@@ -1,16 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import type { Map } from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { MAP_CONFIG } from '@/lib/constants/mapConfig';
+import { mapConfig } from '@/lib/constants/mapbox';
 import { setupDistrictLayers, setupDistrictInteractions, setupAtmosphericEffects } from '@/lib/utils/mapUtils';
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
 export default function MapPage() {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<Map | null>(null);
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -39,9 +40,9 @@ export default function MapPage() {
           }
         ]
       },
-      center: MAP_CONFIG.center,
-      zoom: MAP_CONFIG.zoom,
-      projection: MAP_CONFIG.projection
+      center: mapConfig.center,
+      zoom: mapConfig.zoom,
+      projection: mapConfig.projection
     });
 
     // Add navigation controls
