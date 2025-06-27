@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <main>
-      <h1>TSA Dashboard</h1>
+      <h1>TSA Platform</h1>
       
       <div style={{ marginBottom: '20px' }}>
         <Link 
@@ -58,7 +58,7 @@ export default function App() {
         ))}
       </ul>
       <div>
-        🥳 TSA Dashboard successfully hosted.
+        🥳 TSA Platform successfully hosted.
         <br />
         <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
           Review next steps of this tutorial.

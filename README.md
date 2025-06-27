@@ -1,6 +1,6 @@
-## TSA Dashboard
+## TSA Platform
 
-This repository provides a TSA (Transportation Security Administration) dashboard application built with **Next.js**, **Mapbox GL JS** for interactive mapping, and **AWS Amplify** for backend infrastructure.
+This repository provides a TSA (Transportation Security Administration) platform application built with **Next.js**, **Mapbox GL JS** for interactive mapping, and **AWS Amplify** for backend infrastructure.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ This repository provides a TSA (Transportation Security Administration) dashboar
 
 ## Overview
 
-This TSA Dashboard combines the best of both worlds: **Mapbox's industry-leading mapping capabilities** for visualizing TSA district boundaries with **AWS Amplify's powerful backend services** for authentication, data management, and serverless functions.
+This TSA Platform combines the best of both worlds: **Mapbox's industry-leading mapping capabilities** for visualizing TSA district boundaries with **AWS Amplify's powerful backend services** for authentication, data management, and serverless functions.
 
 ## Quick Start
 
@@ -39,7 +39,7 @@ npx ampx sandbox
 npm run dev
 ```
 
-Visit `http://localhost:3000` to view the dashboard and `http://localhost:3000/map` for the interactive TSA Districts map.
+Visit `http://localhost:3000` to view the platform and `http://localhost:3000/map` for the interactive TSA Districts map.
 
 ## Features
 
@@ -54,7 +54,7 @@ Visit `http://localhost:3000` to view the dashboard and `http://localhost:3000/m
 ## Project Structure
 
 ```
-tsa-dashboard/
+tsa-platform/
 ├── amplify/              # AWS Amplify backend configuration
 │   ├── auth/            # Authentication resources
 │   ├── data/            # Data/API resources  
@@ -62,7 +62,7 @@ tsa-dashboard/
 ├── app/                 # Next.js app directory
 │   ├── map/            # Mapbox map page and components
 │   ├── layout.tsx      # Root layout with Amplify configuration
-│   └── page.tsx        # Main dashboard page
+│   └── page.tsx        # Main platform page
 ├── public/             
 │   └── Current_Districts_2025.geojson  # TSA districts data
 ├── scripts/

@@ -131,7 +131,7 @@ export default function MapPage() {
     <div className="map-page">
       <div className="map-header">
         <h1>TSA Districts Map</h1>
-        <p>Transportation Security Administration District Overview</p>
+        <p>Transportation Security Administration Platform - District Overview</p>
         {!MAPBOX_ACCESS_TOKEN && (
           <div style={{ 
             backgroundColor: '#fef3c7', 

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# TSA Dashboard - Development Deployment Script
+# TSA Platform - Development Deployment Script
 # This script follows Amplify best practices for development setup
 
 set -e  # Exit on any error
 
-echo "🚀 Starting TSA Dashboard Development Deployment..."
+echo "🚀 Starting TSA Platform Development Deployment..."
 
 # Check prerequisites
 echo "📋 Checking prerequisites..."

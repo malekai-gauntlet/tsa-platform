@@ -1,6 +1,6 @@
-# TSA Dashboard Deployment Guide
+# TSA Platform Deployment Guide
 
-This guide follows best practices for deploying the TSA Dashboard with **Mapbox** for geo-spatial visualization and **AWS Amplify** for backend infrastructure.
+This guide follows best practices for deploying the TSA Platform with **Mapbox** for geo-spatial visualization and **AWS Amplify** for backend infrastructure.
 
 ## Architecture Overview
 

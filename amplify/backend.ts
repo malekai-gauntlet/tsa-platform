@@ -30,7 +30,7 @@ const map = new CfnMap(geoStack, 'DistrictsMap', {
     },
     {
       key: 'project',
-      value: 'tsa-dashboard',
+      value: 'tsa-platform',
     },
     {
       key: 'environment',
