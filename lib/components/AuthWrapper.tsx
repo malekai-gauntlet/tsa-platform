@@ -18,8 +18,8 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Public routes that don't require authentication
-  const isLoginRoute = pathname === AUTH_CONFIG.ROUTES.LOGIN;
+  // Check if current route is public (doesn't require authentication)
+  const isPublicRoute = AUTH_CONFIG.PUBLIC_ROUTES.includes(pathname as '/login' | '/map');
 
   // Check auth state - called once when component mounts
   const checkAuthState = async () => {
@@ -28,14 +28,14 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
       setAuthState({ isAuthenticated: true, isLoading: false });
       
       // If user is authenticated and on login page, redirect to dashboard
-      if (isLoginRoute) {
+      if (pathname === AUTH_CONFIG.ROUTES.LOGIN) {
         router.push(AUTH_CONFIG.ROUTES.DASHBOARD);
       }
     } catch (error) {
       setAuthState({ isAuthenticated: false, isLoading: false });
       
       // If user is not authenticated and on a protected route, redirect to login
-      if (!isLoginRoute) {
+      if (!isPublicRoute) {
         router.push(AUTH_CONFIG.ROUTES.LOGIN);
       }
     }
@@ -52,7 +52,7 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
       <div className="auth-loading">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading TSA Platform...</p>
+          <p>Loading...</p>
         </div>
         
         <style jsx>{`
@@ -94,8 +94,8 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     );
   }
 
-  // For login route, always render children
-  if (isLoginRoute) {
+  // For public routes, always render children
+  if (isPublicRoute) {
     return <>{children}</>;
   }
 

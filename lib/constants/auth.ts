@@ -10,6 +10,8 @@ export const AUTH_CONFIG = {
     DASHBOARD: '/',
     MAP: '/map',
   },
+  // Routes that don't require authentication
+  PUBLIC_ROUTES: ['/login', '/map'],
   USER_ROLES: {
     ADMIN: 'admin',
     COACH: 'coach',
