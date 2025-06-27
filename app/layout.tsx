@@ -4,7 +4,6 @@ import "./app.css";
 
 // Amplify configuration at root level
 import { Amplify } from "aws-amplify";
-import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import ClientWrapper from "@/lib/components/ClientWrapper";
 
@@ -23,8 +22,7 @@ try {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TSA Platform",
-  description: "Texas Sports Academy Platform",
+  title: "Texas Sports Academy Platform",
 };
 
 export default function RootLayout({
