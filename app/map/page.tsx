@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { MAP_CONFIG, MINIMAL_STYLE } from '@/lib/constants/mapConfig';
+import { MAP_CONFIG } from '@/lib/constants/mapConfig';
 import { setupDistrictLayers, setupDistrictInteractions, setupAtmosphericEffects } from '@/lib/utils/mapUtils';
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
@@ -23,10 +23,22 @@ export default function MapPage() {
     // Set the access token
     mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-    // Initialize map
+    // Initialize map with inline style to avoid TypeScript issues
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: MINIMAL_STYLE,
+      style: {
+        version: 8,
+        sources: {},
+        layers: [
+          {
+            id: 'background',
+            type: 'background',
+            paint: {
+              'background-color': 'hsl(220, 1%, 97%)'
+            }
+          }
+        ]
+      },
       center: MAP_CONFIG.center,
       zoom: MAP_CONFIG.zoom,
       projection: MAP_CONFIG.projection

@@ -12,21 +12,6 @@ export const VECTOR_TILES = {
   sourceLayer: 'Current_Districts_2025-a8192i',
 } as const;
 
-// Minimal style for fast loading (no external dependencies)
-export const MINIMAL_STYLE = {
-  version: 8,
-  sources: {},
-  layers: [
-    {
-      id: 'background',
-      type: 'background',
-      paint: {
-        'background-color': 'hsl(220, 1%, 97%)'
-      }
-    }
-  ]
-};
-
 // District styling
 export const DISTRICT_STYLES = {
   fill: {

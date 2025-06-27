@@ -37,13 +37,20 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
         components={{
           Header() {
             return (
-              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                 <Image
                   src="/logo.svg"
                   alt="Texas Sports Academy"
                   width={200}
                   height={94}
                 />
+              </div>
+            );
+          },
+          Footer() {
+            return (
+              <div className="contact-info">
+                <p>Can't login? Contact us at <a href="mailto:team@texassportsacademy.com">team@texassportsacademy.com</a> for an invite.</p>
               </div>
             );
           },
@@ -60,7 +67,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(180deg, rgb(117, 81, 194), rgb(255, 255, 255));
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
           padding: 20px;
           font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
         }
@@ -71,13 +78,39 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           max-width: 400px;
         }
 
-        /* Style the form container to match app design */
+        /* Style the outer form card with 1px border */
         .auth-container [data-amplify-authenticator] [data-amplify-container] {
           background: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
           padding: 2rem;
-          border: 1px solid transparent;
+          border: 1px solid #9ca3af;
+        }
+
+        /* Contact info styling - now inside the form */
+        .contact-info {
+          margin-top: 1.5rem;
+          text-align: center;
+          padding-top: 1rem;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .contact-info p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: #6b7280;
+          line-height: 1.4;
+        }
+
+        .contact-info a {
+          color: #2563eb;
+          text-decoration: none;
+          font-weight: 500;
+        }
+
+        .contact-info a:hover {
+          color: #1d4ed8;
+          text-decoration: underline;
         }
 
         /* Style form inputs to match app design */
@@ -86,9 +119,16 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           font-family: inherit;
           font-size: 1em;
           padding: 0.6em 1.2em;
+          border: 1px solid #d1d5db;
         }
 
-        /* Style submit button to match app design */
+        .auth-container [data-amplify-authenticator] input:focus {
+          border-color: #2563eb;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Style submit button with blue theme */
         .auth-container [data-amplify-authenticator] button[type="submit"] {
           border-radius: 8px;
           border: 1px solid transparent;
@@ -112,15 +152,26 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           outline: 4px auto -webkit-focus-ring-color;
         }
 
-        /* Style secondary buttons/links */
+        /* Style secondary buttons/links with blue theme */
         .auth-container [data-amplify-authenticator] button[data-variation="link"] {
           font-family: inherit;
           font-weight: 500;
           color: #2563eb;
+          background: none;
+          border: none;
+          text-decoration: none;
         }
 
         .auth-container [data-amplify-authenticator] button[data-variation="link"]:hover {
           color: #1d4ed8;
+          text-decoration: underline;
+        }
+
+        /* Style labels */
+        .auth-container [data-amplify-authenticator] label {
+          font-family: inherit;
+          font-weight: 500;
+          color: #374151;
         }
       `}</style>
     </div>
