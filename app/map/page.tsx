@@ -7,6 +7,11 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 // Mapbox access token - you'll need to add this to your environment variables
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
+// Configuration - update this when you upload to Mapbox Studio
+const USE_VECTOR_TILES = true; // Set to true once you upload to Mapbox Studio
+const VECTOR_TILESET_ID = 'blackbirddash.945h4nkg'; // Replace with your actual tileset ID after upload
+const VECTOR_SOURCE_LAYER = 'Current_Districts_2025-6fysrt'; // This will be the layer name in your vector tileset
+
 export default function MapPage() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -14,6 +19,7 @@ export default function MapPage() {
   const [lat] = useState(37.0902);
   const [zoom] = useState(3);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [dataSource, setDataSource] = useState<'geojson' | 'vector'>('geojson');
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // Initialize map only once
@@ -52,35 +58,63 @@ export default function MapPage() {
           'star-intensity': 0.0
         });
 
-        // Load Districts GeoJSON data
-        map.current.addSource('districts', {
-          'type': 'geojson',
-          'data': '/Current_Districts_2025.geojson'
-        });
+        // Choose data source based on configuration
+        if (USE_VECTOR_TILES) {
+          // Use vector tiles for better performance
+          map.current.addSource('districts', {
+            'type': 'vector',
+            'url': `mapbox://${VECTOR_TILESET_ID}`
+          });
+          setDataSource('vector');
+          console.log('Using vector tiles for districts data');
+        } else {
+          // Fallback to GeoJSON
+          map.current.addSource('districts', {
+            'type': 'geojson',
+            'data': '/Current_Districts_2025.geojson'
+          });
+          setDataSource('geojson');
+          console.log('Using GeoJSON for districts data');
+        }
 
         // Add district boundaries layer
-        map.current.addLayer({
+        // Note: for vector tiles, you need to specify the source-layer
+        const layerConfig = {
           'id': 'districts-fill',
-          'type': 'fill',
+          'type': 'fill' as const,
           'source': 'districts',
           'layout': {},
           'paint': {
             'fill-color': '#627BC1',
             'fill-opacity': 0.4
           }
-        });
+        };
+
+        if (dataSource === 'vector') {
+          // For vector tiles, add source-layer property
+          // The source-layer name is typically the original filename without extension
+          (layerConfig as any)['source-layer'] = VECTOR_SOURCE_LAYER;
+        }
+
+        map.current.addLayer(layerConfig);
 
         // Add district borders
-        map.current.addLayer({
+        const borderConfig = {
           'id': 'districts-line',
-          'type': 'line',
+          'type': 'line' as const,
           'source': 'districts',
           'layout': {},
           'paint': {
             'line-color': '#1e40af',
             'line-width': 2
           }
-        });
+        };
+
+        if (dataSource === 'vector') {
+          (borderConfig as any)['source-layer'] = VECTOR_SOURCE_LAYER;
+        }
+
+        map.current.addLayer(borderConfig);
 
         // Add click event for districts
         map.current.on('click', 'districts-fill', (e) => {
@@ -92,9 +126,10 @@ export default function MapPage() {
               .setLngLat(coordinates)
               .setHTML(`
                 <div style="padding: 10px;">
-                  <h3 style="margin: 0 0 10px 0; color: #1e40af;">District</h3>
-                  <p style="margin: 0;"><strong>District:</strong> ${properties?.DISTRICT || 'N/A'}</p>
-                  <p style="margin: 5px 0 0 0;"><strong>Region:</strong> ${properties?.REGION || 'N/A'}</p>
+                  <h3 style="margin: 0 0 10px 0; color: #1e40af;">District Info</h3>
+                  <p style="margin: 0;"><strong>District:</strong> ${properties?.DISTRICT || properties?.NAME || 'N/A'}</p>
+                  <p style="margin: 5px 0 0 0;"><strong>Name:</strong> ${properties?.NAME20 || properties?.NAME2 || 'N/A'}</p>
+                  ${properties?.GEOID20 ? `<p style="margin: 5px 0 0 0;"><strong>GEOID:</strong> ${properties.GEOID20}</p>` : ''}
                 </div>
               `)
               .addTo(map.current!);
@@ -149,6 +184,11 @@ export default function MapPage() {
             Loading districts data...
           </p>
         )}
+        {mapLoaded && (
+          <p style={{ color: '#10b981', fontSize: '0.9rem' }}>
+            ✅ Map loaded using {dataSource === 'vector' ? 'vector tiles' : 'GeoJSON'} data source
+          </p>
+        )}
       </div>
       
       <div 
@@ -156,7 +196,7 @@ export default function MapPage() {
         className="map-container"
         style={{ 
           width: '100%', 
-          height: 'calc(100vh - 120px)',
+          height: 'calc(100vh - 140px)',
           borderRadius: '8px',
           overflow: 'hidden',
           boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
