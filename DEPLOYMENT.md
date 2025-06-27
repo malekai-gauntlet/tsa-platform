@@ -22,7 +22,7 @@ This guide follows best practices for deploying the TSA Platform with **Mapbox**
 
 ```bash
 git clone <your-repo>
-cd tsa-dashboard
+cd tsa-platform
 npm install
 ```
 
