@@ -4,7 +4,9 @@ import "./app.css";
 
 // Amplify configuration at root level
 import { Amplify } from "aws-amplify";
-import AuthWrapper from "@/lib/components/AuthWrapper";
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+import ClientWrapper from "@/lib/components/ClientWrapper";
 
 // Configure Amplify as early as possible in the application lifecycle
 let amplifyConfigured = false;
@@ -33,9 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthWrapper>
+        <ClientWrapper>
           {children}
-        </AuthWrapper>
+        </ClientWrapper>
       </body>
     </html>
   );

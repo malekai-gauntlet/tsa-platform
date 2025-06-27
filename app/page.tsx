@@ -7,7 +7,6 @@ import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
 import Link from "next/link";
-import { AUTH_CONFIG } from "@/lib/constants/auth";
 
 const client = generateClient<Schema>();
 

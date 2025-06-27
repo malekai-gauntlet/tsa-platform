@@ -164,66 +164,57 @@ export default function MapPage() {
 
   return (
     <div className="map-page">
-      <div className="map-header">
-        <h1>TSA Districts Map</h1>
-        <p>Transportation Security Administration Platform - District Overview</p>
-        {!MAPBOX_ACCESS_TOKEN && (
-          <div style={{ 
-            backgroundColor: '#fef3c7', 
-            border: '1px solid #f59e0b', 
-            borderRadius: '6px', 
-            padding: '12px', 
-            margin: '10px 0',
-            color: '#92400e'
-          }}>
-            <strong>⚠️ Configuration Required:</strong> Please add your Mapbox access token to .env.local
-          </div>
-        )}
-        {MAPBOX_ACCESS_TOKEN && !mapLoaded && (
-          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-            Loading districts data...
-          </p>
-        )}
-        {mapLoaded && (
-          <p style={{ color: '#10b981', fontSize: '0.9rem' }}>
-            ✅ Map loaded using {dataSource === 'vector' ? 'vector tiles' : 'GeoJSON'} data source
-          </p>
-        )}
-      </div>
+      {/* Minimal overlay for status messages */}
+      {!MAPBOX_ACCESS_TOKEN && (
+        <div className="map-overlay error-overlay">
+          <strong>⚠️ Configuration Required:</strong> Please add your Mapbox access token to .env.local
+        </div>
+      )}
+      {MAPBOX_ACCESS_TOKEN && !mapLoaded && (
+        <div className="map-overlay loading-overlay">
+          Loading TSA districts data...
+        </div>
+      )}
       
       <div 
         ref={mapContainer} 
         className="map-container"
         style={{ 
-          width: '100%', 
-          height: 'calc(100vh - 140px)',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-          backgroundColor: '#f3f4f6'
+          width: '100vw', 
+          height: '100vh',
         }} 
       />
       
       <style jsx>{`
         .map-page {
-          padding: 20px;
-          background-color: #f8fafc;
-          min-height: 100vh;
-        }
-        .map-header {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        .map-header h1 {
-          color: #1e293b;
-          margin: 0 0 8px 0;
-          font-size: 2rem;
-          font-weight: 600;
-        }
-        .map-header p {
-          color: #64748b;
+          position: relative;
+          width: 100vw;
+          height: 100vh;
           margin: 0;
-          font-size: 1.1rem;
+          padding: 0;
+        }
+        
+        .map-overlay {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1000;
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-weight: 500;
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .error-overlay {
+          background-color: #fef3c7;
+          border: 1px solid #f59e0b;
+          color: #92400e;
+        }
+        
+        .loading-overlay {
+          background-color: rgba(0, 0, 0, 0.8);
+          color: white;
         }
       `}</style>
     </div>
