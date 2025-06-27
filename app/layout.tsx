@@ -4,6 +4,7 @@ import "./app.css";
 
 // Amplify configuration at root level
 import { Amplify } from "aws-amplify";
+import AuthWrapper from "@/lib/components/AuthWrapper";
 
 // Configure Amplify as early as possible in the application lifecycle
 let amplifyConfigured = false;
@@ -20,8 +21,8 @@ try {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TSA Dashboard",
-  description: "Transportation Security Administration Dashboard",
+  title: "TSA Platform",
+  description: "Texas Sports Academy Platform",
 };
 
 export default function RootLayout({
@@ -31,7 +32,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AuthWrapper>
+          {children}
+        </AuthWrapper>
+      </body>
     </html>
   );
 }
