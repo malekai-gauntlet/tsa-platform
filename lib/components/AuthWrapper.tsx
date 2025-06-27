@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { AUTH_CONFIG } from '@/lib/constants/auth';
@@ -10,47 +10,49 @@ interface AuthWrapperProps {
 }
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [authState, setAuthState] = useState<{
+    isAuthenticated: boolean | null;
+    isLoading: boolean;
+  }>({ isAuthenticated: null, isLoading: true });
+  
   const router = useRouter();
   const pathname = usePathname();
 
   // Public routes that don't require authentication
-  const publicRoutes = [AUTH_CONFIG.ROUTES.LOGIN];
-  const isPublicRoute = publicRoutes.includes(pathname as any);
+  const isLoginRoute = pathname === AUTH_CONFIG.ROUTES.LOGIN;
 
-  useEffect(() => {
-    checkAuthState();
-  }, []);
-
+  // Check auth state - called once when component mounts
   const checkAuthState = async () => {
     try {
       await getCurrentUser();
-      setIsAuthenticated(true);
+      setAuthState({ isAuthenticated: true, isLoading: false });
       
       // If user is authenticated and on login page, redirect to dashboard
-      if (isPublicRoute && pathname === AUTH_CONFIG.ROUTES.LOGIN) {
+      if (isLoginRoute) {
         router.push(AUTH_CONFIG.ROUTES.DASHBOARD);
       }
     } catch (error) {
-      setIsAuthenticated(false);
+      setAuthState({ isAuthenticated: false, isLoading: false });
       
       // If user is not authenticated and on a protected route, redirect to login
-      if (!isPublicRoute) {
+      if (!isLoginRoute) {
         router.push(AUTH_CONFIG.ROUTES.LOGIN);
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // Call auth check if not already done
+  if (authState.isAuthenticated === null) {
+    checkAuthState();
+  }
+
   // Show loading spinner while checking auth state
-  if (isLoading) {
+  if (authState.isLoading) {
     return (
       <div className="auth-loading">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading...</p>
+          <p>Loading TSA Platform...</p>
         </div>
         
         <style jsx>{`
@@ -92,13 +94,13 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     );
   }
 
-  // For public routes, always render children
-  if (isPublicRoute) {
+  // For login route, always render children
+  if (isLoginRoute) {
     return <>{children}</>;
   }
 
   // For protected routes, only render if authenticated
-  if (isAuthenticated) {
+  if (authState.isAuthenticated) {
     return <>{children}</>;
   }
 
