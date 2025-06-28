@@ -19,7 +19,7 @@ export const userOperations = {
         filter: { userId: { eq: currentUser.userId } },
       });
 
-      return profiles?.[0] || null;
+      return profiles?.[0];
     } catch (error) {
       console.error('Error fetching current profile:', error);
       throw error;
@@ -51,7 +51,7 @@ export const eventOperations = {
   async getEvents() {
     try {
       const { data: events } = await client.models.Event.list();
-      return events || [];
+      return events ?? [];
     } catch (error) {
       console.error('Error fetching events:', error);
       throw error;
@@ -123,7 +123,7 @@ export const applicationOperations = {
   async getApplications() {
     try {
       const { data: enrollments } = await client.models.Enrollment.list();
-      return enrollments || [];
+      return enrollments ?? [];
     } catch (error) {
       console.error('Error fetching applications:', error);
       throw error;
@@ -166,7 +166,7 @@ export const invitationOperations = {
         filter: { token: { eq: token }, status: { eq: 'PENDING' } }
       });
       
-      if (!invitations || invitations.length === 0) {
+      if (!invitations?.length) {
         return { 
           valid: false, 
           error: 'Invalid or expired invitation token' 
@@ -188,20 +188,20 @@ export const invitationOperations = {
       // Transform Amplify data model to expected InvitationData format
       const invitationData = {
         email: invitation.email,
-        role: invitation.invitationType ? invitation.invitationType.toLowerCase() : 'coach',
-        firstName: invitation.firstName || '',
-        lastName: invitation.lastName || '',
-        phone: invitation.phone || '',
-        city: invitation.city || '',
-        state: invitation.state || '',
-        bio: invitation.bio || '',
-        message: invitation.message || '',
-        fullName: `${invitation.firstName || ''} ${invitation.lastName || ''}`.trim(),
-        location: invitation.city ? `${invitation.city}, ${invitation.state || ''}`.trim() : invitation.state || '',
-        phoneFormatted: invitation.phone || '',
-        schoolName: invitation.schoolName || '',
-        schoolType: invitation.schoolType || '',
-        sport: invitation.sport || ''
+        role: invitation.invitationType?.toLowerCase() ?? 'coach',
+        firstName: invitation.firstName ?? '',
+        lastName: invitation.lastName ?? '',
+        phone: invitation.phone ?? '',
+        city: invitation.city ?? '',
+        state: invitation.state ?? '',
+        bio: invitation.bio ?? '',
+        message: invitation.message ?? '',
+        fullName: `${invitation.firstName ?? ''} ${invitation.lastName ?? ''}`.trim(),
+        location: invitation.city ? `${invitation.city}, ${invitation.state ?? ''}`.trim() : invitation.state ?? '',
+        phoneFormatted: invitation.phone ?? '',
+        schoolName: invitation.schoolName ?? '',
+        schoolType: invitation.schoolType ?? '',
+        sport: invitation.sport ?? ''
       };
       
       return { 
@@ -231,14 +231,13 @@ export const onboardingOperations = {
         filter: { email: { eq: email } }
       });
 
-      if (!progress || progress.length === 0) {
+      if (!progress?.length) {
         // No existing progress, create a new record if we have an invitation token
         if (invitationToken) {
           const result = await invitationOperations.validateInvitation(invitationToken);
-      const valid = result.valid;
-      const invitation = result.invitation;
           
-          if (valid && invitation && result.invitation) {
+          if (result.valid && result.invitation) {
+            const invitation = result.invitation;
             // Create a new onboarding progress with invitation data
             const stepData = {
               personalInfo: {
@@ -275,16 +274,19 @@ export const onboardingOperations = {
             });
 
             // Transform to snake_case format expected by the API
-            return {
-              user_id: newProgress.userId,
-              email: newProgress.email,
-              current_step: newProgress.currentStep.toLowerCase().replace('_', '-'),
-              completed_steps: newProgress.completedSteps || [],
-              step_data: newProgress.stepData,
-              last_updated: newProgress.lastUpdated,
-              invitation_based: newProgress.invitationBased,
-              invitation_id: newProgress.invitationId
-            };
+            if (newProgress) {
+              return {
+                user_id: newProgress.userId ?? '',
+                email: newProgress.email ?? '',
+                current_step: newProgress.currentStep?.toLowerCase().replace('_', '-') ?? 'personal-info',
+                completed_steps: newProgress.completedSteps?.filter((x): x is string => typeof x === 'string') ?? [],
+                step_data: newProgress.stepData ?? {},
+                last_updated: newProgress.lastUpdated ?? new Date().toISOString(),
+                invitation_based: newProgress.invitationBased ?? false,
+                invitation_id: newProgress.invitationId
+              };
+            }
+            return null;
           }
         }
         return null;
@@ -295,13 +297,13 @@ export const onboardingOperations = {
 
       // Transform to snake_case format expected by the API
       return {
-        user_id: existingProgress.userId,
-        email: existingProgress.email,
-        current_step: existingProgress.currentStep.toLowerCase().replace('_', '-'),
-        completed_steps: existingProgress.completedSteps || [],
-        step_data: existingProgress.stepData,
-        last_updated: existingProgress.lastUpdated,
-        invitation_based: existingProgress.invitationBased,
+        user_id: existingProgress.userId ?? '',
+        email: existingProgress.email ?? '',
+        current_step: existingProgress.currentStep?.toLowerCase().replace('_', '-') ?? 'personal-info',
+        completed_steps: existingProgress.completedSteps?.filter((x): x is string => typeof x === 'string') ?? [],
+        step_data: existingProgress.stepData ?? {},
+        last_updated: existingProgress.lastUpdated ?? new Date().toISOString(),
+        invitation_based: existingProgress.invitationBased ?? false,
         invitation_id: existingProgress.invitationId
       };
     } catch (error) {
@@ -326,7 +328,7 @@ export const onboardingOperations = {
       // Convert step name format from kebab-case to SNAKE_CASE
       const formattedCurrentStep = currentStep.toUpperCase().replace('-', '_');
       
-      if (!progress || progress.length === 0) {
+      if (!progress?.length) {
         // Create new progress record
         const newProgressData = {
           email,
@@ -344,7 +346,7 @@ export const onboardingOperations = {
         // Update existing progress record
         const existingProgress = progress[0];
         const updatedCompletedSteps = [
-          ...new Set([...existingProgress.completedSteps || [], ...completedSteps])
+          ...new Set([...(existingProgress.completedSteps ?? []), ...completedSteps])
         ];
 
         await client.models.OnboardingProgress.update({
@@ -392,7 +394,7 @@ export const onboardingOperations = {
       let invitation = null;
       if (invitationBased && data.invitationId) {
         const validationResult = await invitationOperations.validateInvitation(data.invitationId);
-        if (validationResult.valid && validationResult.invitation) {
+        if (validationResult.valid) {
           invitation = validationResult.invitation;
         }
       }
@@ -411,7 +413,7 @@ export const onboardingOperations = {
       const { data: newProfile } = await client.models.Profile.create({
         userId: newUser.id,
         profileType: 'COACH',
-        bio: data.bio || '',
+        bio: data.bio ?? '',
         onboardingComplete: true
       });
       
@@ -432,7 +434,7 @@ export const onboardingOperations = {
           id: progressRecord.id,
           currentStep: 'COMPLETE',
           completedSteps: [
-            ...new Set([...progressRecord.completedSteps || [], ...data.completedSteps, 'COMPLETE'])
+            ...new Set([...(progressRecord.completedSteps ?? []), ...data.completedSteps, 'COMPLETE'])
           ],
           lastUpdated: new Date().toISOString()
         });
@@ -445,7 +447,7 @@ export const onboardingOperations = {
           filter: { token: { eq: data.invitationId } }
         });
         
-        if (invitations && invitations.length > 0) {
+        if (invitations?.length) {
           await client.models.Invitation.update({
             id: invitations[0].id,
             status: 'ACCEPTED',
