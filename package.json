@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "typecheck": "tsc --project tsconfig.build.json --noEmit",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:pages": "node scripts/test-pages.js",
     "deploy:dev": "./scripts/deploy-dev.sh",
     "sandbox": "npx ampx sandbox",
@@ -50,6 +53,7 @@
   "devDependencies": {
     "@aws-amplify/backend": "^1.5.1",
     "@aws-amplify/backend-cli": "^1.3.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.839.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -57,6 +61,8 @@
     "aws-cdk-lib": "^2",
     "constructs": "^10.3.0",
     "esbuild": "^0.23.1",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "tsx": "^4.19.0",
     "typescript": "^5.6.2"
   }
