@@ -1,29 +1,29 @@
-import { applicationOperations } from '@/lib/services/graphql-client'
+import { applicationOperations } from '@/lib/services/graphql-client';
 
 // StudentApplication type aligned with Enrollment schema
 export type StudentApplication = {
-  id: string
-  parentId: string
-  studentName: string
-  studentAge?: number
-  studentGrade?: string
-  enrollmentType: 'FULL_TIME' | 'PART_TIME' | 'AFTER_SCHOOL'
-  status: 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED'
-  applicationData?: Record<string, any>
-  documents?: Record<string, any>
-  tuitionPlan?: Record<string, any>
-  startDate?: string
-  academicYear?: string
-  schoolPreferences?: Record<string, any>
-  coachName?: string
-  sportInterest?: string
-  currentStep?: number
-  totalSteps?: number
-  timelineSteps?: Array<any>
-  timelineStatus?: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | 'CANCELLED'
-  createdAt: string
-  updatedAt?: string
-}
+  id: string;
+  parentId: string;
+  studentName: string;
+  studentAge?: number;
+  studentGrade?: string;
+  enrollmentType: 'FULL_TIME' | 'PART_TIME' | 'AFTER_SCHOOL';
+  status: 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED';
+  applicationData?: Record<string, any>;
+  documents?: Record<string, any>;
+  tuitionPlan?: Record<string, any>;
+  startDate?: string;
+  academicYear?: string;
+  schoolPreferences?: Record<string, any>;
+  coachName?: string;
+  sportInterest?: string;
+  currentStep?: number;
+  totalSteps?: number;
+  timelineSteps?: Array<any>;
+  timelineStatus?: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | 'CANCELLED';
+  createdAt: string;
+  updatedAt?: string;
+};
 
 // Transform Enrollment to StudentApplication with proper field mapping
 function transformEnrollmentToApplication(enrollment: any): StudentApplication {
@@ -48,56 +48,68 @@ function transformEnrollmentToApplication(enrollment: any): StudentApplication {
     timelineSteps: enrollment.timelineSteps,
     timelineStatus: enrollment.timelineStatus,
     createdAt: enrollment.createdAt,
-    updatedAt: enrollment.updatedAt
-  }
+    updatedAt: enrollment.updatedAt,
+  };
 }
 
-export const fetchStudentApplications = async (options?: { limit?: number }): Promise<StudentApplication[]> => {
+export const fetchStudentApplications = async (options?: {
+  limit?: number;
+}): Promise<StudentApplication[]> => {
   try {
-    const enrollments = await applicationOperations.getApplications()
-    return enrollments.map(transformEnrollmentToApplication)
+    const enrollments = await applicationOperations.getApplications();
+    return enrollments.map(transformEnrollmentToApplication);
   } catch (error) {
-    console.error('Error fetching student applications:', error)
-    throw error
+    console.error('Error fetching student applications:', error);
+    throw error;
   }
-}
+};
 
-export const acceptStudentApplication = async (applicationId: string): Promise<StudentApplication | null> => {
+export const acceptStudentApplication = async (
+  applicationId: string
+): Promise<StudentApplication | null> => {
   try {
-    const updatedEnrollment = await applicationOperations.updateApplicationStatus(applicationId, 'APPROVED')
-    if (!updatedEnrollment) return null
-    
-    return transformEnrollmentToApplication(updatedEnrollment)
-  } catch (error) {
-    console.error('Error accepting student application:', error)
-    throw error
-  }
-}
+    const updatedEnrollment = await applicationOperations.updateApplicationStatus(
+      applicationId,
+      'APPROVED'
+    );
+    if (!updatedEnrollment) return null;
 
-export const rejectStudentApplication = async (applicationId: string): Promise<StudentApplication | null> => {
-  try {
-    const updatedEnrollment = await applicationOperations.updateApplicationStatus(applicationId, 'REJECTED')
-    if (!updatedEnrollment) return null
-    
-    return transformEnrollmentToApplication(updatedEnrollment)
+    return transformEnrollmentToApplication(updatedEnrollment);
   } catch (error) {
-    console.error('Error rejecting student application:', error)
-    throw error
+    console.error('Error accepting student application:', error);
+    throw error;
   }
-}
+};
+
+export const rejectStudentApplication = async (
+  applicationId: string
+): Promise<StudentApplication | null> => {
+  try {
+    const updatedEnrollment = await applicationOperations.updateApplicationStatus(
+      applicationId,
+      'REJECTED'
+    );
+    if (!updatedEnrollment) return null;
+
+    return transformEnrollmentToApplication(updatedEnrollment);
+  } catch (error) {
+    console.error('Error rejecting student application:', error);
+    throw error;
+  }
+};
 
 // Backward compatibility export
 export const studentApplications = {
   getApplications: fetchStudentApplications,
   getApplicationById: async (id: string): Promise<StudentApplication | null> => {
     try {
-      const enrollment = await applicationOperations.getApplicationById(id)
-      if (!enrollment) return null
-      
-      return transformEnrollmentToApplication(enrollment)
+      const enrollment = await applicationOperations.getApplicationById(id);
+      if (!enrollment) return null;
+
+      return transformEnrollmentToApplication(enrollment);
     } catch (error) {
-      console.error('Error fetching application by ID:', error)
-      throw error
+      console.error('Error fetching application by ID:', error);
+      throw error;
     }
-  }
-} 
+  },
+};

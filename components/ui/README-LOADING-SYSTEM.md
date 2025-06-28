@@ -11,6 +11,7 @@ A unified, consistent loading experience across the Texas Sports Academy platfor
 ## 🛠️ Components
 
 ### LoadingSpinner
+
 ```tsx
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
@@ -25,6 +26,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 ```
 
 ### LoadingPage
+
 ```tsx
 import { LoadingPage } from '@/components/ui/loading-spinner'
 
@@ -32,14 +34,15 @@ import { LoadingPage } from '@/components/ui/loading-spinner'
 <LoadingPage title="Verifying access..." size="md" />
 
 // With description
-<LoadingPage 
-  title="Setting up your school..." 
+<LoadingPage
+  title="Setting up your school..."
   description="This may take a few moments"
-  size="lg" 
+  size="lg"
 />
 ```
 
 ### LoadingInline
+
 ```tsx
 import { LoadingInline } from '@/components/ui/loading-spinner'
 
@@ -51,14 +54,16 @@ import { LoadingInline } from '@/components/ui/loading-spinner'
 ## 🎨 Skeleton Loading
 
 ### CardListSkeleton
+
 ```tsx
-import { CardListSkeleton } from '@/components/ui/loading-skeleton'
+import { CardListSkeleton } from '@/components/ui/loading-skeleton';
 
 // For coach lists, admin tables, etc.
-<CardListSkeleton count={3} showAvatar={true} showStatus={true} />
+<CardListSkeleton count={3} showAvatar={true} showStatus={true} />;
 ```
 
 ### StatsGridSkeleton
+
 ```tsx
 import { StatsGridSkeleton } from '@/components/ui/loading-skeleton'
 
@@ -68,14 +73,16 @@ import { StatsGridSkeleton } from '@/components/ui/loading-skeleton'
 ```
 
 ### ApplicationCardSkeleton
+
 ```tsx
-import { ApplicationCardSkeleton } from '@/components/ui/loading-skeleton'
+import { ApplicationCardSkeleton } from '@/components/ui/loading-skeleton';
 
 // Specialized for student applications
-<ApplicationCardSkeleton />
+<ApplicationCardSkeleton />;
 ```
 
 ### Other Skeletons
+
 - `TableSkeleton` - For data tables
 - `PageHeaderSkeleton` - For page titles
 - `FormSkeleton` - For loading forms
@@ -83,31 +90,34 @@ import { ApplicationCardSkeleton } from '@/components/ui/loading-skeleton'
 ## ⚡ Loading Utilities
 
 ### LoadingState Manager
-```tsx
-import { createLoadingState, LOADING_DELAYS } from '@/lib/loading-utils'
 
-const [isLoading, setIsLoading] = useState(false)
-const loadingState = createLoadingState(setIsLoading, LOADING_DELAYS.FAST)
+```tsx
+import { createLoadingState, LOADING_DELAYS } from '@/lib/loading-utils';
+
+const [isLoading, setIsLoading] = useState(false);
+const loadingState = createLoadingState(setIsLoading, LOADING_DELAYS.FAST);
 
 // Auto-manage loading state
 const data = await loadingState.wrap(async () => {
-  return await fetchData()
-})
+  return await fetchData();
+});
 ```
 
 ### Consistent Delays
+
 ```tsx
-import { LOADING_DELAYS } from '@/lib/loading-utils'
+import { LOADING_DELAYS } from '@/lib/loading-utils';
 
 // Standardized delays for consistent UX
-LOADING_DELAYS.INSTANT  // 0ms
-LOADING_DELAYS.FAST     // 150ms
-LOADING_DELAYS.NORMAL   // 300ms
-LOADING_DELAYS.SLOW     // 500ms
-LOADING_DELAYS.VERY_SLOW // 1000ms
+LOADING_DELAYS.INSTANT; // 0ms
+LOADING_DELAYS.FAST; // 150ms
+LOADING_DELAYS.NORMAL; // 300ms
+LOADING_DELAYS.SLOW; // 500ms
+LOADING_DELAYS.VERY_SLOW; // 1000ms
 ```
 
 ### Loading Messages
+
 ```tsx
 import { LOADING_MESSAGES } from '@/lib/loading-utils'
 
@@ -130,11 +140,13 @@ All loading components use consistent TSA branding:
 ### Replace Ad-hoc Spinners
 
 **❌ Before:**
+
 ```tsx
 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600">
 ```
 
 **✅ After:**
+
 ```tsx
 <LoadingSpinner size="md" color="primary" />
 ```
@@ -142,25 +154,32 @@ All loading components use consistent TSA branding:
 ### Replace Custom Loading States
 
 **❌ Before:**
+
 ```tsx
-{loading && (
-  <div className="flex justify-center py-8">
-    <div className="animate-spin..."></div>
-    <span>Loading...</span>
-  </div>
-)}
+{
+  loading && (
+    <div className="flex justify-center py-8">
+      <div className="animate-spin..."></div>
+      <span>Loading...</span>
+    </div>
+  );
+}
 ```
 
 **✅ After:**
+
 ```tsx
-{loading && <LoadingInline text="Loading coaches..." />}
+{
+  loading && <LoadingInline text="Loading coaches..." />;
+}
 ```
 
 ### Replace Full-Page Loading
 
 **❌ Before:**
+
 ```tsx
-<div className="min-h-screen flex items-center justify-center">
+<div className="flex min-h-screen items-center justify-center">
   <div className="text-center">
     <div className="animate-spin..."></div>
     <h2>Loading...</h2>
@@ -169,6 +188,7 @@ All loading components use consistent TSA branding:
 ```
 
 **✅ After:**
+
 ```tsx
 <LoadingPage title="Loading dashboard..." />
 ```
@@ -209,4 +229,4 @@ src/lib/
 - **Coach List**: Uses `CardListSkeleton` for coach data
 - **Analytics**: Uses multiple skeleton components for complex layouts
 
-The centralized loading system eliminates the "loading explosion" feeling and provides a smooth, professional user experience across the entire TSA platform. 
+The centralized loading system eliminates the "loading explosion" feeling and provides a smooth, professional user experience across the entire TSA platform.

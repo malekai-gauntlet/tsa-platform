@@ -13,8 +13,12 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
   const pathname = usePathname();
 
   // Public routes that don't require authentication
+  // Routes managed in middleware.ts - this is just for component-level awareness
   const publicRoutes = ['/map', '/login'];
-  const isPublicRoute = publicRoutes.includes(pathname);
+  const publicPathPrefixes = ['/onboarding'];
+  const isPublicRoute =
+    publicRoutes.includes(pathname) ||
+    publicPathPrefixes.some(prefix => pathname.startsWith(prefix));
 
   // For public routes, render children without authentication
   if (isPublicRoute) {
@@ -38,19 +42,18 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           Header() {
             return (
               <div style={{ textAlign: 'center' }}>
-                <Image
-                  src="/logo.svg"
-                  alt="Texas Sports Academy"
-                  width={200}
-                  height={94}
-                />
+                <Image src="/logo.svg" alt="Texas Sports Academy" width={200} height={94} />
               </div>
             );
           },
           Footer() {
             return (
               <div className="contact-info">
-                <p>Can't login? Contact us at <a href="mailto:team@texassportsacademy.com">team@texassportsacademy.com</a> for an invite.</p>
+                <p>
+                  Can't login? Contact us at{' '}
+                  <a href="mailto:team@texassportsacademy.com">team@texassportsacademy.com</a> for
+                  an invite.
+                </p>
               </div>
             );
           },
@@ -127,7 +130,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
         }
 
         /* Style submit button with blue theme */
-        .auth-container [data-amplify-authenticator] button[type="submit"] {
+        .auth-container [data-amplify-authenticator] button[type='submit'] {
           border-radius: 8px;
           border: 1px solid transparent;
           padding: 0.6em 1.2em;
@@ -141,17 +144,17 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           width: 100%;
         }
 
-        .auth-container [data-amplify-authenticator] button[type="submit"]:hover {
+        .auth-container [data-amplify-authenticator] button[type='submit']:hover {
           background-color: #1d4ed8;
         }
 
-        .auth-container [data-amplify-authenticator] button[type="submit"]:focus,
-        .auth-container [data-amplify-authenticator] button[type="submit"]:focus-visible {
+        .auth-container [data-amplify-authenticator] button[type='submit']:focus,
+        .auth-container [data-amplify-authenticator] button[type='submit']:focus-visible {
           outline: 4px auto -webkit-focus-ring-color;
         }
 
         /* Style secondary buttons/links with blue theme */
-        .auth-container [data-amplify-authenticator] button[data-variation="link"] {
+        .auth-container [data-amplify-authenticator] button[data-variation='link'] {
           font-family: inherit;
           font-weight: 500;
           color: #2563eb;
@@ -160,7 +163,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           text-decoration: none;
         }
 
-        .auth-container [data-amplify-authenticator] button[data-variation="link"]:hover {
+        .auth-container [data-amplify-authenticator] button[data-variation='link']:hover {
           color: #1d4ed8;
           text-decoration: underline;
         }
@@ -174,4 +177,4 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
       `}</style>
     </div>
   );
-} 
+}

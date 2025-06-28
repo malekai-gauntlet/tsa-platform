@@ -18,4 +18,4 @@ This directory contains organized cursor rules broken down by topic for better m
 
 ## Usage
 
-Each file can be used independently as cursor rules, or you can reference specific sections based on your current development focus. This modular approach makes it easier to maintain and update specific areas without affecting others. 
+Each file can be used independently as cursor rules, or you can reference specific sections based on your current development focus. This modular approach makes it easier to maintain and update specific areas without affecting others.

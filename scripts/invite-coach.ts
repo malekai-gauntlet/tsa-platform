@@ -30,9 +30,9 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { generateClient } from 'aws-amplify/data';
 import { Amplify } from 'aws-amplify';
-import { UnifiedEmailService } from '@/lib/email-service-unified';
-import { TSAEmailTemplates } from '@/lib/email-templates';
-import type { Schema } from '@/amplify/data/resource';
+import { UnifiedEmailService } from '../lib/email-service-unified';
+import { TSAEmailTemplates } from '../lib/email-templates-tsa';
+import type { Schema } from '../amplify/data/resource';
 
 // Import amplify outputs for configuration
 let amplifyOutputs: any;

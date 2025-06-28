@@ -1,4 +1,6 @@
-import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { coachInvite } from '../functions/coach-invite/resource';
+import { parentApplication } from '../functions/parent-application/resource';
 
 /*== TSA PLATFORM DATA SCHEMA ===============================================
 Comprehensive data schema for the Texas Sports Academy platform
@@ -7,9 +9,72 @@ Covers coach profiles, events, enrollments, invitations, analytics, and more
 
 const schema = a.schema({
   // =================================================================
+  // CUSTOM FUNCTIONS
+  // =================================================================
+
+  coachInvite: a
+    .mutation()
+    .arguments({
+      name: a.string().required(),
+      email: a.string().required(),
+      cell: a.string().required(),
+      location: a.string().required(),
+      d1_athletics_count: a.integer().required(),
+      bio: a.string().required(),
+    })
+    .returns(a.json())
+    .handler(a.handler.function(coachInvite))
+    .authorization(allow => [
+      allow.groups(['admin']),
+      allow.publicApiKey(), // Allow API key for third-party access
+    ]),
+
+  parentApplication: a
+    .mutation()
+    .arguments({
+      // Parent Information
+      parentEmail: a.string().required(),
+      parentFirstName: a.string(),
+      parentLastName: a.string(),
+      parentPhone: a.string(),
+
+      // Student Information
+      studentName: a.string().required(),
+      studentAge: a.integer(),
+      studentGrade: a.string(),
+      studentDateOfBirth: a.string(),
+
+      // Application Details
+      sportInterest: a.string().required(),
+      enrollmentType: a.enum(['FULL_TIME', 'PART_TIME', 'AFTER_SCHOOL']),
+      schoolPreferences: a.json(),
+      startDate: a.string(),
+      academicYear: a.string(),
+
+      // Additional Information
+      specialNotes: a.string(),
+      emergencyContact: a.json(),
+      medicalInformation: a.string(),
+
+      // Coach Selection (optional)
+      preferredCoachId: a.string(),
+      coachName: a.string(),
+
+      // Address Information
+      address: a.json(),
+    })
+    .returns(a.json())
+    .handler(a.handler.function(parentApplication))
+    .authorization(allow => [
+      allow.publicApiKey(), // Allow third-party access via API key
+      allow.authenticated(), // Allow authenticated users
+      allow.guest(), // Allow guest submissions
+    ]),
+
+  // =================================================================
   // USER MANAGEMENT
   // =================================================================
-  
+
   User: a
     .model({
       email: a.string().required(),
@@ -20,18 +85,19 @@ const schema = a.schema({
       status: a.enum(['ACTIVE', 'INACTIVE', 'PENDING']),
       amplifyUserId: a.string(), // Links to Cognito User Pool (updated after authentication)
       lastLoginAt: a.datetime(),
-      
+
       // EdFi Integration Fields
       studentUSI: a.integer(), // Links to Student table if role is STUDENT
       parentUSI: a.integer(), // Links to Parent table if role is PARENT
       staffUSI: a.integer(), // Links to Staff table if role is COACH/ADMIN
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'update', 'delete']), // Allow admin full access
       allow.authenticated().to(['read', 'update']), // Allow authenticated users to read/update their own data
+      allow.publicApiKey().to(['create', 'read']), // Allow API key for parent application function
     ]),
 
   // USED BY: background-check, onboarding API
@@ -56,15 +122,16 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'update', 'delete']), // Allow admin full access
       allow.authenticated().to(['read', 'update']), // Allow authenticated users to read/update their own profile
+      allow.publicApiKey().to(['create', 'read']), // Allow API key for parent application function
     ]),
 
   // =================================================================
-  // EVENTS & SESSIONS  
+  // EVENTS & SESSIONS
   // =================================================================
-  
+
   Event: a
     .model({
       title: a.string().required(),
@@ -94,17 +161,17 @@ const schema = a.schema({
       registrationDeadline: a.datetime(),
       ageGroups: a.string().array(),
       skillLevel: a.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVELS']),
-      
+
       // Google Calendar Integration
       googleCalendarEventId: a.string(),
       googleMeetUrl: a.string(),
       googleCalendarSyncEnabled: a.boolean().default(false),
       googleCalendarLastSynced: a.datetime(),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'update']),
       allow.authenticated().to(['read']),
@@ -126,7 +193,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'update']),
       allow.publicApiKey().to(['read']), // Allow public API access for published events
@@ -149,7 +216,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'update']),
     ]),
@@ -157,7 +224,7 @@ const schema = a.schema({
   // =================================================================
   // ENROLLMENTS & APPLICATIONS
   // =================================================================
-  
+
   // USED BY: parent-dashboard
   Enrollment: a
     .model({
@@ -183,14 +250,15 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'update', 'delete']),
+      allow.publicApiKey().to(['create', 'read']), // Allow API key for parent application function
     ]),
 
   // =================================================================
   // INVITATIONS SYSTEM
   // =================================================================
-  
+
   // Enhanced invitation model with comprehensive pre-fill data
   Invitation: a
     .model({
@@ -201,7 +269,7 @@ const schema = a.schema({
       status: a.enum(['PENDING', 'ACCEPTED', 'EXPIRED', 'CANCELLED', 'REVOKED']),
       token: a.string().required(),
       expiresAt: a.datetime().required(),
-      
+
       // Comprehensive pre-fill data for onboarding
       firstName: a.string(),
       lastName: a.string(),
@@ -210,19 +278,19 @@ const schema = a.schema({
       state: a.string(),
       bio: a.string(),
       message: a.string(), // Custom welcome message
-      
+
       // School information (optional pre-fill)
       schoolName: a.string(),
       schoolType: a.string(),
       sport: a.string(),
-      
+
       // Timestamps
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
       acceptedAt: a.datetime(),
       lastSentAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['create', 'read', 'update', 'delete']), // Allow admin users only
       allow.authenticated().to(['read']), // Allow authenticated users to read invitations
       allow.guest().to(['read']), // Allow public read access for invitation validation only
@@ -232,7 +300,18 @@ const schema = a.schema({
     .model({
       userId: a.id().required(),
       email: a.string().required(),
-      currentStep: a.enum(['PERSONAL_INFO', 'ROLE_EXPERIENCE', 'SCHOOL_SETUP', 'SCHOOL_NAME', 'SCHOOL_FOCUS', 'STUDENT_PLANNING', 'STUDENTS', 'AGREEMENTS', 'FINALIZE', 'COMPLETE']),
+      currentStep: a.enum([
+        'PERSONAL_INFO',
+        'ROLE_EXPERIENCE',
+        'SCHOOL_SETUP',
+        'SCHOOL_NAME',
+        'SCHOOL_FOCUS',
+        'STUDENT_PLANNING',
+        'STUDENTS',
+        'AGREEMENTS',
+        'FINALIZE',
+        'COMPLETE',
+      ]),
       completedSteps: a.string().array(),
       stepData: a.json(), // EdFi compliant step data
       invitationBased: a.boolean().default(false),
@@ -241,7 +320,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.publicApiKey().to(['create', 'read', 'update', 'delete']), // Allow API key for onboarding operations
       allow.groups(['admin']).to(['read', 'delete']), // Allow admin to manage progress
       allow.authenticated().to(['read', 'update']), // Allow authenticated users to read/update their own progress
@@ -250,7 +329,7 @@ const schema = a.schema({
   // =================================================================
   // TUITION & PAYMENTS
   // =================================================================
-  
+
   TuitionSetting: a
     .model({
       coachId: a.id().required(),
@@ -260,16 +339,16 @@ const schema = a.schema({
       allowPaymentPlans: a.boolean().default(true),
       paymentPlanOptions: a.string().required(), // JSON stringified array
       currency: a.string().default('USD'),
-      
+
       // Marketplace Settings
       stripeConnectAccountId: a.string(), // Stripe Connect account for receiving payments
       marketplaceEnabled: a.boolean().default(false),
       platformFeePercent: a.float().default(5.0), // Platform fee percentage
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'create', 'update']),
     ]),
@@ -286,27 +365,27 @@ const schema = a.schema({
       totalPaid: a.float().default(0),
       paymentStatus: a.enum(['pending', 'deposit_paid', 'fully_paid', 'overdue']),
       paymentPlan: a.enum(['full', 'deposit_only', 'monthly', 'quarterly']),
-      
+
       // Stripe Integration
       stripeCustomerId: a.string(),
       stripePaymentLinkId: a.string(),
       stripePaymentIntentId: a.string(),
-      
+
       // Marketplace Integration
       stripeConnectAccountId: a.string(), // Coach's Stripe Connect account
       platformFeeAmount: a.float(), // Platform fee collected
       coachPayoutAmount: a.float(), // Amount to be paid to coach
       isMarketplacePayment: a.boolean().default(false),
-      
+
       // Payment Tracking
       lastPaymentDate: a.datetime(),
       nextPaymentDue: a.datetime(),
       paymentHistory: a.json(), // Array of payment records
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'create', 'update']),
       allow.publicApiKey().to(['read', 'update']), // For Stripe webhooks
@@ -327,7 +406,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'create', 'update']),
       allow.publicApiKey().to(['create', 'update']), // For automated payouts
@@ -336,7 +415,7 @@ const schema = a.schema({
   // =================================================================
   // COMMUNICATION
   // =================================================================
-  
+
   // TODO: Implement messaging function for internal communication system
   Message: a
     .model({
@@ -353,7 +432,7 @@ const schema = a.schema({
       readAt: a.datetime(),
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['coach', 'admin']).to(['read', 'create']),
     ]),
@@ -373,7 +452,7 @@ const schema = a.schema({
       sentAt: a.datetime(),
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.owner(),
       allow.groups(['admin']).to(['read', 'create', 'update']),
     ]),
@@ -381,7 +460,7 @@ const schema = a.schema({
   // =================================================================
   // ANALYTICS & TRACKING
   // =================================================================
-  
+
   // USED BY: reports-generator
   AnalyticsEvent: a
     .model({
@@ -400,15 +479,16 @@ const schema = a.schema({
       timestamp: a.datetime().required(),
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.authenticated().to(['create']),
       allow.groups(['admin']).to(['read']),
+      allow.publicApiKey().to(['create']), // Allow API key for analytics tracking
     ]),
 
   // =================================================================
   // QUIZZES & ASSESSMENTS
   // =================================================================
-  
+
   // USED BY: quiz-handler, bootcamp-progress
   Quiz: a
     .model({
@@ -424,7 +504,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['coach', 'admin']).to(['read', 'create', 'update']),
       allow.authenticated().to(['read']),
     ]),
@@ -442,15 +522,12 @@ const schema = a.schema({
       timeSpent: a.integer(),
       metadata: a.json(),
     })
-    .authorization((allow) => [
-      allow.owner(),
-      allow.groups(['coach', 'admin']).to(['read']),
-    ]),
+    .authorization(allow => [allow.owner(), allow.groups(['coach', 'admin']).to(['read'])]),
 
   // =================================================================
   // BUSINESS INCORPORATION
   // =================================================================
-  
+
   // USED BY: llc-incorporation
   LLCIncorporation: a
     .model({
@@ -467,15 +544,12 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
-      allow.owner(),
-      allow.groups(['admin']).to(['read', 'update']),
-    ]),
+    .authorization(allow => [allow.owner(), allow.groups(['admin']).to(['read', 'update'])]),
 
   // =================================================================
   // SYSTEM & AUDIT
   // =================================================================
-  
+
   // USED BY: audit-health, reports-generator
   AuditLog: a
     .model({
@@ -489,14 +563,12 @@ const schema = a.schema({
       userAgent: a.string(),
       timestamp: a.datetime().required(),
     })
-    .authorization((allow) => [
-      allow.groups(['admin']).to(['read']),
-    ]),
+    .authorization(allow => [allow.groups(['admin']).to(['read'])]),
 
   // =================================================================
   // ED-FI COMPLIANT MODELS - EDUCATIONAL ORGANIZATION STRUCTURE
   // =================================================================
-  
+
   EducationOrganization: a
     .model({
       educationOrganizationId: a.integer().required(),
@@ -504,18 +576,18 @@ const schema = a.schema({
       shortNameOfInstitution: a.string(),
       webSite: a.string(),
       operationalStatus: a.string(),
-      
+
       // Address Information (stored as JSON for flexibility)
       addresses: a.json(), // Array of address objects
       telephones: a.json(), // Array of phone objects
-      
+
       // Ed-Fi Metadata
       etag: a.string(),
       lastModifiedDate: a.datetime(),
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.authenticated().to(['read']),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -528,22 +600,22 @@ const schema = a.schema({
       schoolType: a.string(),
       charterStatus: a.string(),
       titleIPartASchoolDesignation: a.string(),
-      
+
       // Administrative Information
       administrativeFundingControl: a.string(),
       magnetSpecialProgramEmphasisSchool: a.string(),
-      
+
       // Grade Levels and Categories (stored as JSON arrays)
       gradeLevels: a.json(), // ["K", "01", "02", ...]
       schoolCategories: a.json(), // ["Elementary", "Title I"]
-      
+
       // Ed-Fi Metadata
       etag: a.string(),
       lastModifiedDate: a.datetime(),
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.authenticated().to(['read']),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -552,7 +624,7 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - STAFF MANAGEMENT
   // =================================================================
-  
+
   Staff: a
     .model({
       staffUSI: a.integer().required(), // Unique Staff Identifier (system-generated)
@@ -565,27 +637,27 @@ const schema = a.schema({
       maidenName: a.string(),
       birthDate: a.date(),
       sex: a.string(),
-      
+
       // Contact Information
       personalEmailAddress: a.string(),
       workEmailAddress: a.string(),
-      
+
       // Demographics
       hispanicLatinoEthnicity: a.boolean(),
       races: a.json(), // Race information array
-      
+
       // Professional Information
       highestCompletedLevelOfEducation: a.string(),
       yearsOfPriorProfessionalExperience: a.float(),
-      
+
       // System Information
       loginId: a.string(),
       isActive: a.boolean().default(true),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       // Only admin can manage staff records (EdFi compliance)
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.owner(),
@@ -597,16 +669,16 @@ const schema = a.schema({
       schoolId: a.integer().required(),
       programAssignment: a.string().required(), // Administrator, Support, etc.
       schoolYear: a.integer(),
-      
+
       // Employment Information
       employmentStatus: a.string(),
       hireDate: a.date(),
       endDate: a.date(),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.authenticated().to(['read']),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -615,7 +687,7 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - STUDENT INFORMATION
   // =================================================================
-  
+
   Student: a
     .model({
       studentUSI: a.integer().required(), // Unique Student Identifier (system-generated)
@@ -626,27 +698,27 @@ const schema = a.schema({
       lastSurname: a.string().required(),
       generationCodeSuffix: a.string(),
       maidenName: a.string(),
-      
+
       // Birth Information
       birthDate: a.date(),
       birthCity: a.string(),
       birthStateAbbreviation: a.string(),
       birthCountry: a.string(),
-      
+
       // Demographics
       sex: a.string(),
       hispanicLatinoEthnicity: a.boolean(),
       races: a.json(), // Race information array
-      
+
       // Status Information
       studentApplicationStatus: a.enum(['INQUIRY', 'APPLIED', 'ADMITTED', 'ENROLLED']),
       applicationDate: a.date(),
       admissionDate: a.date(),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.groups(['parent']).to(['read']), // Parent can view their students
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -658,27 +730,27 @@ const schema = a.schema({
       schoolId: a.integer().required(),
       schoolYear: a.integer().required(),
       entryDate: a.date().required(),
-      
+
       // Entry Information
       entryGradeLevel: a.string(),
       entryType: a.string(),
       repeatGradeIndicator: a.boolean().default(false),
-      
+
       // Exit Information
       exitWithdrawDate: a.date(),
       exitWithdrawType: a.string(),
-      
+
       // Academic Planning
       classOfSchoolYear: a.integer(),
-      
+
       // Application Status Tracking
       applicationStatus: a.string(),
       admissionStatus: a.string(),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.groups(['parent']).to(['read']),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -687,7 +759,7 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - PARENT INFORMATION
   // =================================================================
-  
+
   Parent: a
     .model({
       parentUSI: a.integer().required(), // Unique Parent Identifier (system-generated)
@@ -698,29 +770,29 @@ const schema = a.schema({
       lastSurname: a.string().required(),
       generationCodeSuffix: a.string(),
       maidenName: a.string(),
-      
+
       // Contact Information
       personalEmailAddress: a.string(),
       workEmailAddress: a.string(),
-      
+
       // Professional Information
       professionDescriptor: a.string(),
       employerName: a.string(),
       backgroundInformation: a.string(), // Parent background for applications
-      
+
       // Demographics (optional)
       sex: a.string(),
       hispanicLatinoEthnicity: a.boolean(),
       races: a.json(), // Race information array
-      
+
       // System Information
       loginId: a.string(),
       isActive: a.boolean().default(true),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.owner(),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -730,25 +802,34 @@ const schema = a.schema({
     .model({
       studentUSI: a.integer().required(),
       parentUSI: a.integer().required(),
-      
+
       // Relationship Information
-      relation: a.enum(['Mother', 'Father', 'Guardian', 'Stepmother', 'Stepfather', 'Grandmother', 'Grandfather', 'Other']),
+      relation: a.enum([
+        'Mother',
+        'Father',
+        'Guardian',
+        'Stepmother',
+        'Stepfather',
+        'Grandmother',
+        'Grandfather',
+        'Other',
+      ]),
       primaryContactStatus: a.boolean().default(false),
       livesWith: a.boolean().default(false),
-      
+
       // Legal Information
       legalGuardian: a.boolean().default(false),
       custodyStatus: a.enum(['FULL', 'PARTIAL', 'NONE']),
-      
+
       // Contact Preferences
       contactPriority: a.integer(),
       contactRestrictions: a.string(),
       emergencyContactStatus: a.boolean().default(false),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.groups(['parent']).to(['read']),
       allow.publicApiKey().to(['read', 'create', 'update', 'delete']), // Allow API key for testing
@@ -757,29 +838,29 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - CONTACT INFORMATION
   // =================================================================
-  
+
   StudentEducationOrganizationResponsibleContactPerson: a
     .model({
       studentUSI: a.integer().required(),
       educationOrganizationId: a.integer().required(),
       firstName: a.string().required(),
       lastSurname: a.string().required(),
-      
+
       // Contact Details
       relation: a.string(),
       contactTitle: a.string(),
       contactEmailAddress: a.string(),
       contactTelephones: a.json(), // Phone numbers array
       contactAddress: a.json(), // Address information
-      
+
       // Status
       emergencyContactStatus: a.boolean().default(false),
       primaryContactStatus: a.boolean().default(false),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.groups(['parent']).to(['read']),
     ]),
@@ -787,7 +868,7 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - DOCUMENT MANAGEMENT
   // =================================================================
-  
+
   DocumentCategory: a
     .model({
       documentCategoryId: a.integer().required(),
@@ -796,11 +877,11 @@ const schema = a.schema({
       isRequired: a.boolean().default(false),
       sortOrder: a.integer(),
       isActive: a.boolean().default(true),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.authenticated().to(['read']),
     ]),
@@ -809,36 +890,36 @@ const schema = a.schema({
     .model({
       studentUSI: a.integer().required(),
       documentCategoryId: a.integer().required(),
-      
+
       // Document Information
       documentTitle: a.string().required(),
       documentDescription: a.string(),
       fileName: a.string(),
       fileSize: a.integer(),
       mimeType: a.string(),
-      
+
       // Storage Information
       storageLocation: a.string(),
       documentHash: a.string(),
-      
+
       // Submission Information
       submittedDate: a.datetime(),
       submittedByParentUSI: a.integer(),
-      
+
       // Review Information
       reviewStatus: a.enum(['PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION']),
       reviewDate: a.datetime(),
       reviewedByStaffUSI: a.integer(),
       reviewComments: a.string(),
-      
+
       // Compliance
       expirationDate: a.date(),
       isConfidential: a.boolean().default(true),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.groups(['parent']).to(['read', 'create', 'update']),
     ]),
@@ -846,7 +927,7 @@ const schema = a.schema({
   // =================================================================
   // ED-FI COMPLIANT MODELS - DESCRIPTORS (REFERENCE DATA)
   // =================================================================
-  
+
   Descriptor: a
     .model({
       descriptorId: a.integer().required(),
@@ -857,11 +938,11 @@ const schema = a.schema({
       priorDescriptorId: a.integer(),
       effectiveBeginDate: a.date(),
       effectiveEndDate: a.date(),
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
       allow.authenticated().to(['read']),
     ]),
@@ -869,7 +950,7 @@ const schema = a.schema({
   // =================================================================
   // API KEY MANAGEMENT
   // =================================================================
-  
+
   // API keys for external integrations and third-party access
   ApiKey: a
     .model({
@@ -883,55 +964,53 @@ const schema = a.schema({
       lastUsedAt: a.datetime(),
       rateLimitDaily: a.integer().default(1000), // Daily request limit
       rateLimitMinute: a.integer().default(10), // Per-minute request limit
-      
+
       // Security & Compliance
       createdBy: a.id().required(), // Admin who created the key
       expiresAt: a.datetime(), // Optional expiration date
       lastRotatedAt: a.datetime(), // When key was last rotated
       ipWhitelist: a.string().array(), // Optional IP restrictions
-      
+
       // Monitoring & Analytics
       metadata: a.json(), // Additional configuration
       securityIncidents: a.integer().default(0), // Count of security violations
       lastSecurityIncident: a.datetime(), // When last incident occurred
-      
+
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [
-      allow.groups(['admin']).to(['read', 'create', 'update', 'delete']),
-    ]),
+    .authorization(allow => [allow.groups(['admin']).to(['read', 'create', 'update', 'delete'])]),
 
   // Track detailed API key usage for security monitoring
   ApiKeyUsage: a
     .model({
       keyId: a.id().required(), // Reference to ApiKey
       keyPrefix: a.string().required(), // For quick identification
-      
+
       // Request Details
       endpoint: a.string().required(), // GraphQL operation or REST endpoint
       method: a.string(), // HTTP method if applicable
       userAgent: a.string(),
       ipAddress: a.string(),
-      
+
       // Response Details
       responseStatus: a.integer(), // HTTP status or success/failure
       responseTime: a.integer(), // Response time in milliseconds
       requestSize: a.integer(), // Request payload size in bytes
       responseSize: a.integer(), // Response payload size in bytes
-      
+
       // Security Context
       permissions: a.string().array(), // Permissions checked for this request
       rateLimitHit: a.boolean().default(false), // Whether rate limit was hit
       securityViolation: a.string(), // Type of security violation if any
-      
+
       // Metadata
       metadata: a.json(), // Additional request context
       timestamp: a.datetime().required(),
-      
+
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [
+    .authorization(allow => [
       allow.groups(['admin']).to(['read', 'create']),
       allow.publicApiKey().to(['create']), // Allow API gateway to log usage
     ]),
@@ -944,17 +1023,14 @@ const schema = a.schema({
       rotationType: a.enum(['MANUAL', 'SCHEDULED', 'SECURITY_INCIDENT']),
       reason: a.string(), // Reason for rotation
       rotatedBy: a.id().required(), // Who performed the rotation
-      
+
       // Grace period for old key
       gracePeriodEnd: a.datetime(), // When old key stops working
       oldKeyDeactivated: a.boolean().default(false),
-      
+
       createdAt: a.datetime(),
     })
-    .authorization((allow) => [
-      allow.groups(['admin']).to(['read', 'create']),
-    ]),
-
+    .authorization(allow => [allow.groups(['admin']).to(['read', 'create'])]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -962,7 +1038,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "userPool",
+    defaultAuthorizationMode: 'userPool',
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },

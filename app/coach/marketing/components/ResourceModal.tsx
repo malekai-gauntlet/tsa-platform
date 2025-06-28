@@ -1,12 +1,12 @@
-import React from 'react'
-import { Button } from '@/components/button'
-import { XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/20/solid'
-import type { ResourceMaterial } from '../types'
+import React from 'react';
+import { Button } from '@/components/button';
+import { XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/20/solid';
+import type { ResourceMaterial } from '../types';
 
 interface ResourceModalProps {
-  isOpen: boolean
-  resource: ResourceMaterial | null
-  onClose: () => void
+  isOpen: boolean;
+  resource: ResourceMaterial | null;
+  onClose: () => void;
 }
 
 const getResourceContent = (resourceId: string): string => {
@@ -36,7 +36,7 @@ We'll be hosting an event (part breaking training, part information session) in 
 ⚠️ CUSTOMIZATION REQUIRED:
 - Replace "Houston's first breaking school" with your city/sport
 - Add your personal education background in the "OUR WHY" section
-- Include specific examples of your athletic credentials`
+- Include specific examples of your athletic credentials`;
 
     case 'event-marketing':
       return `═══ EVENT FORMATS THAT WORK ═══
@@ -56,7 +56,7 @@ Last 30 mins = Parent pitch
 Replicate of what a day at your school will be
 Morning = Academics with Alpha's Software
 Afternoon = Athletic training
-Last 30 mins = Parent pitch`
+Last 30 mins = Parent pitch`;
 
     case 'marketing-strategy':
       return `🎯 ═══ MARKETING STRATEGY ═══
@@ -73,7 +73,7 @@ Goal: 5 students by Fall 2025
 
 3. 🤝 ═══ MAKE REFERRALS EASY ═══
    • Follow up within 24 hours
-   • Consider tuition credit incentives`
+   • Consider tuition credit incentives`;
 
     case 'pitch-delivery':
       return `═══ YOUR CLOSING CONVERSATION TOOLKIT ═══
@@ -110,7 +110,7 @@ Goal: 5 students by Fall 2025
 
 🎯 ALWAYS END WITH: "What questions do you have about getting [child's name] started with us?"
 
-⚠️ AVOID: Pressuring for immediate decisions. Give them 48 hours to discuss as a family, then follow up.`
+⚠️ AVOID: Pressuring for immediate decisions. Give them 48 hours to discuss as a family, then follow up.`;
 
     case 'template-deck':
       return `═══ PRESENTATION CUSTOMIZATION CHECKLIST ═══
@@ -162,37 +162,37 @@ Goal: 5 students by Fall 2025
 □ Add your photos and videos
 □ Practice timing and transitions
 □ Prepare for common questions
-□ Set up enrollment process`
+□ Set up enrollment process`;
 
     default:
-      return 'Content not available.'
+      return 'Content not available.';
   }
-}
+};
 
 export const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, resource, onClose }) => {
-  if (!isOpen || !resource) return null
+  if (!isOpen || !resource) return null;
 
   const handleCopyContent = async (): Promise<void> => {
     try {
-      await navigator.clipboard.writeText(getResourceContent(resource.id))
+      await navigator.clipboard.writeText(getResourceContent(resource.id));
     } catch (error) {
-      console.error('Failed to copy content:', error)
+      console.error('Failed to copy content:', error);
     }
-  }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black p-4">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl">
         <div className="flex h-full max-h-[90vh]">
-          <div className="flex-1 p-8 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-8">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{resource.title}</h2>
-                <p className="text-gray-600 mt-1">{resource.description}</p>
+                <p className="mt-1 text-gray-600">{resource.description}</p>
               </div>
               <Button
-                className="border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                className="cursor-pointer border border-gray-200 hover:bg-gray-50"
                 onClick={onClose}
               >
                 <XMarkIcon className="h-4 w-4" />
@@ -201,22 +201,22 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, resource, 
 
             {/* Content */}
             <div className="prose max-w-none">
-              <pre className="whitespace-pre-wrap text-base text-gray-900 font-sans leading-7 bg-white p-8 rounded-lg border border-gray-200 shadow-sm">
+              <pre className="rounded-lg border border-gray-200 bg-white p-8 font-sans text-base leading-7 whitespace-pre-wrap text-gray-900 shadow-sm">
                 {getResourceContent(resource.id)}
               </pre>
             </div>
 
             {/* Footer Actions */}
-            <div className="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 flex items-center justify-end space-x-3 border-t border-gray-200 pt-6">
               <Button
-                className="border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                className="cursor-pointer border border-gray-200 hover:bg-gray-50"
                 onClick={handleCopyContent}
               >
-                <ClipboardDocumentIcon className="h-4 w-4 mr-1" />
+                <ClipboardDocumentIcon className="mr-1 h-4 w-4" />
                 Copy Content
               </Button>
               <Button
-                className="bg-[#004aad] text-white hover:bg-[#003888] cursor-pointer"
+                className="cursor-pointer bg-[#004aad] text-white hover:bg-[#003888]"
                 onClick={onClose}
               >
                 Done
@@ -226,5 +226,5 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, resource, 
         </div>
       </div>
     </div>
-  )
-} 
+  );
+};

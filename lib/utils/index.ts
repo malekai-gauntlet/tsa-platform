@@ -1,12 +1,12 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * Utility function to merge Tailwind CSS classes
  * Combines clsx for conditional classes and tailwind-merge for deduplication
  */
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -17,13 +17,13 @@ export function cn(...inputs: ClassValue[]) {
  * - "sarah.connor@email.com" → "Sarah"
  */
 export function extractDisplayNameFromEmail(email: string): string {
-  if (!email) return 'Coach'
-  
-  const localPart = email.split('@')[0]
-  const displayName = localPart.split('.')[0]
-  
+  if (!email) return 'Coach';
+
+  const localPart = email.split('@')[0];
+  const displayName = localPart.split('.')[0];
+
   // Capitalize first letter
-  return displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase()
+  return displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
 }
 
 /**
@@ -33,13 +33,14 @@ export function extractDisplayNameFromEmail(email: string): string {
  * - "Elite Basketball Center" → "https://www.texassportsacademy.com/elite-basketball-center"
  */
 export function createSchoolApplicationURL(schoolName: string): string {
-  if (!schoolName) return 'https://www.texassportsacademy.com/application'
-  
-  const schoolSlug = schoolName.toLowerCase()
+  if (!schoolName) return 'https://www.texassportsacademy.com/application';
+
+  const schoolSlug = schoolName
+    .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
     .replace(/\s+/g, '-') // Replace spaces with dashes
     .replace(/-+/g, '-') // Replace multiple dashes with single dash
-    .replace(/^-|-$/g, '') // Remove leading/trailing dashes
-  
-  return `https://www.texassportsacademy.com/${schoolSlug}`
-} 
+    .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
+
+  return `https://www.texassportsacademy.com/${schoolSlug}`;
+}

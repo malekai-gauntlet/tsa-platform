@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { cn } from '@/lib/utils'
-import { CheckIcon } from '@heroicons/react/24/solid'
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 interface TimelineStepProps {
-  id: number
-  name: string
-  description: string
-  status: 'completed' | 'current' | 'upcoming'
-  autoDetected?: boolean
-  onClick?: () => void
-  className?: string
-  isMobile?: boolean
+  id: number;
+  name: string;
+  description: string;
+  status: 'completed' | 'current' | 'upcoming';
+  autoDetected?: boolean;
+  onClick?: () => void;
+  className?: string;
+  isMobile?: boolean;
 }
 
 /**
@@ -29,21 +29,21 @@ export const TimelineStep: React.FC<TimelineStepProps> = ({
   className,
   isMobile = false,
 }) => {
-  const isInteractive = onClick && !autoDetected && status !== 'completed'
+  const isInteractive = onClick && !autoDetected && status !== 'completed';
 
   if (isMobile) {
     // Mobile layout: Vertical card-like design
     return (
-      <div className={cn('flex flex-col items-center group w-24', className)}>
+      <div className={cn('group flex w-24 flex-col items-center', className)}>
         {/* Step Circle */}
         <div className="relative z-10 mb-2">
           <div
             className={cn(
               'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-200',
               {
-                'bg-green-500 border-green-500 text-white': status === 'completed',
-                'bg-[#004aad] border-[#004aad] text-white': status === 'current',
-                'bg-white border-gray-300 text-gray-500': status === 'upcoming',
+                'border-green-500 bg-green-500 text-white': status === 'completed',
+                'border-[#004aad] bg-[#004aad] text-white': status === 'current',
+                'border-gray-300 bg-white text-gray-500': status === 'upcoming',
                 'cursor-pointer hover:scale-105': isInteractive,
               }
             )}
@@ -56,30 +56,27 @@ export const TimelineStep: React.FC<TimelineStepProps> = ({
               <span className="text-xs font-semibold">{id}</span>
             )}
           </div>
-          
+
           {/* Auto-detected indicator */}
           {autoDetected && status === 'completed' && (
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-blue-500">
               <CheckIcon className="h-2 w-2 text-white" />
             </div>
           )}
         </div>
-        
+
         {/* Step Content */}
         <div className="text-center">
-          <h3 className={cn(
-            'text-xs font-semibold mb-1 leading-tight',
-            {
+          <h3
+            className={cn('mb-1 text-xs leading-tight font-semibold', {
               'text-[#004aad]': status === 'current',
               'text-gray-900': status !== 'current',
-            }
-          )}>
+            })}
+          >
             {name}
           </h3>
-          <p className="text-xs text-gray-500 leading-tight">
-            {description}
-          </p>
-          
+          <p className="text-xs leading-tight text-gray-500">{description}</p>
+
           {/* Status Badge */}
           <div className="mt-1">
             {status === 'completed' && (
@@ -95,21 +92,21 @@ export const TimelineStep: React.FC<TimelineStepProps> = ({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // Desktop layout: Original horizontal design
   return (
-    <div className={cn('flex flex-col items-center group', className)}>
+    <div className={cn('group flex flex-col items-center', className)}>
       {/* Step Circle */}
       <div className="relative z-10 mb-3">
         <div
           className={cn(
             'flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-200',
             {
-              'bg-green-500 border-green-500 text-white': status === 'completed',
-              'bg-[#004aad] border-[#004aad] text-white': status === 'current',
-              'bg-white border-gray-300 text-gray-500': status === 'upcoming',
+              'border-green-500 bg-green-500 text-white': status === 'completed',
+              'border-[#004aad] bg-[#004aad] text-white': status === 'current',
+              'border-gray-300 bg-white text-gray-500': status === 'upcoming',
               'cursor-pointer hover:scale-105': isInteractive,
             }
           )}
@@ -122,30 +119,27 @@ export const TimelineStep: React.FC<TimelineStepProps> = ({
             <span className="text-sm font-semibold">{id}</span>
           )}
         </div>
-        
+
         {/* Auto-detected indicator */}
         {autoDetected && status === 'completed' && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+          <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500">
             <CheckIcon className="h-2.5 w-2.5 text-white" />
           </div>
         )}
       </div>
-      
+
       {/* Step Content */}
-      <div className="text-center max-w-24">
-        <h3 className={cn(
-          'text-sm font-semibold mb-1',
-          {
+      <div className="max-w-24 text-center">
+        <h3
+          className={cn('mb-1 text-sm font-semibold', {
             'text-[#004aad]': status === 'current',
             'text-gray-900': status !== 'current',
-          }
-        )}>
+          })}
+        >
           {name}
         </h3>
-        <p className="text-xs text-gray-500 leading-tight">
-          {description}
-        </p>
-        
+        <p className="text-xs leading-tight text-gray-500">{description}</p>
+
         {/* Status Badge */}
         <div className="mt-2">
           {status === 'completed' && (
@@ -166,5 +160,5 @@ export const TimelineStep: React.FC<TimelineStepProps> = ({
         </div>
       </div>
     </div>
-  )
-} 
+  );
+};

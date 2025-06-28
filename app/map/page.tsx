@@ -5,7 +5,11 @@ import type { Map } from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { mapConfig } from '@/lib/constants/mapbox';
-import { setupDistrictLayers, setupDistrictInteractions, setupAtmosphericEffects } from '@/lib/utils/mapUtils';
+import {
+  setupDistrictLayers,
+  setupDistrictInteractions,
+  setupAtmosphericEffects,
+} from '@/lib/utils/mapUtils';
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
@@ -17,32 +21,22 @@ export default function MapPage() {
     if (map.current || !mapContainer.current) return;
 
     if (!MAPBOX_ACCESS_TOKEN) {
-      console.error('Mapbox access token not found. Please add NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN to your environment variables.');
+      console.error(
+        'Mapbox access token not found. Please add NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN to your environment variables.'
+      );
       return;
     }
 
     // Set the access token
     mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-    // Initialize map with inline style to avoid TypeScript issues
+    // Initialize map with a Mapbox style for better appearance
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {},
-        layers: [
-          {
-            id: 'background',
-            type: 'background',
-            paint: {
-              'background-color': 'hsl(220, 1%, 97%)'
-            }
-          }
-        ]
-      },
+      style: 'mapbox://styles/mapbox/light-v11', // Using a standard Mapbox style
       center: mapConfig.center,
       zoom: mapConfig.zoom,
-      projection: mapConfig.projection
+      projection: mapConfig.projection,
     });
 
     // Add navigation controls
@@ -52,9 +46,15 @@ export default function MapPage() {
     // Setup map features when style loads
     map.current.on('style.load', () => {
       if (map.current) {
+        console.log('Map style loaded, setting up layers...');
         setupAtmosphericEffects(map.current);
-        setupDistrictLayers(map.current);
-        setupDistrictInteractions(map.current);
+        try {
+          setupDistrictLayers(map.current);
+          setupDistrictInteractions(map.current);
+          console.log('Map layers setup completed');
+        } catch (e) {
+          console.error('Error setting up map layers:', e);
+        }
       }
     });
 
@@ -71,15 +71,13 @@ export default function MapPage() {
       {/* Error overlay for missing token */}
       {!MAPBOX_ACCESS_TOKEN && (
         <div className="error-overlay">
-          <strong>⚠️ Configuration Required:</strong> Please add your Mapbox access token to .env.local
+          <strong>⚠️ Configuration Required:</strong> Please add your Mapbox access token to
+          .env.local
         </div>
       )}
-      
-      <div 
-        ref={mapContainer} 
-        className="map-container"
-      />
-      
+
+      <div ref={mapContainer} className="map-container" />
+
       <style jsx>{`
         .map-page {
           position: relative;
@@ -88,12 +86,12 @@ export default function MapPage() {
           margin: 0;
           padding: 0;
         }
-        
+
         .map-container {
           width: 100%;
           height: 100%;
         }
-        
+
         .error-overlay {
           position: absolute;
           top: 20px;
@@ -111,4 +109,4 @@ export default function MapPage() {
       `}</style>
     </div>
   );
-} 
+}

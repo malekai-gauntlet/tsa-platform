@@ -3,20 +3,25 @@
 ## Core Principles
 
 ### Commit Related Changes
+
 A commit should be a wrapper for related changes. For example, fixing two different bugs should produce two separate commits. Small commits make it easier for other developers to understand the changes and roll them back if something goes wrong.
 
 ### Commit Often
+
 Committing often keeps your commits small and helps you commit only related changes. Moreover, it allows you to share your code more frequently with others. That way it's easier for everyone to integrate changes regularly and avoid having merge conflicts.
 
 ### Don't Commit Half-Done Work
+
 You should only commit code when a logical component is completed. Split a feature's implementation into logical chunks that can be completed quickly so that you can commit often. If you need a clean working copy, consider using Git's stash feature instead.
 
 ### Test Your Code Before You Commit
+
 Resist the temptation to commit something that you "think" is completed. Test it thoroughly to make sure it really is completed and has no side effects. Having your code tested is even more important when it comes to pushing/sharing your code with others.
 
 ## Commit Message Format
 
 ### Structure
+
 ```
 <type>: <subject> (50 chars or less)
 
@@ -24,6 +29,7 @@ Resist the temptation to commit something that you "think" is completed. Test it
 ```
 
 ### Rules
+
 - **Capitalized, short summary** (50 chars or less)
 - **Always leave the second line blank**
 - **Wrap body text to 72 characters**
@@ -33,21 +39,24 @@ Resist the temptation to commit something that you "think" is completed. Test it
 ### Good Examples
 
 **Simple commit (no body needed):**
+
 ```
 feat: Add districts layer to map visualization
 ```
 
 **Complex commit with body:**
+
 ```
 refactor: Extract Mapbox utilities into reusable modules
 
 - Move constants to lib/constants/mapbox.ts
-- Create district types in lib/types/districts.ts  
+- Create district types in lib/types/districts.ts
 - Extract map initialization logic
 - Improve code reusability across components
 ```
 
 **Bug fix:**
+
 ```
 fix: Resolve district popup positioning issue
 
@@ -73,12 +82,14 @@ Use these prefixes for consistent commit categorization:
 ## Branching Strategy
 
 ### Use Branches Extensively
+
 - **Feature branches**: `feature/district-visualization`
 - **Bug fixes**: `fix/popup-positioning`
 - **Hotfixes**: `hotfix/security-patch`
 - **Releases**: `release/v1.2.0`
 
 ### Branch Naming Convention
+
 ```
 <type>/<description-in-kebab-case>
 
@@ -92,18 +103,21 @@ docs/deployment-guide
 ## Push Guidelines
 
 ### Before Pushing
+
 1. **Run tests**: Ensure all tests pass
 2. **Check lint**: Fix any linting errors
 3. **Review changes**: Use `git diff` to review your changes
 4. **Squash if needed**: Combine related commits for cleaner history
 
 ### Push Frequency
+
 - **Push feature branches regularly** to backup work
 - **Don't push to main/master directly** (use pull requests)
 - **Push early, push often** on feature branches
 - **Coordinate with team** on shared branches
 
 ### Force Push Guidelines
+
 - **Never force push to shared branches** (main, develop, etc.)
 - **Only force push to your own feature branches**
 - **Use `--force-with-lease`** instead of `--force` when needed
@@ -112,6 +126,7 @@ docs/deployment-guide
 ## Pre-commit Checklist
 
 Before every commit, verify:
+
 - [ ] Code compiles without errors
 - [ ] All tests pass
 - [ ] No console errors or warnings
@@ -123,6 +138,7 @@ Before every commit, verify:
 ## Pull Request Best Practices
 
 ### Before Creating PR
+
 - [ ] Rebase on latest main/develop
 - [ ] Squash commits if needed
 - [ ] Write descriptive PR title and description
@@ -130,6 +146,7 @@ Before every commit, verify:
 - [ ] Link related issues
 
 ### PR Description Template
+
 ```
 ## What changed?
 Brief description of the changes
@@ -152,6 +169,7 @@ Visual changes or new features
 ## Common Mistakes to Avoid
 
 ❌ **Don't:**
+
 - Commit large, unrelated changes together
 - Use vague commit messages like "fix stuff" or "update"
 - Commit commented-out code or debug statements
@@ -160,6 +178,7 @@ Visual changes or new features
 - Commit directly to main/master
 
 ✅ **Do:**
+
 - Write clear, descriptive commit messages
 - Commit early and often with logical chunks
 - Use branches for all feature work
@@ -170,6 +189,7 @@ Visual changes or new features
 ## Useful Git Aliases
 
 Add these to your `.gitconfig` for improved workflow:
+
 ```bash
 [alias]
     co = checkout
@@ -186,6 +206,7 @@ Add these to your `.gitconfig` for improved workflow:
 ## Emergency Procedures
 
 ### Undo Last Commit (not pushed)
+
 ```bash
 git reset --soft HEAD~1  # Keep changes staged
 git reset HEAD~1         # Keep changes unstaged
@@ -193,13 +214,15 @@ git reset --hard HEAD~1  # Discard changes entirely
 ```
 
 ### Undo Last Commit (already pushed)
+
 ```bash
 git revert HEAD  # Creates new commit that undoes the last one
 ```
 
 ### Fix Wrong Commit Message (not pushed)
+
 ```bash
 git commit --amend -m "New commit message"
 ```
 
-This rule ensures consistent, high-quality commits that improve code maintainability and team collaboration. 
+This rule ensures consistent, high-quality commits that improve code maintainability and team collaboration.

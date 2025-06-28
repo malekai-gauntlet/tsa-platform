@@ -1,0 +1,8 @@
+public/Current_Districts_2025.geojson
+*.geojson
+node_modules/
+dist/
+build/
+.next/
+.amplify/
+lib/graphql-generated/

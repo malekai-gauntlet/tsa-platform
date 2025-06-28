@@ -1,6 +1,7 @@
 # Development Philosophy & Code Style
 
 ## Development Philosophy
+
 - Write clean, maintainable, and scalable code
 - Follow SOLID principles
 - Prefer functional and declarative programming patterns over imperative
@@ -10,12 +11,14 @@
 ## Code Implementation Guidelines
 
 ### Planning Phase
+
 - Begin with step-by-step planning
 - Write detailed pseudocode before implementation
 - Document component architecture and data flow
 - Consider edge cases and error scenarios
 
 ### Code Style
+
 - Use tabs for indentation
 - Use single quotes for strings (except to avoid escaping)
 - Omit semicolons (unless required for disambiguation)
@@ -34,6 +37,7 @@
 ## Naming Conventions
 
 ### General Rules
+
 - Use PascalCase for:
   - Components
   - Type definitions
@@ -54,6 +58,7 @@
   - Global configurations
 
 ### Specific Naming Patterns
+
 - Prefix event handlers with 'handle': handleClick, handleSubmit
 - Prefix boolean variables with verbs: isLoading, hasError, canSubmit
 - Prefix custom hooks with 'use': useAuth, useForm
@@ -62,4 +67,4 @@
   - req (request)
   - res (response)
   - props (properties)
-  - ref (reference) 
+  - ref (reference)

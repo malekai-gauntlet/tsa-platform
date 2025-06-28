@@ -1,27 +1,27 @@
-import { generateClient } from 'aws-amplify/data'
-import { getCurrentUser } from 'aws-amplify/auth'
-import type { Schema } from '@/amplify/data/resource'
+import { generateClient } from 'aws-amplify/data';
+import { getCurrentUser } from 'aws-amplify/auth';
+import type { Schema } from '@/amplify/data/resource';
 
-const client = generateClient<Schema>()
+const client = generateClient<Schema>();
 
 export interface CreateApiKeyRequest {
-  name: string
-  description?: string
-  permissions: string[]
-  expiresInDays?: number
+  name: string;
+  description?: string;
+  permissions: string[];
+  expiresInDays?: number;
 }
 
 export interface ApiKeyResponse {
-  id: string
-  name: string
-  description?: string
-  permissions: string[]
-  isActive: boolean
-  usageCount: number
-  lastUsedAt?: string
-  expiresAt?: string
-  createdAt: string
-  key?: string // Only returned once during creation
+  id: string;
+  name: string;
+  description?: string;
+  permissions: string[];
+  isActive: boolean;
+  usageCount: number;
+  lastUsedAt?: string;
+  expiresAt?: string;
+  createdAt: string;
+  key?: string; // Only returned once during creation
 }
 
 /**
@@ -32,24 +32,24 @@ export class ApiKeyManager {
    * Generate a simple API key
    */
   private generateApiKey(): string {
-    const timestamp = Date.now().toString(36)
-    const randomPart = Math.random().toString(36).substring(2)
-    return `tsa_${timestamp}_${randomPart}`
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2);
+    return `tsa_${timestamp}_${randomPart}`;
   }
 
   /**
    * Create a new API key
    */
   async createApiKey(request: CreateApiKeyRequest): Promise<ApiKeyResponse> {
-    const currentUser = await getCurrentUser()
+    const currentUser = await getCurrentUser();
     if (!currentUser?.userId) {
-      throw new Error('No authenticated user found')
+      throw new Error('No authenticated user found');
     }
 
-    const apiKey = this.generateApiKey()
-    const expiresAt = request.expiresInDays 
+    const apiKey = this.generateApiKey();
+    const expiresAt = request.expiresInDays
       ? new Date(Date.now() + request.expiresInDays * 24 * 60 * 60 * 1000).toISOString()
-      : undefined
+      : undefined;
 
     const { data: newKey } = await client.models.ApiKey.create({
       keyHash: apiKey, // Store the key directly for simplicity
@@ -61,10 +61,10 @@ export class ApiKeyManager {
       usageCount: 0,
       createdBy: currentUser.userId,
       expiresAt,
-    })
+    });
 
     if (!newKey) {
-      throw new Error('Failed to create API key')
+      throw new Error('Failed to create API key');
     }
 
     return {
@@ -78,7 +78,7 @@ export class ApiKeyManager {
       expiresAt: newKey.expiresAt || undefined,
       createdAt: newKey.createdAt || new Date().toISOString(),
       key: apiKey, // Return the key only once
-    }
+    };
   }
 
   /**
@@ -88,16 +88,16 @@ export class ApiKeyManager {
     const { data: apiKeys } = await client.models.ApiKey.list({
       filter: {
         keyHash: { eq: key },
-        isActive: { eq: true }
-      }
-    })
+        isActive: { eq: true },
+      },
+    });
 
-    const apiKey = apiKeys[0]
-    if (!apiKey) return null
+    const apiKey = apiKeys[0];
+    if (!apiKey) return null;
 
     // Check expiration
     if (apiKey.expiresAt && new Date() > new Date(apiKey.expiresAt)) {
-      return null
+      return null;
     }
 
     return {
@@ -110,7 +110,7 @@ export class ApiKeyManager {
       lastUsedAt: apiKey.lastUsedAt || undefined,
       expiresAt: apiKey.expiresAt || undefined,
       createdAt: apiKey.createdAt || new Date().toISOString(),
-    }
+    };
   }
 
   /**
@@ -121,11 +121,11 @@ export class ApiKeyManager {
       const { data: updatedKey } = await client.models.ApiKey.update({
         id: keyId,
         isActive: false,
-      })
-      return !!updatedKey
+      });
+      return !!updatedKey;
     } catch (error) {
-      console.error('Error revoking API key:', error)
-      return false
+      console.error('Error revoking API key:', error);
+      return false;
     }
   }
 
@@ -133,8 +133,8 @@ export class ApiKeyManager {
    * List all API keys
    */
   async listApiKeys(): Promise<ApiKeyResponse[]> {
-    const { data: apiKeys } = await client.models.ApiKey.list()
-    
+    const { data: apiKeys } = await client.models.ApiKey.list();
+
     return apiKeys.map(key => ({
       id: key.id,
       name: key.name || '',
@@ -145,12 +145,12 @@ export class ApiKeyManager {
       lastUsedAt: key.lastUsedAt || undefined,
       expiresAt: key.expiresAt || undefined,
       createdAt: key.createdAt || new Date().toISOString(),
-    }))
+    }));
   }
 }
 
 // Simple export - no singleton needed
-export const apiKeyManager = new ApiKeyManager()
+export const apiKeyManager = new ApiKeyManager();
 
 // Simplified permission constants
 export const API_PERMISSIONS = {
@@ -161,4 +161,4 @@ export const API_PERMISSIONS = {
   USERS_READ: 'users:read',
   USERS_WRITE: 'users:write',
   ADMIN_FULL: 'admin:full',
-} as const 
+} as const;

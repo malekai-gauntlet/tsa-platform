@@ -19,6 +19,7 @@
   "dependencies": {
     "@aws-amplify/geo": "^3.0.82",
     "@aws-amplify/ui-react": "^6.11.2",
+    "@aws-sdk/client-ses": "^3.839.0",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-accordion": "^1.2.11",
@@ -40,8 +41,10 @@
     "aws-amplify": "^6.6.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^12.19.2",
     "lucide-react": "^0.524.0",
+    "mapbox": "^1.0.0-beta10",
     "mapbox-gl": "^3.13.0",
     "next": "14.2.10",
     "postcss": "^8.5.6",

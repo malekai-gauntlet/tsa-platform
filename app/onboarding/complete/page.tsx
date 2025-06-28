@@ -1,541 +1,538 @@
-'use client';
+'use client'
 
-import React, { useState, useCallback, useRef } from 'react';
-import { Link } from '@/components/link';
-import { motion } from 'framer-motion';
-import {
-  invitationAPI,
-  getStoredInvitationData,
-  isInvitationOnboarding,
-  getCachedInvitationToken,
-  buildInvitationURL,
-  clearInvitationData,
-  type OnboardingResponse,
-  type InvitationData,
-  type OnboardingProgress,
-} from '@/lib/invitation-api';
-import { config } from '@/config/environments';
-import { getNextAcademicYear } from '@/lib/academic-year-utils';
-import { useSearchParams } from 'next/navigation';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '@/amplify/data/resource';
-import { useOnboardingState } from '@/lib/hooks/useOnboardingState';
+import React, { useState, useCallback, useRef } from 'react'
+import { Link } from '@/components/link'
+import { motion } from 'framer-motion'
+import { invitationAPI, getStoredInvitationData, isInvitationOnboarding, getCachedInvitationToken, buildInvitationURL, clearInvitationData, type OnboardingResponse } from '@/lib/invitation-api'
+import { config } from '@/config/environments'
+import { getNextAcademicYear } from '@/lib/academic-year-utils'
+import { useSearchParams } from 'next/navigation'
+import { generateClient } from 'aws-amplify/data'
+import type { Schema } from '@amplify/data/resource'
+import { useOnboardingState } from '@/hooks/useOnboardingState'
 
-// Initialize GraphQL client for direct AppSync calls
-const client = generateClient<Schema>();
+// Initialize GraphQL client for direct AppSync calls  
+const client = generateClient<Schema>()
 
 // TypeScript interfaces for server step data structures
 interface PersonalInfo {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  middleName?: string;
-  phone?: string;
-  birthDate?: string;
-  birth_date?: string;
-  birthCity?: string;
-  birth_city?: string;
-  birthState?: string;
-  birth_state_abbreviation_descriptor?: string;
-  gender?: string;
-  city?: string;
+  email?: string
+  firstName?: string
+  lastName?: string
+  middleName?: string
+  phone?: string
+  birthDate?: string
+  birth_date?: string
+  birthCity?: string
+  birth_city?: string
+  birthState?: string
+  birth_state_abbreviation_descriptor?: string
+  gender?: string
+  city?: string
 }
 
 interface RoleExperience {
-  roleType?: string;
-  coachingYears?: string;
-  experience?: string;
-  certificationLevel?: string;
-  specialties?: string[];
+  roleType?: string
+  coachingYears?: string
+  experience?: string
+  certificationLevel?: string
+  specialties?: string[]
 }
 
 interface SchoolSetup {
-  schoolName?: string;
-  schoolType?: string;
-  gradeLevels?: string[];
-  hasPhysicalLocation?: boolean;
-  website?: string;
-  academicYear?: string;
-  schoolStreet?: string;
-  schoolCity?: string;
-  schoolState?: string;
-  schoolZip?: string;
-  schoolPhone?: string;
+  schoolName?: string
+  schoolType?: string
+  gradeLevels?: string[]
+  hasPhysicalLocation?: boolean
+  website?: string
+  academicYear?: string
+  schoolStreet?: string
+  schoolCity?: string
+  schoolState?: string
+  schoolZip?: string
+  schoolPhone?: string
 }
 
 interface SchoolFocus {
-  sport?: string;
-  footballType?: string;
-  schoolCategories?: string[];
-  programFocus?: string[];
+  sport?: string
+  footballType?: string
+  schoolCategories?: string[]
+  programFocus?: string[]
 }
 
 interface StudentPlanning {
-  estimatedStudentCount?: number;
-  studentGradeLevels?: string[];
-  enrollmentCapacity?: number;
-  hasCurrentStudents?: boolean;
-  currentStudentDetails?: string;
+  estimatedStudentCount?: number
+  studentGradeLevels?: string[]
+  enrollmentCapacity?: number
+  hasCurrentStudents?: boolean
+  currentStudentDetails?: string
 }
 
 interface ServerStepData {
-  personalInfo?: PersonalInfo;
-  roleExperience?: RoleExperience;
-  schoolSetup?: SchoolSetup;
-  schoolFocus?: SchoolFocus;
-  studentPlanning?: StudentPlanning;
+  personalInfo?: PersonalInfo
+  roleExperience?: RoleExperience
+  schoolSetup?: SchoolSetup
+  schoolFocus?: SchoolFocus
+  studentPlanning?: StudentPlanning
   // Flat fields for backward compatibility
-  email?: string;
-  first_name?: string;
-  last_name?: string;
-  middle_name?: string;
-  cell_phone?: string;
-  phone?: string;
-  birth_date?: string;
-  birth_city?: string;
-  birth_state_abbreviation_descriptor?: string;
-  gender?: string;
-  location?: string;
-  role_type?: string;
-  years_experience?: string;
-  certification_level?: string;
-  specializations?: string[];
-  school_name?: string;
-  school_type?: string;
-  grade_levels_served?: string[];
-  has_physical_location?: boolean;
-  website?: string;
-  academic_year?: string;
-  school_street?: string;
-  school_city?: string;
-  school_state?: string;
-  school_zip?: string;
-  school_phone?: string;
-  sport?: string;
-  football_type?: string;
-  school_categories?: string[];
-  program_focus?: string[];
-  estimated_student_count?: number;
-  student_grade_levels?: string[];
-  enrollment_capacity?: number;
-  has_current_students?: boolean;
-  current_student_details?: string;
-  platform_agreement?: boolean;
+  email?: string
+  first_name?: string
+  last_name?: string
+  middle_name?: string
+  cell_phone?: string
+  phone?: string
+  birth_date?: string
+  birth_city?: string
+  birth_state_abbreviation_descriptor?: string
+  gender?: string
+  location?: string
+  role_type?: string
+  years_experience?: string
+  certification_level?: string
+  specializations?: string[]
+  school_name?: string
+  school_type?: string
+  grade_levels_served?: string[]
+  has_physical_location?: boolean
+  website?: string
+  academic_year?: string
+  school_street?: string
+  school_city?: string
+  school_state?: string
+  school_zip?: string
+  school_phone?: string
+  sport?: string
+  football_type?: string
+  school_categories?: string[]
+  program_focus?: string[]
+  estimated_student_count?: number
+  student_grade_levels?: string[]
+  enrollment_capacity?: number
+  has_current_students?: boolean
+  current_student_details?: string
+  platform_agreement?: boolean
 }
 
 interface OnboardingCompleteData {
   // Core identity fields
-  email: string;
-  first_name: string;
-  last_name: string;
-  middle_name: string;
-  full_name: string;
-  cell_phone: string;
-  birth_date: string;
-  birth_city: string;
-  birth_state_abbreviation_descriptor: string;
-  gender: string;
-
+  email: string
+  first_name: string
+  last_name: string
+  middle_name: string
+  full_name: string
+  cell_phone: string
+  birth_date: string
+  birth_city: string
+  birth_state_abbreviation_descriptor: string
+  gender: string
+  
   // Location
-  location: string;
-
+  location: string
+  
   // Role and experience
-  role_type: string;
-  years_experience: string;
-  certification_level: string;
-  specializations: string[];
-  bio?: string;
-  certifications?: string[];
-
+  role_type: string
+  years_experience: string
+  certification_level: string
+  specializations: string[]
+  bio?: string
+  certifications?: string[]
+  
   // School information
-  school_name: string;
-  school_type: string;
-  grade_levels_served: string[];
-  has_physical_location: boolean;
-  website: string;
-  academic_year: string;
-
+  school_name: string
+  school_type: string
+  grade_levels_served: string[]
+  has_physical_location: boolean
+  website: string
+  academic_year: string
+  
   // School address
-  school_street: string;
-  school_city: string;
-  school_state: string;
-  school_zip: string;
-  school_phone: string;
-
+  school_street: string
+  school_city: string
+  school_state: string
+  school_zip: string
+  school_phone: string
+  
   // School focus
-  sport: string;
-  football_type: string;
-  school_categories: string[];
-  program_focus: string[];
-
+  sport: string
+  football_type: string
+  school_categories: string[]
+  program_focus: string[]
+  
   // Student planning
-  estimated_student_count: number;
-  student_grade_levels: string[];
-  enrollment_capacity: number;
-  has_current_students: boolean;
-  current_student_details: string;
-
+  estimated_student_count: number
+  student_grade_levels: string[]
+  enrollment_capacity: number
+  has_current_students: boolean
+  current_student_details: string
+  
   // Compliance
-  platform_agreement: boolean;
-
+  platform_agreement: boolean
+  
   // EdFi compliance fields
-  generation_code_suffix?: string;
-  hispanic_latino_ethnicity?: boolean;
-  races?: string[];
-
+  generation_code_suffix?: string
+  hispanic_latino_ethnicity?: boolean
+  races?: string[]
+  
   // System fields
-  timestamp: string;
-  source: string;
-
+  timestamp: string
+  source: string
+  
   // Invitation-specific fields (optional)
-  invitation_token?: string;
-  invitation_email?: string;
-  invitation_role?: string;
-  invitation_school_name?: string;
-  invitation_sport?: string;
-  invitation_school_type?: string;
-
+  invitation_token?: string
+  invitation_email?: string
+  invitation_role?: string
+  invitation_school_name?: string
+  invitation_sport?: string
+  invitation_school_type?: string
+  
   // Index signature for dynamic access
-  [key: string]: any;
+  [key: string]: any
 }
 
 interface OnboardingData {
   user: {
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    role: 'COACH' | 'PARENT' | 'ADMIN' | 'STUDENT';
-    status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
-  };
+    email: string
+    firstName: string
+    lastName: string
+    phone: string
+    role: 'COACH' | 'PARENT' | 'ADMIN' | 'STUDENT'
+    status: 'ACTIVE' | 'INACTIVE' | 'PENDING'
+  }
   profile: {
-    userId: string;
-    profileType: 'COACH' | 'PARENT' | 'STUDENT';
-    bio: string;
-    experience: string;
-    specialties: string[];
-    certifications: string[];
-    onboardingComplete: boolean;
+    userId: string
+    profileType: 'COACH' | 'PARENT' | 'STUDENT'
+    bio: string
+    experience: string
+    specialties: string[]
+    certifications: string[]
+    onboardingComplete: boolean
     address: {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-      phone: string;
-    } | null;
+      street: string
+      city: string
+      state: string
+      zip: string
+      phone: string
+    } | null
     preferences: {
-      certificationLevel: string;
-      programFocus: string[];
-      footballType: string | null;
-      hasPhysicalLocation: boolean;
-      website: string | null;
-      academicYear: string;
-      estimatedStudentCount: number;
-      enrollmentCapacity: number;
-      hasCurrentStudents: boolean;
-      currentStudentDetails: string;
-      platformAgreement: boolean;
-    } | null;
-  };
+      certificationLevel: string
+      programFocus: string[]
+      footballType: string | null
+      hasPhysicalLocation: boolean
+      website: string | null
+      academicYear: string
+      estimatedStudentCount: number
+      enrollmentCapacity: number
+      hasCurrentStudents: boolean
+      currentStudentDetails: string
+      platformAgreement: boolean
+    } | null
+  }
   educationOrganization: {
-    nameOfInstitution: string;
-    shortNameOfInstitution: string;
-    webSite: string | null;
-    operationalStatus: string;
+    nameOfInstitution: string
+    shortNameOfInstitution: string
+    webSite: string | null
+    operationalStatus: string
     addresses: Array<{
-      addressType: string;
-      streetNumberName: string;
-      city: string;
-      stateAbbreviation: string;
-      postalCode: string;
-    }> | null;
+      addressType: string
+      streetNumberName: string
+      city: string
+      stateAbbreviation: string
+      postalCode: string
+    }> | null
     telephones: Array<{
-      telephoneNumberType: string;
-      telephoneNumber: string;
-    }> | null;
-  } | null;
+      telephoneNumberType: string
+      telephoneNumber: string
+    }> | null
+  } | null
   school: {
-    localEducationAgencyId: null;
-    schoolType: string;
-    gradeLevels: string[] | null;
-    schoolCategories: string[] | null;
-  } | null;
+    localEducationAgencyId: null
+    schoolType: string
+    gradeLevels: string[] | null
+    schoolCategories: string[] | null
+  } | null
   staff: {
-    staffUniqueId: string;
-    firstName: string;
-    middleName: string | null;
-    lastSurname: string;
-    generationCodeSuffix: string | null;
-    birthDate: string | null;
-    hispanicLatinoEthnicity: boolean;
-    races: string[] | null;
-    sex: string | null;
-  } | null;
+    staffUniqueId: string
+    firstName: string
+    middleName: string | null
+    lastSurname: string
+    generationCodeSuffix: string | null
+    birthDate: string | null
+    hispanicLatinoEthnicity: boolean
+    races: string[] | null
+    sex: string | null
+  } | null
 }
 
 export default function Complete() {
-  const searchParams = useSearchParams();
-  const bypassFlag = searchParams.get('bypass') === 'true';
-  const isDev =
-    process.env.NODE_ENV === 'development' ||
-    (typeof window !== 'undefined' && window.location.hostname === 'localhost');
-  const allowBypass = isDev || bypassFlag;
+  const searchParams = useSearchParams()
+  const bypassFlag = searchParams.get('bypass') === 'true'
+  const isDev = process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+  const allowBypass = isDev || bypassFlag
 
   // Use the onboarding state hook to get properly loaded data
-  const {
-    formData,
-    invitationData,
-    progress,
-    isLoading: onboardingLoading,
-  } = useOnboardingState({
+  const { 
+    formData, 
+    invitationData, 
+    progress, 
+    isLoading: onboardingLoading 
+  } = useOnboardingState({ 
     currentStep: 'complete',
-    requiredFields: [],
-  });
+    requiredFields: []
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const [profileData, setProfileData] = useState<any>(null);
-  const [isInvitationFlow, setIsInvitationFlow] = useState(false);
-  const [showMissingFieldsForm, setShowMissingFieldsForm] = useState(false);
-  const [missingFieldsData, setMissingFieldsData] = useState<any>({});
-  const [missingFieldsList, setMissingFieldsList] = useState<string[]>([]);
-  const [hasInitialized, setHasInitialized] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState('')
+  const [profileData, setProfileData] = useState<any>(null)
+  const [isInvitationFlow, setIsInvitationFlow] = useState(false)
+  const [showMissingFieldsForm, setShowMissingFieldsForm] = useState(false)
+  const [missingFieldsData, setMissingFieldsData] = useState<any>({})
+  const [missingFieldsList, setMissingFieldsList] = useState<string[]>([])
+  const [hasInitialized, setHasInitialized] = useState(false)
+  
   // Use ref to prevent infinite loops
-  const hasSubmittedRef = useRef(false);
+  const hasSubmittedRef = useRef(false)
 
   const collectOnboardingData = async () => {
-    const isInvitation = isInvitationOnboarding();
-    const invitationToken = getCachedInvitationToken();
+    const isInvitation = isInvitationOnboarding()
+    const invitationToken = getCachedInvitationToken()
+
+    // Debug: Log what we have from the hook
+    console.log('🔍 Hook data available:', {
+      formData: formData,
+      invitationData: invitationData,
+      progress: progress,
+      hasProgress: !!progress,
+      hasStepData: !!(progress?.step_data)
+    })
+
+    // If hook doesn't have progress data, fetch it directly from server
+    let serverProgress = progress
+    if (!serverProgress && invitationToken) {
+      console.log('🔄 Hook progress is null, fetching directly from server...')
+      
+      // If we have invitation data with email, use it directly
+      if (invitationData?.email) {
+        try {
+          serverProgress = await invitationAPI.getOnboardingProgress(invitationData.email, invitationToken)
+          console.log('📡 Direct server fetch result:', serverProgress)
+        } catch (error) {
+          console.error('❌ Failed to fetch server progress with invitation email:', error)
+        }
+      } 
+      // If we have invitation token but no email, try to get email from token validation
+      else {
+        console.log('🔄 No email in invitation data, trying to validate invitation token to get email...')
+        try {
+          const invitationValidation = await invitationAPI.validateInvitation(invitationToken)
+          if (invitationValidation.valid && invitationValidation.invitation?.email) {
+            console.log('✅ Got email from invitation validation:', invitationValidation.invitation.email)
+            serverProgress = await invitationAPI.getOnboardingProgress(invitationValidation.invitation.email, invitationToken)
+            console.log('📡 Server progress after email discovery:', serverProgress)
+        } else {
+            console.log('⚠️ Could not get email from invitation token - user will need to provide it')
+          }
+        } catch (validationError) {
+          console.error('❌ Failed to validate invitation token:', validationError)
+        }
+      }
+    }
+
+    console.log('📊 Detailed data source analysis:')
+    console.log('  📋 FormData keys:', Object.keys(formData))
+    console.log('  📋 FormData with values:', Object.fromEntries(Object.entries(formData).filter(([k, v]) => v !== '' && v !== undefined && v !== null)))
+    console.log('  📨 InvitationData:', invitationData)
+    console.log('  🏃 Progress object (hook):', progress)
+    console.log('  🏃 Progress object (server):', serverProgress)
+    console.log('  📡 Progress step_data:', serverProgress?.step_data)
+
+    // Use data from server progress
+    let serverStepData: ServerStepData = {}
+    let personalInfo: PersonalInfo = {}
+    let roleExperience: RoleExperience = {}
+    let schoolSetup: SchoolSetup = {}
+    let schoolFocus: SchoolFocus = {}
+    let studentPlanning: StudentPlanning = {}
     
-    // Get onboarding data from different sources
-    const serverProgress = await getServerProgress(invitationData, invitationToken, progress);
-
-    // Extract the data from server progress
-    const { personalInfo, roleExperience, schoolSetup, schoolFocus, studentPlanning, serverStepData } = 
-      extractDataFromServerProgress(serverProgress);
-
-    // Now build the complete onboarding data from all sources
+    if (serverProgress?.step_data) {
+      serverStepData = serverProgress.step_data
+      console.log('📡 Server step data found:', serverStepData)
+      console.log('📡 Server step data keys:', Object.keys(serverStepData))
+      console.log('📡 Server step data with values:', Object.fromEntries(Object.entries(serverStepData).filter(([k, v]) => v !== '' && v !== undefined && v !== null)))
+      
+      // Extract nested data structures
+      if (typeof serverStepData === 'string') {
+        try {
+          const parsed = JSON.parse(serverStepData)
+          personalInfo = parsed.personalInfo || {}
+          roleExperience = parsed.roleExperience || {}
+          schoolSetup = parsed.schoolSetup || {}
+          schoolFocus = parsed.schoolFocus || {}
+          studentPlanning = parsed.studentPlanning || {}
+          console.log('📊 Parsed server data:', {
+            personalInfo,
+            roleExperience,
+            schoolSetup,
+            schoolFocus,
+            studentPlanning
+          })
+        } catch (e) {
+          console.error('❌ Failed to parse server step_data:', e)
+        }
+      } else {
+        personalInfo = serverStepData.personalInfo || {}
+        roleExperience = serverStepData.roleExperience || {}
+        schoolSetup = serverStepData.schoolSetup || {}
+        schoolFocus = serverStepData.schoolFocus || {}
+        studentPlanning = serverStepData.studentPlanning || {}
+      }
+    }
 
     // Use the data from server progress, with fallbacks to formData and invitation
     const onboardingData: OnboardingCompleteData = {
       // Core identity fields - prioritize server data, then formData, then invitation
       // Map server camelCase to client snake_case
-      email:
-        personalInfo.email || serverStepData.email || formData.email || invitationData?.email || '',
-      first_name:
-        personalInfo.firstName ||
-        serverStepData.first_name ||
-        formData.firstName ||
-        invitationData?.firstName ||
-        '',
-      last_name:
-        personalInfo.lastName ||
-        serverStepData.last_name ||
-        formData.lastName ||
-        invitationData?.lastName ||
-        '',
-      middle_name:
-        personalInfo.middleName || serverStepData.middle_name || formData.middle_name || '',
-      full_name:
-        `${personalInfo.firstName || serverStepData.first_name || formData.firstName || ''} ${personalInfo.lastName || serverStepData.last_name || formData.lastName || ''}`.trim(),
-      cell_phone:
-        personalInfo.phone ||
-        serverStepData.cell_phone ||
-        serverStepData.phone ||
-        formData.phone ||
-        invitationData?.phone ||
-        '',
-      birth_date:
-        personalInfo.birthDate ||
-        personalInfo.birth_date ||
-        serverStepData.birth_date ||
-        formData.birth_date ||
-        '',
-      birth_city:
-        personalInfo.birthCity ||
-        personalInfo.birth_city ||
-        serverStepData.birth_city ||
-        formData.birth_city ||
-        '',
-      birth_state_abbreviation_descriptor:
-        personalInfo.birthState ||
-        personalInfo.birth_state_abbreviation_descriptor ||
-        serverStepData.birth_state_abbreviation_descriptor ||
-        formData.birth_state_abbreviation_descriptor ||
-        '',
+      email: personalInfo.email || serverStepData.email || formData.email || invitationData?.email || '',
+      first_name: personalInfo.firstName || serverStepData.first_name || formData.first_name || invitationData?.first_name || '',
+      last_name: personalInfo.lastName || serverStepData.last_name || formData.last_name || invitationData?.last_name || '',
+      middle_name: personalInfo.middleName || serverStepData.middle_name || formData.middle_name || '',
+      full_name: `${personalInfo.firstName || serverStepData.first_name || formData.first_name || ''} ${personalInfo.lastName || serverStepData.last_name || formData.last_name || ''}`.trim(),
+      cell_phone: personalInfo.phone || serverStepData.cell_phone || serverStepData.phone || formData.phone || invitationData?.phone || '',
+      birth_date: personalInfo.birthDate || personalInfo.birth_date || serverStepData.birth_date || formData.birth_date || '',
+      birth_city: personalInfo.birthCity || personalInfo.birth_city || serverStepData.birth_city || formData.birth_city || '',
+      birth_state_abbreviation_descriptor: personalInfo.birthState || personalInfo.birth_state_abbreviation_descriptor || serverStepData.birth_state_abbreviation_descriptor || formData.birth_state_abbreviation_descriptor || '',
       gender: personalInfo.gender || serverStepData.gender || formData.gender || '',
-
+      
       // Location for backend compatibility
-      location:
-        personalInfo.city ||
-        serverStepData.location ||
-        formData.city ||
-        invitationData?.city ||
-        'Texas',
-
+      location: personalInfo.city || serverStepData.location || formData.city || invitationData?.city || 'Texas',
+      
       // Role and experience information
-      role_type:
-        roleExperience.roleType ||
-        serverStepData.role_type ||
-        formData.role_type ||
-        invitationData?.role ||
-        'COACH',
-      years_experience:
-        roleExperience.coachingYears ||
-        roleExperience.experience ||
-        serverStepData.years_experience ||
-        formData.experience ||
-        formData.years_experience ||
-        '0',
-      certification_level:
-        roleExperience.certificationLevel ||
-        serverStepData.certification_level ||
-        formData.certification_level ||
-        '',
-      specializations:
-        roleExperience.specialties ||
-        serverStepData.specializations ||
-        formData.specialties ||
-        formData.specialties ||
-        [],
-
+      role_type: roleExperience.roleType || serverStepData.role_type || formData.role_type || invitationData?.role || 'COACH',
+      years_experience: roleExperience.coachingYears || roleExperience.experience || serverStepData.years_experience || formData.experience || formData.years_experience || '0',
+      certification_level: roleExperience.certificationLevel || serverStepData.certification_level || formData.certification_level || '',
+      specializations: roleExperience.specialties || serverStepData.specializations || formData.specialties || formData.specialties || [],
+      
       // School information
-      school_name:
-        schoolSetup.schoolName ||
-        serverStepData.school_name ||
-        formData.schoolName ||
-        invitationData?.schoolName ||
-        '',
-      school_type:
-        schoolSetup.schoolType ||
-        serverStepData.school_type ||
-        formData.schoolType ||
-        invitationData?.schoolType ||
-        '',
-      grade_levels_served:
-        schoolSetup.gradeLevels ||
-        serverStepData.grade_levels_served ||
-        formData.gradeLevels ||
-        formData.gradeLevelsServed ||
-        [],
-      has_physical_location:
-        schoolSetup.hasPhysicalLocation !== undefined
-          ? schoolSetup.hasPhysicalLocation
-          : serverStepData.has_physical_location !== undefined
-            ? serverStepData.has_physical_location
-            : formData.has_physical_location !== undefined
-              ? formData.has_physical_location
-              : true,
+      school_name: schoolSetup.schoolName || serverStepData.school_name || formData.school_name || invitationData?.school_name || '',
+      school_type: schoolSetup.schoolType || serverStepData.school_type || formData.school_type || invitationData?.school_type || '',
+      grade_levels_served: schoolSetup.gradeLevels || serverStepData.grade_levels_served || formData.grade_levels || formData.grade_levels_served || [],
+      has_physical_location: schoolSetup.hasPhysicalLocation !== undefined ? schoolSetup.hasPhysicalLocation : (serverStepData.has_physical_location !== undefined ? serverStepData.has_physical_location : (formData.has_physical_location !== undefined ? formData.has_physical_location : true)),
       website: schoolSetup.website || serverStepData.website || formData.website || '',
-      academic_year:
-        schoolSetup.academicYear ||
-        serverStepData.academic_year ||
-        formData.academic_year ||
-        getNextAcademicYear(),
-
+      academic_year: schoolSetup.academicYear || serverStepData.academic_year || formData.academic_year || getNextAcademicYear(),
+      
       // School address information (optional)
-      school_street:
-        schoolSetup.schoolStreet || serverStepData.school_street || formData.school_street || '',
-      school_city:
-        schoolSetup.schoolCity ||
-        serverStepData.school_city ||
-        formData.school_city ||
-        formData.city ||
-        invitationData?.city ||
-        '',
-      school_state:
-        schoolSetup.schoolState ||
-        serverStepData.school_state ||
-        formData.school_state ||
-        formData.state ||
-        invitationData?.state ||
-        '',
+      school_street: schoolSetup.schoolStreet || serverStepData.school_street || formData.school_street || '',
+      school_city: schoolSetup.schoolCity || serverStepData.school_city || formData.school_city || formData.city || invitationData?.city || '',
+      school_state: schoolSetup.schoolState || serverStepData.school_state || formData.school_state || formData.state || invitationData?.state || '',
       school_zip: schoolSetup.schoolZip || serverStepData.school_zip || formData.school_zip || '',
-      school_phone:
-        schoolSetup.schoolPhone || serverStepData.school_phone || formData.school_phone || '',
-
+      school_phone: schoolSetup.schoolPhone || serverStepData.school_phone || formData.school_phone || '',
+      
       // School focus and programs
-      sport:
-        schoolFocus.sport || serverStepData.sport || formData.sport || invitationData?.sport || '',
-      football_type:
-        schoolFocus.footballType || serverStepData.football_type || formData.football_type || '',
-      school_categories:
-        schoolFocus.schoolCategories ||
-        serverStepData.school_categories ||
-        formData.school_categories ||
-        [],
-      program_focus:
-        schoolFocus.programFocus || serverStepData.program_focus || formData.program_focus || [],
-
+      sport: schoolFocus.sport || serverStepData.sport || formData.sport || invitationData?.sport || '',
+      football_type: schoolFocus.footballType || serverStepData.football_type || formData.football_type || '',
+      school_categories: schoolFocus.schoolCategories || serverStepData.school_categories || formData.school_categories || [],
+      program_focus: schoolFocus.programFocus || serverStepData.program_focus || formData.program_focus || [],
+      
       // Student planning
-      estimated_student_count:
-        studentPlanning.estimatedStudentCount ||
-        serverStepData.estimated_student_count ||
-        formData.estimated_student_count ||
-        0,
-      student_grade_levels:
-        studentPlanning.studentGradeLevels ||
-        serverStepData.student_grade_levels ||
-        formData.student_grade_levels ||
-        [],
-      enrollment_capacity:
-        studentPlanning.enrollmentCapacity ||
-        serverStepData.enrollment_capacity ||
-        formData.enrollment_capacity ||
-        0,
-      has_current_students:
-        studentPlanning.hasCurrentStudents !== undefined
-          ? studentPlanning.hasCurrentStudents
-          : serverStepData.has_current_students !== undefined
-            ? serverStepData.has_current_students
-            : formData.has_current_students || false,
-      current_student_details:
-        studentPlanning.currentStudentDetails ||
-        serverStepData.current_student_details ||
-        formData.current_student_details ||
-        '',
-
+      estimated_student_count: studentPlanning.estimatedStudentCount || serverStepData.estimated_student_count || formData.estimated_student_count || 0,
+      student_grade_levels: studentPlanning.studentGradeLevels || serverStepData.student_grade_levels || formData.student_grade_levels || [],
+      enrollment_capacity: studentPlanning.enrollmentCapacity || serverStepData.enrollment_capacity || formData.enrollment_capacity || 0,
+      has_current_students: studentPlanning.hasCurrentStudents !== undefined ? studentPlanning.hasCurrentStudents : (serverStepData.has_current_students !== undefined ? serverStepData.has_current_students : (formData.has_current_students || false)),
+      current_student_details: studentPlanning.currentStudentDetails || serverStepData.current_student_details || formData.current_student_details || '',
+      
       // Compliance and agreements
-      platform_agreement:
-        serverStepData.platform_agreement !== undefined
-          ? serverStepData.platform_agreement
-          : formData.platform_agreement || false,
-
+      platform_agreement: serverStepData.platform_agreement !== undefined ? serverStepData.platform_agreement : (formData.platform_agreement || false),
+      
       // System fields
       timestamp: new Date().toISOString(),
-      source: 'coach_onboarding_complete',
-    };
-
-    // For debugging, we track key fields that we've combined from multiple sources
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Data sources for key fields:', { 
-        email: onboardingData.email, 
-        name: `${onboardingData.first_name} ${onboardingData.last_name}`,
-        school: onboardingData.school_name,
-        sport: onboardingData.sport
-      });
+      source: 'coach_onboarding_complete'
     }
+
+    console.log('🔍 Field-by-field data resolution:')
+    console.log('  📧 email:', { 
+      server_personal: personalInfo.email, 
+      server_flat: serverStepData.email, 
+      form: formData.email, 
+      invitation: invitationData?.email, 
+      final: onboardingData.email 
+    })
+    console.log('  👤 first_name:', { 
+      server_personal: personalInfo.firstName, 
+      server_flat: serverStepData.first_name, 
+      form: formData.first_name, 
+      invitation: invitationData?.first_name, 
+      final: onboardingData.first_name 
+    })
+    console.log('  👤 last_name:', { 
+      server_personal: personalInfo.lastName, 
+      server_flat: serverStepData.last_name, 
+      form: formData.last_name, 
+      invitation: invitationData?.last_name, 
+      final: onboardingData.last_name 
+    })
+    console.log('  📱 cell_phone/phone:', { 
+      server_personal: personalInfo.phone, 
+      server_cell: serverStepData.cell_phone, 
+      server_phone: serverStepData.phone, 
+      form: formData.phone, 
+      invitation: invitationData?.phone, 
+      final: onboardingData.cell_phone 
+    })
+    console.log('  🎂 birth_date:', { 
+      server_personal: personalInfo.birthDate, 
+      server_flat: serverStepData.birth_date, 
+      form: formData.birth_date, 
+      final: onboardingData.birth_date 
+    })
+    console.log('  🏙️ birth_city:', { 
+      server_personal: personalInfo.birthCity, 
+      server_flat: serverStepData.birth_city, 
+      form: formData.birth_city, 
+      final: onboardingData.birth_city 
+    })
+    console.log('  🗺️ birth_state:', { 
+      server_personal: personalInfo.birthState, 
+      server_flat: serverStepData.birth_state_abbreviation_descriptor, 
+      form: formData.birth_state_abbreviation_descriptor, 
+      final: onboardingData.birth_state_abbreviation_descriptor 
+    })
+    console.log('  ⚧️ gender:', { 
+      server_personal: personalInfo.gender, 
+      server_flat: serverStepData.gender, 
+      form: formData.gender, 
+      final: onboardingData.gender 
+    })
+    console.log('  🏫 school_name:', { 
+      server_school: schoolSetup.schoolName, 
+      server_flat: serverStepData.school_name, 
+      form: formData.school_name, 
+      invitation: invitationData?.school_name, 
+      final: onboardingData.school_name 
+    })
+    console.log('  🏀 sport:', { 
+      server_focus: schoolFocus.sport, 
+      server_flat: serverStepData.sport, 
+      form: formData.sport, 
+      invitation: invitationData?.sport, 
+      final: onboardingData.sport 
+    })
 
     // Add invitation-specific data and defaults
     if (isInvitation && invitationToken) {
-      onboardingData.invitation_token = invitationToken;
-
+      onboardingData.invitation_token = invitationToken
+      
       // Add invitation data for backend reference
       if (invitationData) {
-        onboardingData.invitation_email = invitationData.email;
-        onboardingData.invitation_role = invitationData.role;
-        onboardingData.invitation_school_name =
-          onboardingData.school_name || invitationData.schoolName || '';
-        onboardingData.invitation_sport = onboardingData.sport || invitationData.sport || '';
-        onboardingData.invitation_school_type =
-          onboardingData.school_type || invitationData.schoolType || '';
+        onboardingData.invitation_email = invitationData.email
+        onboardingData.invitation_role = invitationData.role
+        onboardingData.invitation_school_name = onboardingData.school_name || invitationData.school_name || ''
+        onboardingData.invitation_sport = onboardingData.sport || invitationData.sport || ''
+        onboardingData.invitation_school_type = onboardingData.school_type || invitationData.school_type || ''
       }
-
+      
       // Provide defaults for invitation-based onboarding
       if (!onboardingData.grade_levels_served || onboardingData.grade_levels_served.length === 0) {
-        onboardingData.grade_levels_served = ['9', '10', '11', '12']; // Default to high school
+        onboardingData.grade_levels_served = ['9', '10', '11', '12'] // Default to high school
       }
     }
 
@@ -555,115 +552,20 @@ export default function Complete() {
       data_sources: {
         from_server: Object.keys(serverStepData).length,
         from_formData: Object.keys(formData).filter(k => formData[k]).length,
-        from_invitation: invitationData
-          ? Object.keys(invitationData).filter(
-              k => invitationData[k as keyof typeof invitationData]
-            ).length
-          : 0,
-      },
-    });
+        from_invitation: invitationData ? Object.keys(invitationData).filter(k => invitationData[k as keyof typeof invitationData]).length : 0
+      }
+    })
 
-    return onboardingData;
-  };
+    return onboardingData
+  }
 
   /**
-   * Helper function to get server progress data
+   * Transform flat onboarding data into normalized database structure
+   * Maps to: User, Profile, EducationOrganization, School, Staff models
    */
-  const getServerProgress = async (
-    invitationData: InvitationData | null,
-    invitationToken: string | null,
-    existingProgress: OnboardingProgress | null
-  ): Promise<OnboardingProgress | null> => {
-    // Use existing progress if available
-    if (existingProgress) {
-      return existingProgress;
-    }
-    
-    // Try to fetch from server if we have an invitation token
-    if (!invitationToken) {
-      return null;
-    }
-    
-    // If we have invitation data with email, use it directly
-    if (invitationData?.email) {
-      try {
-        return await invitationAPI.getOnboardingProgress(invitationData.email, invitationToken);
-      } catch (error) {
-        console.error('Failed to fetch server progress with invitation email:', error);
-      }
-    }
-    
-    // Try to get email from token validation
-    try {
-      const validation = await invitationAPI.validateInvitation(invitationToken);
-      if (validation.valid && validation.invitation?.email) {
-        return await invitationAPI.getOnboardingProgress(
-          validation.invitation.email,
-          invitationToken
-        );
-      }
-    } catch (validationError) {
-      console.error('Failed to validate invitation token:', validationError);
-    }
-    
-    return null;
-  };
-
-  /**
-   * Helper function to extract structured data from server progress
-   */
-  const extractDataFromServerProgress = (serverProgress: OnboardingProgress | null): {
-    personalInfo: PersonalInfo;
-    roleExperience: RoleExperience;
-    schoolSetup: SchoolSetup;
-    schoolFocus: SchoolFocus;
-    studentPlanning: StudentPlanning;
-    serverStepData: ServerStepData;
-  } => {
-    const personalInfo: PersonalInfo = {};
-    const roleExperience: RoleExperience = {};
-    const schoolSetup: SchoolSetup = {};
-    const schoolFocus: SchoolFocus = {};
-    const studentPlanning: StudentPlanning = {};
-    let serverStepData: ServerStepData = {};
-    
-    if (serverProgress?.step_data) {
-      serverStepData = serverProgress.step_data;
-      
-      // Extract nested data structures
-      if (typeof serverStepData === 'string') {
-        try {
-          const parsed = JSON.parse(serverStepData);
-          Object.assign(personalInfo, parsed.personalInfo || {});
-          Object.assign(roleExperience, parsed.roleExperience || {});
-          Object.assign(schoolSetup, parsed.schoolSetup || {});
-          Object.assign(schoolFocus, parsed.schoolFocus || {});
-          Object.assign(studentPlanning, parsed.studentPlanning || {});
-        } catch (e) {
-          console.error('Failed to parse server stepData:', e);
-        }
-      } else {
-        Object.assign(personalInfo, serverStepData.personalInfo || {});
-        Object.assign(roleExperience, serverStepData.roleExperience || {});
-        Object.assign(schoolSetup, serverStepData.schoolSetup || {});
-        Object.assign(schoolFocus, serverStepData.schoolFocus || {});
-        Object.assign(studentPlanning, serverStepData.studentPlanning || {});
-      }
-    }
-    
-    return {
-      personalInfo,
-      roleExperience,
-      schoolSetup,
-      schoolFocus,
-      studentPlanning,
-      serverStepData,
-    };
-  };
-
   const transformToStructuredData = (flatData: OnboardingCompleteData): OnboardingData => {
-    const userId = `temp_${Date.now()}`; // Will be replaced by backend with actual user ID
-
+    const userId = `temp_${Date.now()}` // Will be replaced by backend with actual user ID
+    
     return {
       // User model data
       user: {
@@ -672,10 +574,10 @@ export default function Complete() {
         lastName: flatData.last_name,
         phone: flatData.cell_phone,
         role: 'COACH',
-        status: 'ACTIVE',
+        status: 'ACTIVE'
       },
-
-      // Profile model data
+      
+      // Profile model data  
       profile: {
         userId: userId,
         profileType: 'COACH',
@@ -684,138 +586,110 @@ export default function Complete() {
         specialties: flatData.specializations || [],
         certifications: flatData.certifications || [],
         onboardingComplete: true,
-
+        
         // Address as JSON object
-        address: flatData.school_street
-          ? {
-              street: flatData.school_street,
-              city: flatData.school_city,
-              state: flatData.school_state,
-              zip: flatData.school_zip,
-              phone: flatData.school_phone,
-            }
-          : null,
-
+        address: flatData.school_street ? {
+          street: flatData.school_street,
+          city: flatData.school_city,
+          state: flatData.school_state,
+          zip: flatData.school_zip,
+          phone: flatData.school_phone
+        } : null,
+        
         // Store additional coach-specific data in preferences (only if we have data)
-        preferences:
-          flatData.certification_level ||
-          flatData.program_focus ||
-          flatData.football_type ||
-          flatData.has_physical_location ||
-          flatData.website ||
-          flatData.academic_year
-            ? {
-                certificationLevel: flatData.certification_level,
-                programFocus: flatData.program_focus || [],
-                footballType: flatData.football_type || null,
-                hasPhysicalLocation: flatData.has_physical_location,
-                website: flatData.website || null,
-                academicYear: flatData.academic_year,
-                estimatedStudentCount: flatData.estimated_student_count || 0,
-                enrollmentCapacity: flatData.enrollment_capacity || 0,
-                hasCurrentStudents: flatData.has_current_students || false,
-                currentStudentDetails: flatData.current_student_details || '',
-                platformAgreement: flatData.platform_agreement || false,
-              }
-            : null,
+        preferences: flatData.certification_level || flatData.program_focus || flatData.football_type || 
+                    flatData.has_physical_location || flatData.website || flatData.academic_year ? {
+          certificationLevel: flatData.certification_level,
+          programFocus: flatData.program_focus || [],
+          footballType: flatData.football_type || null,
+          hasPhysicalLocation: flatData.has_physical_location,
+          website: flatData.website || null,
+          academicYear: flatData.academic_year,
+          estimatedStudentCount: flatData.estimated_student_count || 0,
+          enrollmentCapacity: flatData.enrollment_capacity || 0,
+          hasCurrentStudents: flatData.has_current_students || false,
+          currentStudentDetails: flatData.current_student_details || '',
+          platformAgreement: flatData.platform_agreement || false
+        } : null
       },
-
+      
       // EducationOrganization model data
-      educationOrganization: flatData.school_name
-        ? {
-            nameOfInstitution: flatData.school_name,
-            shortNameOfInstitution: flatData.school_name.substring(0, 50),
-            webSite: flatData.website || null,
-            operationalStatus: 'Active',
-
-            // Address information as JSON (null if no data)
-            addresses: flatData.school_street
-              ? [
-                  {
-                    addressType: 'Physical',
-                    streetNumberName: flatData.school_street,
-                    city: flatData.school_city,
-                    stateAbbreviation: flatData.school_state,
-                    postalCode: flatData.school_zip,
-                  },
-                ]
-              : null,
-
-            // Phone information as JSON (null if no data)
-            telephones: flatData.school_phone
-              ? [
-                  {
-                    telephoneNumberType: 'Main',
-                    telephoneNumber: flatData.school_phone,
-                  },
-                ]
-              : null,
-          }
-        : null,
-
+      educationOrganization: flatData.school_name ? {
+        nameOfInstitution: flatData.school_name,
+        shortNameOfInstitution: flatData.school_name.substring(0, 50),
+        webSite: flatData.website || null,
+        operationalStatus: 'Active',
+        
+        // Address information as JSON (null if no data)
+        addresses: flatData.school_street ? [{
+          addressType: 'Physical',
+          streetNumberName: flatData.school_street,
+          city: flatData.school_city,
+          stateAbbreviation: flatData.school_state,
+          postalCode: flatData.school_zip
+        }] : null,
+        
+        // Phone information as JSON (null if no data)
+        telephones: flatData.school_phone ? [{
+          telephoneNumberType: 'Main',
+          telephoneNumber: flatData.school_phone
+        }] : null
+      } : null,
+      
       // School model data (if education organization exists)
-      school: flatData.school_name
-        ? {
-            localEducationAgencyId: null, // To be assigned by backend
-            schoolType: flatData.school_type || 'Regular',
-
-            // Grade levels as JSON array (Ed-Fi format) - null if no data
-            gradeLevels:
-              flatData.grade_levels_served && flatData.grade_levels_served.length > 0
-                ? flatData.grade_levels_served.map((grade: string) => {
-                    // Convert to Ed-Fi format (K → Kindergarten, 1 → First grade, etc.)
-                    if (grade === 'K') return 'Kindergarten';
-                    return `${grade}th grade`;
-                  })
-                : null,
-
-            // School categories as JSON array - null if no data
-            schoolCategories:
-              flatData.school_categories && flatData.school_categories.length > 0
-                ? flatData.school_categories
-                : null,
-          }
-        : null,
-
+      school: flatData.school_name ? {
+        localEducationAgencyId: null, // To be assigned by backend
+        schoolType: flatData.school_type || 'Regular',
+        
+        // Grade levels as JSON array (Ed-Fi format) - null if no data
+        gradeLevels: flatData.grade_levels_served && flatData.grade_levels_served.length > 0 ? 
+          flatData.grade_levels_served.map((grade: string) => {
+          // Convert to Ed-Fi format (K → Kindergarten, 1 → First grade, etc.)
+          if (grade === 'K') return 'Kindergarten'
+          return `${grade}th grade`
+          }) : null,
+        
+        // School categories as JSON array - null if no data
+        schoolCategories: flatData.school_categories && flatData.school_categories.length > 0 ? 
+          flatData.school_categories : null
+      } : null,
+      
       // Staff model data (Ed-Fi compliance) - only for coaches
-      staff:
-        flatData.role_type === 'COACH'
-          ? {
-              staffUniqueId: flatData.email, // Use email as unique identifier
-              firstName: flatData.first_name,
-              middleName: flatData.middle_name || null,
-              lastSurname: flatData.last_name,
-              generationCodeSuffix: flatData.generation_code_suffix || null,
-              birthDate: flatData.birth_date || null,
-
-              // Ed-Fi demographics (if collected)
-              hispanicLatinoEthnicity: flatData.hispanic_latino_ethnicity || false,
-              races: flatData.races && flatData.races.length > 0 ? flatData.races : null,
-              sex: flatData.gender || null,
-            }
-          : null,
-    };
-  };
+      staff: flatData.role_type === 'COACH' ? {
+        staffUniqueId: flatData.email, // Use email as unique identifier
+        firstName: flatData.first_name,
+        middleName: flatData.middle_name || null,
+        lastSurname: flatData.last_name,
+        generationCodeSuffix: flatData.generation_code_suffix || null,
+        birthDate: flatData.birth_date || null,
+        
+        // Ed-Fi demographics (if collected)
+        hispanicLatinoEthnicity: flatData.hispanic_latino_ethnicity || false,
+        races: flatData.races && flatData.races.length > 0 ? flatData.races : null,
+        sex: flatData.gender || null
+      } : null
+    }
+  }
 
   const clearOnboardingData = () => {
     // Clear all onboarding data from localStorage including invitation data
     const keysToRemove = [
       // Personal information
       'onboarding_first_name',
-      'onboarding_last_name',
+      'onboarding_last_name', 
       'onboarding_middle_name',
       'onboarding_full_name',
       'onboarding_email',
       'onboarding_cell_phone',
       'onboarding_birth_date',
       'onboarding_gender',
-
+      
       // Role and experience
       'onboarding_role_type',
       'onboarding_years_experience',
       'onboarding_certification_level',
       'onboarding_specializations',
-
+      
       // School information
       'onboarding_school_name',
       'onboarding_school_type',
@@ -823,329 +697,297 @@ export default function Complete() {
       'onboarding_has_physical_location',
       'onboarding_website',
       'onboarding_academic_year',
-
+      
       // School address
       'onboarding_school_street',
       'onboarding_school_city',
       'onboarding_school_state',
       'onboarding_school_zip',
       'onboarding_school_phone',
-
+      
       // School focus
       'onboarding_sport',
       'onboarding_football_type',
       'onboarding_school_categories',
       'onboarding_program_focus',
-
+      
       // Student planning
       'onboarding_estimated_student_count',
       'onboarding_student_grade_levels',
       'onboarding_enrollment_capacity',
       'onboarding_has_current_students',
       'onboarding_current_student_details',
-
+      
       // Compliance
       'onboarding_platform_agreement',
-
+      
       // Legacy fields
       'onboarding_location',
       'onboarding_has_location',
       'onboarding_knows_2hl',
       'onboarding_has_students',
-      'onboarding_grade_levels_teaching',
-    ];
+      'onboarding_grade_levels_teaching'
+    ]
 
     keysToRemove.forEach(key => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
+      localStorage.removeItem(key)
+      sessionStorage.removeItem(key)
+    })
 
     // Clear invitation tokens and cache after successful completion
-    clearInvitationData();
-
+    clearInvitationData()
+    
     // Also clear any legacy background check data that might still exist
-    localStorage.removeItem('onboarding_candidate_info');
-    sessionStorage.removeItem('onboarding_candidate_info');
-
-    console.log('✅ Cleared all onboarding and invitation data after successful completion');
-  };
+    localStorage.removeItem('onboarding_candidate_info')
+    sessionStorage.removeItem('onboarding_candidate_info')
+    
+    console.log('✅ Cleared all onboarding and invitation data after successful completion')
+  }
 
   const submitOnboardingData = useCallback(async () => {
     // Prevent duplicate submissions
     if (hasSubmittedRef.current) {
-      console.log('🚫 Already processed onboarding completion');
-      return;
+      console.log('🚫 Already processed onboarding completion')
+      return
     }
 
-    console.log('🚀 Starting onboarding data submission...');
-    setError('');
+    console.log('🚀 Starting onboarding data submission...')
+    setError('')
 
     try {
-      const isInvitation = isInvitationOnboarding();
-      setIsInvitationFlow(isInvitation);
-
-      const onboardingData = await collectOnboardingData();
+      const isInvitation = isInvitationOnboarding()
+      setIsInvitationFlow(isInvitation)
+      
+      const onboardingData = await collectOnboardingData()
 
       // Different validation for invitation vs regular flow
       if (isInvitation) {
         // For invitation flow, check ALL required fields (personal + school + role)
         const allRequiredFields = [
-          'email',
-          'first_name',
-          'last_name',
-          'cell_phone',
-          'birth_date',
-          'gender',
-          'location',
-          'role_type',
-          'school_name',
-        ];
-        console.log('🔍 INVITATION FLOW: Validating required fields...');
-        console.log('📋 Required fields list:', allRequiredFields);
-        console.log('📊 Field-by-field validation check:');
-
+          'email', 'first_name', 'last_name', 'cell_phone', 'birth_date', 'gender', 'location',
+          'role_type', 'school_name'
+        ]
+        console.log('🔍 INVITATION FLOW: Validating required fields...')
+        console.log('📋 Required fields list:', allRequiredFields)
+        console.log('📊 Field-by-field validation check:')
+        
         allRequiredFields.forEach(field => {
-          const value = onboardingData[field];
-          const isEmpty = !value || value.toString().trim() === '';
+          const value = onboardingData[field]
+          const isEmpty = !value || value.toString().trim() === ''
           console.log(`  ${isEmpty ? '❌' : '✅'} ${field}:`, {
             value: value,
             type: typeof value,
             isEmpty: isEmpty,
-            trimmed: value ? value.toString().trim() : 'N/A',
-          });
-        });
-
-        let missingFields = allRequiredFields.filter(
-          field => !onboardingData[field] || onboardingData[field].toString().trim() === ''
-        );
-
-        console.log('🚨 Initial missing fields:', missingFields);
-        console.log('📊 Complete onboarding data object:', onboardingData);
-
+            trimmed: value ? value.toString().trim() : 'N/A'
+          })
+        })
+        
+        let missingFields = allRequiredFields.filter(field => !onboardingData[field] || onboardingData[field].toString().trim() === '')
+        
+        console.log('🚨 Initial missing fields:', missingFields)
+        console.log('📊 Complete onboarding data object:', onboardingData)
+        
         // If we have missing fields, try to get them from server or enhanced localStorage search
         if (missingFields.length > 0) {
-          console.log('🔍 Missing fields detected, trying to recover:', missingFields);
-
+          console.log('🔍 Missing fields detected, trying to recover:', missingFields)
+          
           // Try alternative localStorage keys for missing fields
           const alternativeKeys: Record<string, string[]> = {
-            cell_phone: ['onboarding_phone', 'phone', 'onboarding_cell_phone'],
-            first_name: ['firstName', 'onboarding_firstName', 'onboarding_first_name'],
-            last_name: ['lastName', 'onboarding_lastName', 'onboarding_last_name'],
-            birth_date: ['onboarding_dob', 'dob', 'onboarding_birth_date'],
-            gender: ['onboarding_gender'],
-            email: ['onboarding_email', 'email'],
-            location: ['onboarding_location', 'onboarding_city', 'onboarding_school_city', 'city'],
-            role_type: ['onboarding_role_type', 'role', 'role_type'],
-            school_name: ['onboarding_school_name', 'school_name', 'schoolName'],
-          };
-
+            'cell_phone': ['onboarding_phone', 'phone', 'onboarding_cell_phone'],
+            'first_name': ['firstName', 'onboarding_firstName', 'onboarding_first_name'], 
+            'last_name': ['lastName', 'onboarding_lastName', 'onboarding_last_name'],
+            'birth_date': ['onboarding_dob', 'dob', 'onboarding_birth_date'],
+            'gender': ['onboarding_gender'],
+            'email': ['onboarding_email', 'email'],
+            'location': ['onboarding_location', 'onboarding_city', 'onboarding_school_city', 'city'],
+            'role_type': ['onboarding_role_type', 'role', 'role_type'],
+            'school_name': ['onboarding_school_name', 'school_name', 'schoolName']
+          }
+          
           // Try to recover missing fields from alternative localStorage keys
           missingFields.forEach(field => {
             if (!onboardingData[field] || onboardingData[field].toString().trim() === '') {
-              const altKeys = alternativeKeys[field] || [];
+              const altKeys = alternativeKeys[field] || []
               for (const altKey of altKeys) {
-                const value = localStorage.getItem(altKey) || sessionStorage.getItem(altKey) || '';
+                const value = localStorage.getItem(altKey) || sessionStorage.getItem(altKey) || ''
                 if (value && value.trim() !== '') {
-                  console.log(`✅ Recovered ${field} from ${altKey}:`, value);
-                  onboardingData[field] = value.trim();
-                  break;
+                  console.log(`✅ Recovered ${field} from ${altKey}:`, value)
+                  onboardingData[field] = value.trim()
+                  break
                 }
               }
             }
-          });
-
+          })
+          
           // Background check form has been removed - no longer attempt to recover from candidate_info
-          console.log('ℹ️ Background check form removed - skipping candidate_info recovery');
-
+          console.log('ℹ️ Background check form removed - skipping candidate_info recovery')
+          
           // Try to get school/role data from invitation data
-          const storedInvitationData = getStoredInvitationData();
+          const storedInvitationData = getStoredInvitationData()
           if (storedInvitationData) {
-            if (!onboardingData.school_name && storedInvitationData.schoolName) {
-              onboardingData.school_name = storedInvitationData.schoolName;
-              console.log('✅ Recovered school_name from invitation data');
+            if (!onboardingData.school_name && storedInvitationData.school_name) {
+              onboardingData.school_name = storedInvitationData.school_name
+              console.log('✅ Recovered school_name from invitation data')
             }
             if (!onboardingData.role_type && storedInvitationData.role) {
-              onboardingData.role_type = storedInvitationData.role;
-              console.log('✅ Recovered role_type from invitation data');
+              onboardingData.role_type = storedInvitationData.role
+              console.log('✅ Recovered role_type from invitation data')
             }
           }
-
+          
           // Re-check missing fields after recovery attempts
-          missingFields = allRequiredFields.filter(
-            field => !onboardingData[field] || onboardingData[field].toString().trim() === ''
-          );
-
-          console.log('🔄 After recovery attempts:');
-          console.log('📊 Final field validation check:');
+          missingFields = allRequiredFields.filter(field => !onboardingData[field] || onboardingData[field].toString().trim() === '')
+          
+          console.log('🔄 After recovery attempts:')
+          console.log('📊 Final field validation check:')
           allRequiredFields.forEach(field => {
-            const value = onboardingData[field];
-            const isEmpty = !value || value.toString().trim() === '';
+            const value = onboardingData[field]
+            const isEmpty = !value || value.toString().trim() === ''
             console.log(`  ${isEmpty ? '❌' : '✅'} ${field}:`, {
               value: value,
               type: typeof value,
               isEmpty: isEmpty,
-              source: 'after_recovery',
-            });
-          });
-
+              source: 'after_recovery'
+            })
+          })
+          
           if (missingFields.length > 0) {
-            console.log('❌ Still missing after recovery attempt:', missingFields);
-            console.log('📊 Current onboarding data:', onboardingData);
-
+            console.log('❌ Still missing after recovery attempt:', missingFields)
+            console.log('📊 Current onboarding data:', onboardingData)
+            
             // Show form for ALL missing fields (personal + school + role)
-            setMissingFieldsList(missingFields);
-            setMissingFieldsData({ ...onboardingData }); // Store current data
-            setShowMissingFieldsForm(true);
-            return; // Stop processing and show the form
+            setMissingFieldsList(missingFields)
+            setMissingFieldsData({...onboardingData}) // Store current data
+            setShowMissingFieldsForm(true)
+            return // Stop processing and show the form
           } else {
-            console.log('✅ All required fields recovered successfully');
+            console.log('✅ All required fields recovered successfully')
           }
         }
 
         if (!onboardingData.invitation_token) {
-          throw new Error('Invalid invitation. Please use a valid invitation link.');
+          throw new Error('Invalid invitation. Please use a valid invitation link.')
         }
-
+        
         // Note: birth_date and gender should now be properly saved by the fixed auto-save function
         if (!onboardingData.birth_city) {
-          onboardingData.birth_city = 'Unknown'; // Default birth city
-          console.log('⚠️ INVITATION: Using default birth_city');
+          onboardingData.birth_city = 'Unknown' // Default birth city
+          console.log('⚠️ INVITATION: Using default birth_city')
         }
         if (!onboardingData.birth_state_abbreviation_descriptor) {
-          onboardingData.birth_state_abbreviation_descriptor = 'TX'; // Default to Texas
-          console.log('⚠️ INVITATION: Using default birth_state (TX)');
+          onboardingData.birth_state_abbreviation_descriptor = 'TX' // Default to Texas
+          console.log('⚠️ INVITATION: Using default birth_state (TX)')
         }
       } else {
         // Regular onboarding validation (bypass case)
         // Check for both onboarding fields AND coach information that would come from invitations
         const allRequiredFields = [
-          'email',
-          'first_name',
-          'last_name',
-          'cell_phone',
-          'location',
-          'role_type',
-          'school_name',
-          'sport',
-          'school_type',
-        ];
-        let missingFields = allRequiredFields.filter(
-          field => !onboardingData[field] || onboardingData[field].toString().trim() === ''
-        );
-
+          'email', 'first_name', 'last_name', 'cell_phone', 'location',
+          'role_type', 'school_name', 'sport', 'school_type'
+        ]
+        let missingFields = allRequiredFields.filter(field => !onboardingData[field] || onboardingData[field].toString().trim() === '')
+        
         // Try to recover missing fields from alternative localStorage keys
         if (missingFields.length > 0) {
-          const bypassMode = isDev ? 'DEV BYPASS' : 'BYPASS FLAG';
-          console.log(
-            `🔍 ${bypassMode}: Missing coach information, trying to recover:`,
-            missingFields
-          );
-
+          const bypassMode = isDev ? 'DEV BYPASS' : 'BYPASS FLAG'
+          console.log(`🔍 ${bypassMode}: Missing coach information, trying to recover:`, missingFields)
+          
           const alternativeKeys: Record<string, string[]> = {
-            cell_phone: ['onboarding_phone', 'phone', 'onboarding_cell_phone'],
-            first_name: ['firstName', 'onboarding_firstName', 'onboarding_first_name'],
-            last_name: ['lastName', 'onboarding_lastName', 'onboarding_last_name'],
-            email: ['onboarding_email', 'email'],
-            location: ['onboarding_location', 'onboarding_city', 'onboarding_school_city', 'city'],
-            role_type: ['onboarding_role_type', 'role', 'role_type'],
-            school_name: ['onboarding_school_name', 'school_name', 'schoolName'],
-            sport: ['onboarding_sport', 'sport'],
-            school_type: ['onboarding_school_type', 'school_type', 'schoolType'],
-          };
-
+            'cell_phone': ['onboarding_phone', 'phone', 'onboarding_cell_phone'],
+            'first_name': ['firstName', 'onboarding_firstName', 'onboarding_first_name'], 
+            'last_name': ['lastName', 'onboarding_lastName', 'onboarding_last_name'],
+            'email': ['onboarding_email', 'email'],
+            'location': ['onboarding_location', 'onboarding_city', 'onboarding_school_city', 'city'],
+            'role_type': ['onboarding_role_type', 'role', 'role_type'],
+            'school_name': ['onboarding_school_name', 'school_name', 'schoolName'],
+            'sport': ['onboarding_sport', 'sport'],
+            'school_type': ['onboarding_school_type', 'school_type', 'schoolType']
+          }
+          
           missingFields.forEach(field => {
             if (!onboardingData[field] || onboardingData[field].toString().trim() === '') {
-              const altKeys = alternativeKeys[field] || [];
+              const altKeys = alternativeKeys[field] || []
               for (const altKey of altKeys) {
-                const value = localStorage.getItem(altKey) || sessionStorage.getItem(altKey) || '';
+                const value = localStorage.getItem(altKey) || sessionStorage.getItem(altKey) || ''
                 if (value && value.trim() !== '') {
-                  console.log(`✅ Recovered ${field} from ${altKey}:`, value);
-                  onboardingData[field] = value.trim();
-                  break;
+                  console.log(`✅ Recovered ${field} from ${altKey}:`, value)
+                  onboardingData[field] = value.trim()
+                  break
                 }
               }
             }
-          });
-
+          })
+          
           // Re-check missing fields after recovery attempts
-          missingFields = allRequiredFields.filter(
-            field => !onboardingData[field] || onboardingData[field].toString().trim() === ''
-          );
-
+          missingFields = allRequiredFields.filter(field => !onboardingData[field] || onboardingData[field].toString().trim() === '')
+          
           if (missingFields.length > 0) {
-            console.log(`❌ ${bypassMode}: Still missing coach information:`, missingFields);
-            console.log('📊 Will show coach information form for fields:', missingFields);
-
+            console.log(`❌ ${bypassMode}: Still missing coach information:`, missingFields)
+            console.log('📊 Will show coach information form for fields:', missingFields)
+            
             // Show form for missing coach information (bypass case)
-            setMissingFieldsList(missingFields);
-            setMissingFieldsData({ ...onboardingData }); // Store current data
-            setShowMissingFieldsForm(true);
-            return; // Stop processing and show the form
+            setMissingFieldsList(missingFields)
+            setMissingFieldsData({...onboardingData}) // Store current data
+            setShowMissingFieldsForm(true)
+            return // Stop processing and show the form
           } else {
-            console.log('✅ All required fields recovered successfully');
+            console.log('✅ All required fields recovered successfully')
           }
         }
 
         // Check grade levels served
-        if (
-          !onboardingData.grade_levels_served ||
-          onboardingData.grade_levels_served.length === 0
-        ) {
-          onboardingData.grade_levels_served = ['9', '10', '11', '12']; // Default to high school
-          const bypassMode = isDev ? 'DEV BYPASS' : 'BYPASS FLAG';
-          console.log(`✅ ${bypassMode}: Set default grade levels served`);
+        if (!onboardingData.grade_levels_served || onboardingData.grade_levels_served.length === 0) {
+          onboardingData.grade_levels_served = ['9', '10', '11', '12'] // Default to high school
+          const bypassMode = isDev ? 'DEV BYPASS' : 'BYPASS FLAG'
+          console.log(`✅ ${bypassMode}: Set default grade levels served`)
         }
-
+        
         // Set reasonable defaults for bypass
         if (!onboardingData.birth_date) {
-          onboardingData.birth_date = '1985-01-01'; // Default birth date
+          onboardingData.birth_date = '1985-01-01' // Default birth date
         }
         if (!onboardingData.gender) {
-          onboardingData.gender = 'prefer-not-to-say'; // Default gender
+          onboardingData.gender = 'prefer-not-to-say' // Default gender
         }
       }
 
-      console.log('Submitting onboarding data:', onboardingData);
-      setIsSubmitting(true);
-      hasSubmittedRef.current = true; // Mark as submitted to prevent duplicates
+      console.log('Submitting onboarding data:', onboardingData)
+      setIsSubmitting(true)
+      hasSubmittedRef.current = true // Mark as submitted to prevent duplicates
 
       // Clean up internal metadata before transforming
-      const cleanedData = { ...onboardingData };
+      const cleanedData = { ...onboardingData }
 
       // 🔥 TRANSFORM: Convert flat data to normalized database structure
-      const structuredData = transformToStructuredData(cleanedData);
-
+      const structuredData = transformToStructuredData(cleanedData)
+      
       console.log('🚀 SENDING STRUCTURED DATA TO BACKEND:', {
         user: {
           email: structuredData.user.email,
           firstName: structuredData.user.firstName,
           lastName: structuredData.user.lastName,
-          role: structuredData.user.role,
+          role: structuredData.user.role
         },
         profile: {
           profileType: structuredData.profile.profileType as 'COACH' | 'PARENT' | 'STUDENT',
           experience: structuredData.profile.experience,
           specialties: structuredData.profile.specialties,
-          onboardingComplete: structuredData.profile.onboardingComplete,
+          onboardingComplete: structuredData.profile.onboardingComplete
         },
-        school: structuredData.educationOrganization
-          ? {
-              name: structuredData.educationOrganization.nameOfInstitution,
-              type: structuredData.school?.schoolType,
-              gradeLevels: structuredData.school?.gradeLevels?.length,
-            }
-          : null,
-        staff: structuredData.staff
-          ? {
-              staffUniqueId: structuredData.staff.staffUniqueId,
-              firstName: structuredData.staff.firstName,
-              lastName: structuredData.staff.lastSurname,
-            }
-          : null,
-      });
+        school: structuredData.educationOrganization ? {
+          name: structuredData.educationOrganization.nameOfInstitution,
+          type: structuredData.school?.schoolType,
+          gradeLevels: structuredData.school?.gradeLevels?.length
+        } : null,
+        staff: structuredData.staff ? {
+          staffUniqueId: structuredData.staff.staffUniqueId,
+          firstName: structuredData.staff.firstName,
+          lastName: structuredData.staff.lastSurname
+        } : null
+      })
 
-      let result;
-
+      let result
+      
       if (isInvitation) {
         // Use invitation API for invitation-based onboarding
         console.log('🔍 DEBUG: Using invitation API with data:', {
@@ -1154,27 +996,26 @@ export default function Complete() {
           school_name: onboardingData.school_name,
           role_type: onboardingData.role_type,
           first_name: onboardingData.first_name,
-          last_name: onboardingData.last_name,
-        });
-        console.log('🔍 DEBUG: Cached invitation token:', getCachedInvitationToken());
-        console.log('🔍 DEBUG: Stored invitation data:', getStoredInvitationData());
-        console.log('🔍 DEBUG: Full onboarding data being sent:', onboardingData);
-
+          last_name: onboardingData.last_name
+        })
+        console.log('🔍 DEBUG: Cached invitation token:', getCachedInvitationToken())
+        console.log('🔍 DEBUG: Stored invitation data:', getStoredInvitationData())
+        console.log('🔍 DEBUG: Full onboarding data being sent:', onboardingData)
+        
         try {
           // Use direct AppSync calls with structured data
-          result = await completeOnboardingWithAppSync(structuredData);
+          result = await completeOnboardingWithAppSync(structuredData)
         } catch (completionError) {
-          console.error('Completion error:', completionError);
-
+          console.error('Completion error:', completionError)
+          
           // Check if it's a "session not found" error (404)
-          if (
-            completionError instanceof Error &&
-            (completionError.message.includes('Onboarding session not found') ||
-              completionError.message.includes('404') ||
-              completionError.message.includes('session not found'))
-          ) {
-            console.log('🛠️ Session not found, creating on-the-fly with collected data');
-
+          if (completionError instanceof Error && 
+              (completionError.message.includes('Onboarding session not found') || 
+               completionError.message.includes('404') ||
+               completionError.message.includes('session not found'))) {
+            
+            console.log('🛠️ Session not found, creating on-the-fly with collected data')
+            
             // Try to create the session using the data we have
             try {
               // Note: Session creation handled automatically by completeOnboardingWithAppSync
@@ -1183,51 +1024,42 @@ export default function Complete() {
                 onboardingData.email,
                 'complete', // current step
                 cleanedData, // flat data for compatibility
-                [
-                  'personal-info',
-                  'role-experience',
-                  'school-setup',
-                  'school-focus',
-                  'student-planning',
-                  'agreements',
-                ], // completed steps
+                ['personal-info', 'role-experience', 'school-setup', 'school-name', 'school-focus', 'student-planning', 'agreements'], // completed steps
                 onboardingData.invitation_token
-              );
-
+              )
+              
               if (sessionCreated) {
-                console.log('✅ Session created successfully, retrying completion');
+                console.log('✅ Session created successfully, retrying completion')
                 // Retry the completion now that session exists
-                result = await completeOnboardingWithAppSync(structuredData);
-                console.log('✅ Completion successful after session creation');
+                result = await completeOnboardingWithAppSync(structuredData)
+                console.log('✅ Completion successful after session creation')
               } else {
-                throw new Error('Failed to create onboarding session');
+                throw new Error('Failed to create onboarding session')
               }
             } catch (sessionError) {
-              console.error('Failed to create session:', sessionError);
-              throw new Error(
-                `Failed to create onboarding session: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`
-              );
+              console.error('Failed to create session:', sessionError)
+              throw new Error(`Failed to create onboarding session: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`)
             }
           } else {
             // Re-throw other errors
-            throw completionError;
+            throw completionError
           }
         }
       } else {
         // Use GraphQL for standard onboarding via invitation API
-        console.log('🎯 Using GraphQL API for standard onboarding');
-
+        console.log('🎯 Using GraphQL API for standard onboarding')
+        
         try {
           // Complete onboarding using direct AppSync calls
-          result = await completeOnboardingWithAppSync(structuredData);
-          console.log('✅ GraphQL completion successful');
+          result = await completeOnboardingWithAppSync(structuredData)
+          console.log('✅ GraphQL completion successful')
         } catch (completionError) {
-          console.error('GraphQL completion failed:', completionError);
-
+          console.error('GraphQL completion failed:', completionError)
+          
           // If completion fails due to missing session, create one and retry
           if (completionError instanceof Error && completionError.message.includes('not found')) {
-            console.log('🛠️ Session not found for regular onboarding, creating on-the-fly');
-
+            console.log('🛠️ Session not found for regular onboarding, creating on-the-fly')
+            
             try {
               // Create session using GraphQL
               // Note: Session creation handled automatically by completeOnboardingWithAppSync
@@ -1236,43 +1068,34 @@ export default function Complete() {
                 onboardingData.email,
                 'complete', // current step
                 cleanedData, // flat data for compatibility
-                [
-                  'personal-info',
-                  'role-experience',
-                  'school-setup',
-                  'school-focus',
-                  'student-planning',
-                  'agreements',
-                ], // completed steps
+                ['personal-info', 'role-experience', 'school-setup', 'school-name', 'school-focus', 'student-planning', 'agreements'], // completed steps
                 undefined // no invitation token for regular onboarding
-              );
-
+              )
+              
               if (sessionCreated) {
-                console.log('✅ Session created successfully, retrying completion');
+                console.log('✅ Session created successfully, retrying completion')
                 // Retry completion using direct AppSync calls
-                result = await completeOnboardingWithAppSync(structuredData);
-                console.log('✅ Completion successful after session creation');
+                result = await completeOnboardingWithAppSync(structuredData)
+                  console.log('✅ Completion successful after session creation')
               } else {
-                throw new Error('Failed to create onboarding session');
+                throw new Error('Failed to create onboarding session')
               }
             } catch (sessionError) {
-              console.error('Failed to create session for regular onboarding:', sessionError);
-              throw new Error(
-                `Failed to create onboarding session: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`
-              );
+              console.error('Failed to create session for regular onboarding:', sessionError)
+              throw new Error(`Failed to create onboarding session: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`)
             }
           } else {
             // Re-throw other errors
-            throw completionError;
+            throw completionError
           }
         }
       }
 
       if (!result || result.status === 'error') {
-        throw new Error(result?.message || 'Failed to complete onboarding');
+        throw new Error(result?.message || 'Failed to complete onboarding')
       }
 
-      console.log('Onboarding completed successfully:', result);
+      console.log('Onboarding completed successfully:', result)
       console.log('🔍 BACKEND RESPONSE DATA:', {
         profile_id: result.profile_id,
         status: result.status,
@@ -1281,8 +1104,8 @@ export default function Complete() {
         progress: result.progress,
         user_id: result.user_id,
         staff_usi: result.staff_usi,
-        school_id: result.school_id,
-      });
+        school_id: result.school_id
+      })
 
       // Store the complete onboarding data for profile summary display
       const completeProfileData = {
@@ -1294,145 +1117,162 @@ export default function Complete() {
         profile: structuredData.profile,
         educationOrganization: structuredData.educationOrganization,
         school: structuredData.school,
-        staff: structuredData.staff,
-      };
-      setProfileData(completeProfileData);
-
-      setIsSuccess(true);
+        staff: structuredData.staff
+      }
+      setProfileData(completeProfileData)
+      
+      setIsSuccess(true)
 
       // Clear localStorage after successful completion and profile data is set
       setTimeout(() => {
-        clearOnboardingData();
-      }, 100); // Small delay to ensure profile summary renders first
+      clearOnboardingData()
+      }, 100) // Small delay to ensure profile summary renders first
+
     } catch (error) {
-      console.error('Error submitting onboarding data:', error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
-      hasSubmittedRef.current = false; // Reset on error to allow retry
+      console.error('Error submitting onboarding data:', error)
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
+      hasSubmittedRef.current = false // Reset on error to allow retry
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  }, []); // Remove dependencies to prevent infinite loop
+  }, []) // Remove dependencies to prevent infinite loop
 
   const handleMissingFieldChange = (field: string, value: string) => {
     setMissingFieldsData((prev: any) => ({
       ...prev,
-      [field]: value,
-    }));
-  };
+      [field]: value
+    }))
+  }
 
   const completeMissingFieldsAndSubmit = async () => {
     // Validate that all missing fields are now filled
-    const stillMissing = missingFieldsList.filter(
-      field => !missingFieldsData[field] || missingFieldsData[field].toString().trim() === ''
-    );
-
+    const stillMissing = missingFieldsList.filter(field => 
+      !missingFieldsData[field] || missingFieldsData[field].toString().trim() === ''
+    )
+    
     if (stillMissing.length > 0) {
-      setError(`Please fill in all required fields: ${stillMissing.join(', ')}`);
-      return;
+      setError(`Please fill in all required fields: ${stillMissing.join(', ')}`)
+      return
     }
 
     // Update localStorage with the new values
     missingFieldsList.forEach(field => {
-      const value = missingFieldsData[field];
+      const value = missingFieldsData[field]
       if (value) {
-        localStorage.setItem(`onboarding_${field}`, value);
+        localStorage.setItem(`onboarding_${field}`, value)
       }
-    });
+    })
 
     // Hide the form and retry submission
-    setShowMissingFieldsForm(false);
-    setMissingFieldsList([]);
-    setError('');
-
+    setShowMissingFieldsForm(false)
+    setMissingFieldsList([])
+    setError('')
+    
     // Reset submission flag and retry
-    hasSubmittedRef.current = false;
+    hasSubmittedRef.current = false
     setTimeout(() => {
-      submitOnboardingData();
-    }, 100);
-  };
+      submitOnboardingData()
+    }, 100)
+  }
 
   const getFieldLabel = (field: string) => {
     const labels: Record<string, string> = {
-      first_name: 'First Name',
-      last_name: 'Last Name',
-      email: 'Email Address',
-      cell_phone: 'Cell Phone',
-      birth_date: 'Birth Date',
-      birth_city: 'Birth City',
-      birth_state_abbreviation_descriptor: 'Birth State',
-      gender: 'Gender',
-      location: 'Location/City',
-      role_type: 'Role Type',
-      school_name: 'School Name',
-      sport: 'Primary Sport',
-      school_type: 'School Type',
-    };
-    return labels[field] || field;
-  };
+      'first_name': 'First Name',
+      'last_name': 'Last Name', 
+      'email': 'Email Address',
+      'cell_phone': 'Cell Phone',
+      'birth_date': 'Birth Date',
+      'birth_city': 'Birth City',
+      'birth_state_abbreviation_descriptor': 'Birth State',
+      'gender': 'Gender',
+      'location': 'Location/City',
+      'role_type': 'Role Type',
+      'school_name': 'School Name',
+      'sport': 'Primary Sport',
+      'school_type': 'School Type'
+    }
+    return labels[field] || field
+  }
 
   // Initialize submission when data is ready (replaces useEffect to avoid dependency array issues)
   const initializeSubmission = () => {
-    const isInvitation = isInvitationOnboarding();
-    const hasRequiredData = isInvitation ? invitationData !== null : true;
+    const isInvitation = isInvitationOnboarding()
+    const hasRequiredData = isInvitation ? (invitationData !== null) : true
     
-    const canSubmit = !onboardingLoading && 
-                      !showMissingFieldsForm && 
-                      !hasSubmittedRef.current && 
-                      hasRequiredData && 
-                      !hasInitialized;
-                      
-    if (canSubmit) {
-      setHasInitialized(true);
-      submitOnboardingData();
+    if (!onboardingLoading && !showMissingFieldsForm && !hasSubmittedRef.current && hasRequiredData && !hasInitialized) {
+      console.log('🚀 Ready to submit - hook loaded and required data available:', {
+        onboardingLoading,
+        showMissingFieldsForm,
+        hasSubmitted: hasSubmittedRef.current,
+        isInvitation,
+        hasInvitationData: !!invitationData,
+        hasProgress: !!progress,
+        hasRequiredData,
+        hasInitialized
+      })
+      setHasInitialized(true)
+      submitOnboardingData()
+    } else if (!hasInitialized) {
+      console.log('⏳ Waiting for required data:', {
+        onboardingLoading,
+        showMissingFieldsForm,
+        hasSubmitted: hasSubmittedRef.current,
+        isInvitation,
+        hasInvitationData: !!invitationData,
+        hasProgress: !!progress,
+        hasRequiredData,
+        hasInitialized
+      })
     }
-  };
+  }
 
   // Call initialization check on every render when data might be ready
   if (!hasInitialized) {
-    initializeSubmission();
+    initializeSubmission()
   }
 
   if (onboardingLoading || isSubmitting) {
     return (
-      <div className="font-poppins flex min-h-screen items-center justify-center bg-gradient-to-br from-[#004aad] to-[#003a8c]">
-        <motion.div
+      <div className="min-h-screen bg-gradient-to-br from-[#004aad] to-[#003a8c] font-poppins flex items-center justify-center">
+        <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto max-w-2xl px-8 text-center text-white"
+          className="text-center text-white max-w-2xl mx-auto px-8"
         >
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/20">
+          <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-8">
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              className="h-12 w-12 rounded-full border-4 border-white border-t-transparent"
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 border-4 border-white border-t-transparent rounded-full"
             />
           </div>
-
-          <h1 className="mb-6 text-4xl font-bold md:text-5xl">
+          
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
             {isSubmitting ? 'Finalizing Your Profile...' : 'Loading Your Information...'}
           </h1>
-
+          
           <p className="text-xl opacity-90">
-            {isSubmitting
-              ? 'Creating your coach profile and setting up your academy access.'
-              : 'Please wait while we load your onboarding data.'}
+            {isSubmitting ? 
+              'Creating your coach profile and setting up your academy access.' :
+              'Please wait while we load your onboarding data.'
+            }
           </p>
         </motion.div>
       </div>
-    );
+    )
   }
 
   // Show missing fields form if we have missing data
   if (showMissingFieldsForm && missingFieldsList.length > 0) {
     return (
-      <div className="font-poppins min-h-screen bg-white">
+      <div className="min-h-screen bg-white font-poppins">
         {/* Bypass Indicator */}
         {!isInvitationFlow && allowBypass && (
-          <div className="border-b border-yellow-200 bg-yellow-50 px-4 py-2">
+          <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2">
             <div className="flex items-center justify-center">
               <div className="flex items-center space-x-2 text-sm">
-                <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                   🚧 {bypassFlag ? 'BYPASS MODE' : 'DEV MODE'}
                 </span>
                 <span className="text-yellow-700">
@@ -1442,11 +1282,11 @@ export default function Complete() {
             </div>
           </div>
         )}
-
+        
         {/* Header */}
-        <header className="flex items-center justify-between px-10 py-5">
+        <header className="px-10 py-5 flex justify-between items-center">
           <Link href="/" aria-label="Homepage">
-            <img
+            <img 
               src="https://d6mzuygjyhq8s.cloudfront.net/images/TSA%20Final%20Logos%20-%20CMYK-01.svg"
               alt="Texas Sports Academy"
               className="h-12 w-auto"
@@ -1455,55 +1295,44 @@ export default function Complete() {
         </header>
 
         {/* Missing fields form */}
-        <main className="flex min-h-[calc(100vh-120px)] items-center justify-center px-8">
-          <motion.div
+        <main className="flex items-center justify-center min-h-[calc(100vh-120px)] px-8">
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="w-full max-w-2xl"
           >
-            <div className="mb-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                <svg
-                  className="h-8 w-8 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </div>
-              <h1 className="mb-4 text-3xl font-bold text-[#222222] md:text-4xl">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#222222]">
                 Complete Your Coach Information
               </h1>
-              <p className="mb-6 text-lg text-[#717171]">
-                {isInvitationFlow
-                  ? 'We need just a few more details to complete your onboarding.'
-                  : "Since you're using the dev bypass, please provide your coach information that would normally come from an invitation."}
+              <p className="text-lg text-[#717171] mb-6">
+                {isInvitationFlow ? 'We need just a few more details to complete your onboarding.' : 
+                 'Since you\'re using the dev bypass, please provide your coach information that would normally come from an invitation.'}
               </p>
             </div>
 
-            <div className="rounded-xl border bg-gray-50 p-6">
-              <h3 className="mb-6 text-xl font-semibold text-[#222222]">
+            <div className="bg-gray-50 rounded-xl p-6 border">
+              <h3 className="text-xl font-semibold text-[#222222] mb-6">
                 {isInvitationFlow ? 'Missing Required Information' : 'Coach Information Required'}
               </h3>
-
+              
               <div className="space-y-4">
-                {missingFieldsList.map(field => (
+                {missingFieldsList.map((field) => (
                   <div key={field}>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       {getFieldLabel(field)} *
                     </label>
                     {field === 'gender' ? (
                       <select
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select gender</option>
                         <option value="male">Male</option>
@@ -1514,8 +1343,8 @@ export default function Complete() {
                     ) : field === 'role_type' ? (
                       <select
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select role</option>
                         <option value="coach">Coach</option>
@@ -1526,8 +1355,8 @@ export default function Complete() {
                     ) : field === 'sport' ? (
                       <select
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select primary sport</option>
                         <option value="basketball">Basketball</option>
@@ -1548,8 +1377,8 @@ export default function Complete() {
                     ) : field === 'school_type' ? (
                       <select
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select school type</option>
                         <option value="public">Public School</option>
@@ -1563,44 +1392,40 @@ export default function Complete() {
                       <input
                         type="date"
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        max={
-                          new Date(new Date().setFullYear(new Date().getFullYear() - 18))
-                            .toISOString()
-                            .split('T')[0]
-                        }
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
                       />
                     ) : field === 'email' ? (
                       <input
                         type="email"
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="your.email@example.com"
                       />
                     ) : field === 'cell_phone' ? (
                       <input
                         type="tel"
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="(555) 123-4567"
                       />
                     ) : field === 'school_name' ? (
                       <input
                         type="text"
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your school name"
                       />
                     ) : (
                       <input
                         type="text"
                         value={missingFieldsData[field] || ''}
-                        onChange={e => handleMissingFieldChange(field, e.target.value)}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onChange={(e) => handleMissingFieldChange(field, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder={`Enter your ${getFieldLabel(field).toLowerCase()}`}
                       />
                     )}
@@ -1610,22 +1435,22 @@ export default function Complete() {
 
               {/* Error message */}
               {error && (
-                <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3">
-                  <p className="text-sm text-red-600">{error}</p>
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-red-600 text-sm">{error}</p>
                 </div>
               )}
 
               <div className="mt-6 space-y-3">
                 <button
                   onClick={completeMissingFieldsAndSubmit}
-                  className="w-full rounded-lg bg-gradient-to-r from-[#004aad] to-[#0066ff] px-6 py-3 font-semibold text-white transition-all hover:from-[#003a8c] hover:to-[#0052cc]"
+                  className="w-full bg-gradient-to-r from-[#004aad] to-[#0066ff] hover:from-[#003a8c] hover:to-[#0052cc] text-white font-semibold py-3 px-6 rounded-lg transition-all"
                 >
                   Complete Onboarding
                 </button>
-
+                
                 <button
                   onClick={() => window.history.back()}
-                  className="w-full rounded-lg bg-gray-100 px-6 py-3 font-medium text-gray-700 transition-all hover:bg-gray-200"
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-all"
                 >
                   Go Back
                 </button>
@@ -1634,16 +1459,16 @@ export default function Complete() {
           </motion.div>
         </main>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
-      <div className="font-poppins min-h-screen bg-gradient-to-br from-red-600 to-red-800">
+      <div className="min-h-screen bg-gradient-to-br from-red-600 to-red-800 font-poppins">
         {/* Header */}
-        <header className="flex items-center justify-between px-10 py-5">
+        <header className="px-10 py-5 flex justify-between items-center">
           <Link href="/" aria-label="Homepage">
-            <img
+            <img 
               src="https://d6mzuygjyhq8s.cloudfront.net/images/TSA%20Final%20Logos%20-%20CMYK-01.svg"
               alt="Texas Sports Academy"
               className="h-12 w-auto brightness-0 invert"
@@ -1652,46 +1477,50 @@ export default function Complete() {
         </header>
 
         {/* Error content */}
-        <main className="flex min-h-[calc(100vh-120px)] items-center justify-center px-8">
-          <motion.div
+        <main className="flex items-center justify-center min-h-[calc(100vh-120px)] px-8">
+          <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mx-auto max-w-3xl text-center text-white"
+            className="text-center text-white max-w-3xl mx-auto"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
               className="mb-8"
             >
-              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-white">
+              <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto">
                 <span className="text-6xl">⚠️</span>
               </div>
             </motion.div>
 
-            <h1 className="mb-6 text-4xl font-bold md:text-5xl">Oops! Something went wrong</h1>
-
-            <div className="mb-8 rounded-lg bg-white/10 p-6">
-              <p className="mb-4 text-lg">{error}</p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Oops! Something went wrong
+            </h1>
+            
+            <div className="bg-white/10 rounded-lg p-6 mb-8">
+              <p className="text-lg mb-4">
+                {error}
+              </p>
             </div>
-
+            
             <div className="space-y-4">
-              <button
+              <button 
                 onClick={() => window.location.reload()}
-                className="mr-4 transform rounded-lg bg-white px-10 py-4 text-lg font-bold tracking-wide text-red-600 uppercase shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                className="bg-white text-red-600 font-bold py-4 px-10 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 uppercase tracking-wide transform hover:scale-105 mr-4"
               >
                 Try Again
               </button>
-
-              <Link href={buildInvitationURL('/onboarding')}>
-                <button className="rounded-lg border-2 border-white bg-transparent px-10 py-4 text-lg font-bold tracking-wide text-white uppercase transition-all duration-300 hover:bg-white hover:text-red-600">
+              
+              <Link href={buildInvitationURL('/onboarding/school-name')}>
+                <button className="bg-transparent border-2 border-white text-white font-bold py-4 px-10 rounded-lg text-lg hover:bg-white hover:text-red-600 transition-all duration-300 uppercase tracking-wide">
                   Go Back to Onboarding
                 </button>
               </Link>
             </div>
 
-            <p className="mt-6 text-sm opacity-80">
+            <p className="text-sm opacity-80 mt-6">
               If this problem persists, please contact us at{' '}
               <a href="mailto:team@texassportsacademy.com" className="underline">
                 team@texassportsacademy.com
@@ -1700,16 +1529,16 @@ export default function Complete() {
           </motion.div>
         </main>
       </div>
-    );
+    )
   }
 
   if (isSuccess) {
     return (
-      <div className="font-poppins min-h-screen bg-gradient-to-br from-[#004aad] to-[#003a8c]">
+      <div className="min-h-screen bg-gradient-to-br from-[#004aad] to-[#003a8c] font-poppins">
         {/* Header */}
-        <header className="flex items-center justify-between px-10 py-5">
+        <header className="px-10 py-5 flex justify-between items-center">
           <Link href="/" aria-label="Homepage">
-            <img
+            <img 
               src="https://d6mzuygjyhq8s.cloudfront.net/images/TSA%20Final%20Logos%20-%20CMYK-01.svg"
               alt="Texas Sports Academy"
               className="h-12 w-auto brightness-0 invert"
@@ -1718,158 +1547,154 @@ export default function Complete() {
         </header>
 
         {/* Success content */}
-        <main className="flex min-h-[calc(100vh-120px)] items-center justify-center px-8">
-          <motion.div
+        <main className="flex items-center justify-center min-h-[calc(100vh-120px)] px-8">
+          <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mx-auto max-w-3xl text-center text-white"
+            className="text-center text-white max-w-3xl mx-auto"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
               className="mb-8"
             >
-              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-white">
+              <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto">
                 <span className="text-6xl">🎉</span>
               </div>
             </motion.div>
 
-            <motion.h1
+            <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="font-integral mb-6 text-5xl leading-[0.9] tracking-tight md:text-6xl"
+              className="text-5xl md:text-6xl font-integral tracking-tight mb-6 leading-[0.9]"
             >
               {isInvitationFlow ? 'WELCOME TO THE TEAM!' : 'WELCOME!'}
             </motion.h1>
-
-            <motion.p
+            
+            <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
-              className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed opacity-90 md:text-2xl"
+              className="text-xl md:text-2xl leading-relaxed opacity-90 mb-8 max-w-2xl mx-auto"
             >
-              {isInvitationFlow
-                ? "Thank you for accepting your invitation and completing your application. We're excited to have you join the team!"
-                : "Thank you for completing your onboarding. We're excited to have you join the"}{' '}
-              {!isInvitationFlow && <strong>Texas Sports Academy</strong>}{' '}
-              {!isInvitationFlow && 'family!'}
+              {isInvitationFlow ? 
+                "Thank you for accepting your invitation and completing your application. We're excited to have you join the team!" :
+                "Thank you for completing your onboarding. We're excited to have you join the"
+              } {!isInvitationFlow && <strong>Texas Sports Academy</strong>} {!isInvitationFlow && "family!"}
             </motion.p>
 
             {profileData && (
-              <motion.div
+              <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                className="mb-8 rounded-lg bg-white/10 p-6"
+                className="bg-white/10 rounded-lg p-6 mb-8"
               >
-                <h3 className="mb-4 text-lg font-semibold text-white">Your Profile Summary</h3>
-                <div className="grid grid-cols-1 gap-4 text-left text-sm md:grid-cols-2">
+                <h3 className="text-lg font-semibold text-white mb-4">Your Profile Summary</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-left">
                   <div>
                     <span className="font-medium text-blue-200">Name:</span>
                     <span className="ml-2 text-white">
                       {/* Fix data path mapping - check multiple possible structures */}
-                      {profileData.data_received?.full_name ||
-                        profileData.full_name ||
-                        (profileData.data_received?.first_name &&
-                        profileData.data_received?.last_name
-                          ? `${profileData.data_received.first_name} ${profileData.data_received.last_name}`
-                          : profileData.first_name && profileData.last_name
-                            ? `${profileData.first_name} ${profileData.last_name}`
-                            : profileData.user?.firstName && profileData.user?.lastName
-                              ? `${profileData.user.firstName} ${profileData.user.lastName}`
-                              : profileData.data_received?.first_name ||
-                                profileData.first_name ||
-                                profileData.user?.firstName ||
-                                profileData.data_received?.last_name ||
-                                profileData.last_name ||
-                                profileData.user?.lastName ||
-                                'Not provided')}
+                      {profileData.data_received?.full_name || 
+                       profileData.full_name ||
+                       (profileData.data_received?.first_name && profileData.data_received?.last_name ? 
+                        `${profileData.data_received.first_name} ${profileData.data_received.last_name}` : 
+                        (profileData.first_name && profileData.last_name ? 
+                         `${profileData.first_name} ${profileData.last_name}` :
+                        (profileData.user?.firstName && profileData.user?.lastName ? 
+                         `${profileData.user.firstName} ${profileData.user.lastName}` :
+                        profileData.data_received?.first_name || 
+                         profileData.first_name ||
+                         profileData.user?.firstName ||
+                        profileData.data_received?.last_name || 
+                         profileData.last_name ||
+                         profileData.user?.lastName ||
+                         'Not provided')))}
                     </span>
                   </div>
                   <div>
                     <span className="font-medium text-blue-200">Email:</span>
                     <span className="ml-2 text-white">
-                      {profileData.data_received?.email ||
-                        profileData.email ||
-                        profileData.user?.email ||
-                        profileData.data_received?.invitation_email ||
-                        profileData.invitation_email ||
-                        'Not provided'}
+                      {profileData.data_received?.email || 
+                       profileData.email ||
+                       profileData.user?.email ||
+                       profileData.data_received?.invitation_email || 
+                       profileData.invitation_email ||
+                       'Not provided'}
                     </span>
                   </div>
                   <div>
                     <span className="font-medium text-blue-200">Role:</span>
                     <span className="ml-2 text-white">
-                      {profileData.data_received?.role_type ||
-                        profileData.role_type ||
-                        profileData.user?.role ||
-                        profileData.data_received?.invitation_role ||
-                        profileData.invitation_role ||
-                        'COACH'}
+                      {profileData.data_received?.role_type || 
+                       profileData.role_type ||
+                       profileData.user?.role ||
+                       profileData.data_received?.invitation_role || 
+                       profileData.invitation_role ||
+                       'COACH'}
                     </span>
                   </div>
                   <div>
                     <span className="font-medium text-blue-200">School:</span>
                     <span className="ml-2 text-white">
-                      {profileData.data_received?.school_name ||
-                        profileData.school_name ||
-                        profileData.educationOrganization?.nameOfInstitution ||
-                        profileData.data_received?.invitation_school_name ||
-                        profileData.invitation_school_name ||
-                        'Not provided'}
+                      {profileData.data_received?.school_name || 
+                       profileData.school_name ||
+                       profileData.educationOrganization?.nameOfInstitution ||
+                       profileData.data_received?.invitation_school_name || 
+                       profileData.invitation_school_name ||
+                       'Not provided'}
                     </span>
                   </div>
                   <div>
                     <span className="font-medium text-blue-200">Sport:</span>
                     <span className="ml-2 text-white">
-                      {profileData.data_received?.sport ||
-                        profileData.sport ||
-                        profileData.data_received?.invitation_sport ||
-                        profileData.invitation_sport ||
-                        'Not provided'}
+                      {profileData.data_received?.sport || 
+                       profileData.sport ||
+                       profileData.data_received?.invitation_sport || 
+                       profileData.invitation_sport ||
+                       'Not provided'}
                     </span>
                   </div>
                   <div>
                     <span className="font-medium text-blue-200">Profile ID:</span>
-                    <span className="ml-2 font-mono text-xs text-white">
-                      {profileData.profile_id}
-                    </span>
+                    <span className="ml-2 text-white font-mono text-xs">{profileData.profile_id}</span>
                   </div>
                 </div>
               </motion.div>
             )}
-
-            <motion.p
+            
+            <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.5 }}
-              className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed opacity-90"
+              className="text-lg leading-relaxed opacity-90 mb-12 max-w-2xl mx-auto"
             >
-              Our team will review your information and be in touch within 24-48 hours with next
-              steps. You can now sign in to access your coach dashboard.
+              Our team will review your information and be in touch within 24-48 hours with next steps. 
+              In the meantime, you can start exploring the platform and preparing for your students.
             </motion.p>
-
+            
             {/* Delayed CTA Button */}
-            <motion.div
+            <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 3.0, duration: 0.5 }}
               className="space-y-4"
             >
-              <Link href="/login">
-                <button className="transform rounded-lg bg-white px-10 py-4 text-lg font-bold tracking-wide text-[#004aad] uppercase shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                  SIGN IN
+              <Link href="/">
+                <button className="bg-white text-[#004aad] font-bold py-4 px-10 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 uppercase tracking-wide transform hover:scale-105">
+                  GET STARTED
                 </button>
               </Link>
-
-              <motion.p
+              
+              <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 3.5 }}
-                className="mt-6 text-sm opacity-80"
+                className="text-sm opacity-80 mt-6"
                 style={{ marginBottom: '88px' }}
               >
                 Questions? Email us at{' '}
@@ -1881,89 +1706,71 @@ export default function Complete() {
           </motion.div>
         </main>
       </div>
-    );
+    )
   }
 
+  return null
+}
+
   /**
-   * Complete onboarding using direct GraphQL calls via invitationAPI
-   * This replaces API route calls to simplify the architecture
+   * Complete onboarding using the API route (with proper authentication)
+   * This replaces direct AppSync calls to avoid authentication issues
    */
-  const completeOnboardingWithAppSync = async (
-    structuredData: OnboardingData
-  ): Promise<
-    OnboardingResponse & {
-      user_id?: string;
-      staff_usi?: number;
-      school_id?: string | null;
-    }
-  > => {
+  const completeOnboardingWithAppSync = async (structuredData: OnboardingData): Promise<OnboardingResponse & {
+    user_id?: string;
+    staff_usi?: number;
+    school_id?: string | null;
+  }> => {
+    console.log('🚀 Starting onboarding completion via API route...')
+    
     try {
-      // Extract data for the completion call - using snake_case OnboardingData interface
-      const completionData = {
-        email: structuredData.user.email,
-        first_name: structuredData.user.firstName,
-        last_name: structuredData.user.lastName,
-        phone: structuredData.user.phone,
-        city: structuredData.profile.address?.city || '',
-        state: structuredData.profile.address?.state || '',
-        bio: structuredData.profile.bio,
-        role: structuredData.user.role.toLowerCase(),
-        school_name: structuredData.educationOrganization?.nameOfInstitution || '',
-        current_step: 'COMPLETE',
-        completed_steps: [
-          'PERSONAL_INFO',
-          'ROLE_EXPERIENCE',
-          'SCHOOL_SETUP',
-          'SCHOOL_FOCUS',
-          'STUDENT_PLANNING',
-          'AGREEMENTS',
-          'FINALIZE',
-        ],
-        invitation_id: getCachedInvitationToken() || undefined,
-      };
+      // Use the existing API route that handles authentication properly
+      // Send the full structured data instead of just the legacy flat data
+      const response = await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(structuredData)
+      })
 
-      // Use direct GraphQL call via invitationAPI
-      const result = await invitationAPI.completeOnboarding(completionData);
-      console.log('✅ Direct GraphQL completion successful:', result);
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+      }
 
-      // Transform response to match expected format
-      return {
+      const result = await response.json()
+      console.log('✅ API route completion successful:', result)
+
+      // Transform API response to match expected format
+         return {
         message: result.message || 'Onboarding completed successfully',
-        status: 'success',
+       status: 'success',
         profile_id: result.profile_id,
         invitation_based: result.invitation_based || false,
-        progress: {
-          user_id: structuredData.user.email, // Use email as user_id
+       progress: {
+          user_id: result.user_id,
           email: structuredData.user.email,
-          current_step: 'COMPLETE',
-          completed_steps: [
-            'PERSONAL_INFO',
-            'ROLE_EXPERIENCE',
-            'SCHOOL_SETUP',
-            'SCHOOL_FOCUS',
-            'STUDENT_PLANNING',
-            'AGREEMENTS',
-            'FINALIZE',
-            'COMPLETE',
-          ],
+         current_step: 'COMPLETE',
+         completed_steps: [
+           'PERSONAL_INFO', 'ROLE_EXPERIENCE', 'SCHOOL_SETUP', 
+           'SCHOOL_NAME', 'SCHOOL_FOCUS', 'STUDENT_PLANNING', 
+           'AGREEMENTS', 'FINALIZE', 'COMPLETE'
+         ],
           step_data: structuredData,
-          last_updated: new Date().toISOString(),
-          invitation_based: result.invitation_based || false,
-        },
-        // Additional custom fields for success UI
-        user_id: structuredData.user.email,
-        staff_usi: undefined, // Not available from GraphQL response
-        school_id: structuredData.educationOrganization?.nameOfInstitution || null,
-      };
-    } catch (error) {
-      console.error('❌ Error during GraphQL onboarding completion:', error);
-
-      // Enhanced error context
-      throw new Error(
-        `Onboarding completion failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
-    }
-  };
-
-  return null;
-}
+         last_updated: new Date().toISOString(),
+                      invitation_based: result.invitation_based || false
+       },
+       // Additional custom fields for success UI
+        user_id: result.user_id,
+        staff_usi: result.staff_usi,
+        school_id: result.school_id
+     }
+    
+  } catch (error) {
+      console.error('❌ Error during API route onboarding completion:', error)
+    
+    // Enhanced error context
+    throw new Error(`Onboarding completion failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+} 

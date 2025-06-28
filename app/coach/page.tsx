@@ -1,90 +1,89 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Heading, Subheading } from '@/components/heading'
-import { ArrowRightIcon, AcademicCapIcon, EnvelopeIcon } from '@heroicons/react/24/solid'
-import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect } from 'react';
+import { Heading, Subheading } from '@/components/heading';
+import { ArrowRightIcon, AcademicCapIcon, EnvelopeIcon } from '@heroicons/react/24/solid';
+import { useSearchParams } from 'next/navigation';
 
 // Custom hooks and components
-import { useCoachData } from '@/lib/hooks/useCoachData'
-import { useApplications } from '@/lib/hooks/useApplications'
-import { LockedNotification } from '@/components/coach/LockedNotification'
-import { ApplicationStats } from '@/components/coach/ApplicationStats'
-import { RecentApplications } from '@/components/coach/RecentApplications'
+import { useCoachData } from '@/lib/hooks/useCoachData';
+import { useApplications } from '@/lib/hooks/useApplications';
+import { LockedNotification } from '@/components/coach/LockedNotification';
+import { ApplicationStats } from '@/components/coach/ApplicationStats';
+import { RecentApplications } from '@/components/coach/RecentApplications';
 
 // Utils
-import { createSchoolApplicationURL } from '@/lib/utils'
+import { createSchoolApplicationURL } from '@/lib/utils';
 
 export default function CoachDashboard() {
-  const searchParams = useSearchParams()
-  const [showLockedNotification, setShowLockedNotification] = useState(false)
-  const [lockedRoute, setLockedRoute] = useState('')
+  const searchParams = useSearchParams();
+  const [showLockedNotification, setShowLockedNotification] = useState(false);
+  const [lockedRoute, setLockedRoute] = useState('');
 
   // Custom hooks for data fetching
-  const { coachData, loading: coachLoading } = useCoachData()
-  const { 
-    stats: applicationStats, 
-    recentApplications, 
-    loading: applicationsLoading 
+  const { coachData, loading: coachLoading } = useCoachData();
+  const {
+    stats: applicationStats,
+    recentApplications,
+    loading: applicationsLoading,
   } = useApplications({
     coachEmail: coachData.currentUser?.signInDetails?.loginId || coachData.currentUser?.userId,
     currentUserId: coachData.currentUser?.userId,
-    coachLocation: coachData.coachLocation
-  })
+    coachLocation: coachData.coachLocation,
+  });
 
   // Handle locked route notifications
   useEffect(() => {
-    const locked = searchParams.get('locked')
-    const route = searchParams.get('route')
-    
+    const locked = searchParams.get('locked');
+    const route = searchParams.get('route');
+
     if (locked === 'true' && route) {
-      setShowLockedNotification(true)
-      setLockedRoute(route)
-      
+      setShowLockedNotification(true);
+      setLockedRoute(route);
+
       const timer = setTimeout(() => {
-        setShowLockedNotification(false)
-      }, 10000)
-      
-      return () => clearTimeout(timer)
+        setShowLockedNotification(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   const handleCopyApplicationLink = () => {
-    const applicationUrl = createSchoolApplicationURL(coachData.coachLocation)
-    navigator.clipboard.writeText(applicationUrl)
-    alert('Application link copied to clipboard!')
-  }
+    const applicationUrl = createSchoolApplicationURL(coachData.coachLocation);
+    navigator.clipboard.writeText(applicationUrl);
+    alert('Application link copied to clipboard!');
+  };
 
   return (
     <>
       {/* Locked Route Notification */}
-      <LockedNotification 
+      <LockedNotification
         show={showLockedNotification}
         route={lockedRoute}
         onDismiss={() => setShowLockedNotification(false)}
       />
-      
+
       {/* Dynamic Greeting */}
       <div className="mb-8">
-        <Heading className="text-2xl sm:text-3xl text-gray-900">
+        <Heading className="text-2xl text-gray-900 sm:text-3xl">
           {coachLoading ? 'Loading...' : coachData.greeting}
         </Heading>
         <p className="mt-2 text-gray-600">
-          {coachData.coachLocation 
+          {coachData.coachLocation
             ? `Manage your Texas Sports Academy location. Track applications, invite families, and grow your school.`
-            : 'Welcome to your dashboard. Here you can find all the information you need to manage your school.'
-          }
+            : 'Welcome to your dashboard. Here you can find all the information you need to manage your school.'}
         </p>
       </div>
-        
+
       {/* Application Management Section */}
       <div className="mb-8" data-tour="applications-section">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
           {/* Header */}
-          <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+          <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#004aad]/10 rounded-lg">
+                <div className="rounded-lg bg-[#004aad]/10 p-3">
                   <AcademicCapIcon className="h-6 w-6 text-[#004aad]" />
                 </div>
                 <div>
@@ -96,20 +95,20 @@ export default function CoachDashboard() {
               </div>
               <div className="flex items-center gap-4">
                 {coachData.coachLocation && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
                     📍 {coachData.coachLocation} Location
                   </span>
                 )}
-                <button 
-                  className="text-xs font-medium text-[#004aad] hover:text-[#003888] transition-colors"
+                <button
+                  className="text-xs font-medium text-[#004aad] transition-colors hover:text-[#003888]"
                   onClick={handleCopyApplicationLink}
                   title="Click to copy this application link"
                 >
                   Copy Application Link
                 </button>
-                <a 
-                  href="/coach/applications" 
-                  className="text-sm font-medium text-[#004aad] hover:text-[#003888] transition-colors flex items-center gap-1"
+                <a
+                  href="/coach/applications"
+                  className="flex items-center gap-1 text-sm font-medium text-[#004aad] transition-colors hover:text-[#003888]"
                 >
                   Manage All
                   <ArrowRightIcon className="h-4 w-4" />
@@ -121,13 +120,10 @@ export default function CoachDashboard() {
           {/* Content */}
           <div className="px-6 py-6">
             {/* Stats Cards */}
-            <ApplicationStats 
-              stats={applicationStats}
-              loading={applicationsLoading}
-            />
+            <ApplicationStats stats={applicationStats} loading={applicationsLoading} />
 
             {/* Recent Applications */}
-            <RecentApplications 
+            <RecentApplications
               applications={recentApplications}
               coachLocation={coachData.coachLocation}
               loading={applicationsLoading}
@@ -136,5 +132,5 @@ export default function CoachDashboard() {
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -57,13 +57,13 @@ Visit `http://localhost:3000` to view the platform and `http://localhost:3000/ma
 tsa-platform/
 ├── amplify/              # AWS Amplify backend configuration
 │   ├── auth/            # Authentication resources
-│   ├── data/            # Data/API resources  
+│   ├── data/            # Data/API resources
 │   └── backend.ts       # Backend definition
 ├── app/                 # Next.js app directory
 │   ├── map/            # Mapbox map page and components
 │   ├── layout.tsx      # Root layout with Amplify configuration
 │   └── page.tsx        # Main platform page
-├── public/             
+├── public/
 │   └── Current_Districts_2025.geojson  # TSA districts data
 ├── scripts/
 │   └── deploy-dev.sh   # Development deployment script
@@ -81,6 +81,7 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token_here
 ```
 
 **Get your Mapbox token:**
+
 1. Sign up at [Mapbox](https://account.mapbox.com/)
 2. Go to [Access Tokens](https://account.mapbox.com/access-tokens/)
 3. Copy your default public token (starts with `pk.`)
@@ -88,6 +89,7 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token_here
 ## Map Features
 
 ### Current Implementation
+
 - **Data Source**: TSA Districts 2025 GeoJSON (~71MB)
 - **Rendering**: Client-side with Mapbox GL JS
 - **Interactions**: Click for district info, hover effects
@@ -95,8 +97,9 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token_here
 - **Performance**: Optimized for modern browsers
 
 ### Map Controls
+
 - **Navigation**: Zoom in/out, rotate, tilt
-- **Fullscreen**: Full browser window mode  
+- **Fullscreen**: Full browser window mode
 - **Globe View**: 3D atmosphere when zoomed out
 - **District Info**: Click any district for details
 
@@ -116,6 +119,7 @@ amplify push && amplify publish  # Production
 ### Environment Variables in Production
 
 In Amplify Console → App Settings → Environment Variables:
+
 - Add: `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` = `pk.your_token`
 
 ## Vector Tiles Options
@@ -123,17 +127,20 @@ In Amplify Console → App Settings → Environment Variables:
 For production optimization, consider these approaches:
 
 ### Option 1: Current GeoJSON (Recommended for Most Cases)
+
 - ✅ Simple setup, no additional costs
 - ✅ Full styling control
 - ✅ Good performance for this data size
 
 ### Option 2: Mapbox Tiling Service (High Traffic)
+
 ```bash
 npm install -g @mapbox/mapbox-cli
 mapbox upload username.tsa-districts ./public/Current_Districts_2025.geojson
 ```
 
 ### Option 3: Tippecanoe (Open Source)
+
 ```bash
 brew install tippecanoe
 tippecanoe -o tsa-districts.mbtiles --maximum-zoom=12 public/Current_Districts_2025.geojson
@@ -152,7 +159,7 @@ tippecanoe -o tsa-districts.mbtiles --maximum-zoom=12 public/Current_Districts_2
 ### Available Scripts
 
 - `npm run dev` - Start development server
-- `npm run build` - Build for production  
+- `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run deploy:dev` - Run development deployment script
@@ -167,11 +174,13 @@ tippecanoe -o tsa-districts.mbtiles --maximum-zoom=12 public/Current_Districts_2
 ## Troubleshooting
 
 ### Map Not Loading
+
 - Verify Mapbox token in `.env.local`
 - Check token starts with `pk.`
 - Check browser console for errors
 
-### Districts Not Appearing  
+### Districts Not Appearing
+
 - Ensure file is at `/public/Current_Districts_2025.geojson`
 - Zoom to level 3+ to see districts
 - Check Network tab for 404 errors

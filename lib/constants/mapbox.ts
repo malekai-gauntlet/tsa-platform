@@ -17,7 +17,7 @@ export const mapDefaults = {
 // Fog configuration for globe view
 export const fogConfig = {
   'horizon-blend': 0.3,
-  'color': '#f8f8f8',
+  color: '#f8f8f8',
   'high-color': '#add8e6',
   'space-color': '#d8f2ff',
   'star-intensity': 0.0,
@@ -27,9 +27,9 @@ export const fogConfig = {
 // Based on Mapbox Vector Tiles API: https://docs.mapbox.com/api/maps/vector-tiles/
 export const vectorTiles = {
   // Tileset ID follows format: username.id
-  tilesetId: 'blackbirddash.dbg7wg1v',
+  tilesetId: 'danielmotta7.9a4o9e36',
   // Source layer within the tileset (must match uploaded data)
-  sourceLayer: 'Current_Districts_2025-a8192i',
+  sourceLayer: 'Current_Districts_2025-04m3ev',
   // API Performance Notes:
   // - Rate limit: 100,000 requests/minute
   // - Caching: 12 hours device cache, 5 minutes CDN cache
@@ -50,11 +50,11 @@ interface DistrictLineStyle {
 export const districtStyles = {
   fill: {
     color: '#627BC1',
-    opacity: 0.4
+    opacity: 0.4,
   } as DistrictFillStyle,
   line: {
     color: '#1e40af',
-    width: 2
+    width: 2,
   } as DistrictLineStyle,
   hoverColor: '#1e40af',
 } as const;
@@ -92,4 +92,4 @@ export const DATA_SOURCES = dataSources;
 /** @deprecated Use layerIds instead */
 export const LAYER_IDS = layerIds;
 /** @deprecated Use mapConfig instead */
-export const MAP_CONFIG = mapConfig; 
+export const MAP_CONFIG = mapConfig;

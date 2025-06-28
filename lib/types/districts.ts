@@ -37,4 +37,4 @@ export interface MapControlsConfig {
   fullscreen?: boolean;
   scale?: boolean;
   geolocate?: boolean;
-} 
+}

@@ -1,4 +1,4 @@
-import { defineAuth } from "@aws-amplify/backend";
+import { defineAuth } from '@aws-amplify/backend';
 
 /**
  * Define and configure your auth resource for TSA
@@ -12,20 +12,20 @@ export const auth = defineAuth({
   senders: {
     email: {
       // Configure using a verified email in Amazon SES
-      fromEmail: "team@texassportsacademy.com",
-      fromName: "Texas Sports Academy",
-      replyTo: "info@texassportsacademy.com"
+      fromEmail: 'team@texassportsacademy.com',
+      fromName: 'Texas Sports Academy',
+      replyTo: 'info@texassportsacademy.com',
     },
   },
   userAttributes: {
     // Core TSA user attributes (custom attribute names must be ≤20 chars)
     'custom:firstName': {
-      dataType: 'String', 
+      dataType: 'String',
       mutable: true,
     },
     'custom:lastName': {
       dataType: 'String',
-      mutable: true, 
+      mutable: true,
     },
     'custom:schoolName': {
       dataType: 'String',
@@ -38,5 +38,5 @@ export const auth = defineAuth({
   },
   groups: ['admin', 'coach'],
   // Enable email-based account recovery for production
-  accountRecovery: 'EMAIL_ONLY'
+  accountRecovery: 'EMAIL_ONLY',
 });

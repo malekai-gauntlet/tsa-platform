@@ -1,16 +1,20 @@
 # Code Reusability and Structure
 
 ## Core Principle
+
 Maintain a structured codebase by separating reusable code into dedicated modules and utilities. Follow the pattern: **Generate → Identify Reusability → Extract → Import**.
 
 ## Implementation Workflow
 
 ### 1. Initial Development
+
 - Generate the file with complete functionality first
 - Focus on getting the feature working correctly
 
 ### 2. Reusability Analysis
+
 After generating working code, analyze for:
+
 - **Utilities**: Pure functions that can be used across components
 - **Constants**: Shared configuration, styling values, or data
 - **Types**: TypeScript interfaces/types used in multiple places
@@ -19,6 +23,7 @@ After generating working code, analyze for:
 - **Services**: API calls, data processing, or business logic
 
 ### 3. Extraction Strategy
+
 Move reusable code to appropriate directories:
 
 ```
@@ -37,6 +42,7 @@ components/
 ```
 
 ### 4. Import Back
+
 - Replace extracted code with clean imports
 - Ensure all functionality remains intact
 - Update any dependent code
@@ -44,6 +50,7 @@ components/
 ## Extraction Criteria
 
 Extract code when it:
+
 - **Appears 2+ times** in the codebase
 - **Could be useful** in future components
 - **Has clear boundaries** (pure functions, standalone logic)
@@ -52,6 +59,7 @@ Extract code when it:
 ## File Organization Examples
 
 ### ✅ Good Structure
+
 ```typescript
 // lib/utils/mapbox.ts
 export const initializeMapbox = (token: string) => { ... }
@@ -77,6 +85,7 @@ import { District } from '@/lib/types/districts'
 ```
 
 ### ❌ Avoid
+
 ```typescript
 // Keeping everything in one large file
 // Duplicating similar logic across files
@@ -86,14 +95,16 @@ import { District } from '@/lib/types/districts'
 ## Refactoring Triggers
 
 Refactor immediately when:
+
 - File exceeds **200 lines**
 - Logic is **duplicated** elsewhere
 - Function has **multiple responsibilities**
 - Component renders **multiple unrelated things**
 
 ## Benefits
+
 - **Maintainability**: Easier to update shared logic
 - **Testing**: Isolated functions are easier to test
 - **Reusability**: Code can be imported anywhere
 - **Readability**: Smaller, focused files
-- **Collaboration**: Team members can work on separate modules 
+- **Collaboration**: Team members can work on separate modules

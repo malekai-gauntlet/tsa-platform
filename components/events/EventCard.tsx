@@ -1,41 +1,45 @@
-import React from 'react'
-import Link from 'next/link'
-import { 
+import React from 'react';
+import Link from 'next/link';
+import {
   CalendarDaysIcon,
   EyeIcon,
   MapPinIcon,
   UsersIcon,
   CurrencyDollarIcon,
-  GlobeAltIcon
-} from '@heroicons/react/24/outline'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { formatDate, formatTime, formatPrice, getStatusColor, getEventTypeColor, isUpcoming, isPast } from '@/lib/utils/events'
-import type { Event } from '@/lib/types/events'
+  GlobeAltIcon,
+} from '@heroicons/react/24/outline';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  formatDate,
+  formatTime,
+  formatPrice,
+  getStatusColor,
+  getEventTypeColor,
+  isUpcoming,
+  isPast,
+} from '@/lib/utils/events';
+import type { Event } from '@/lib/types/events';
 
 interface EventCardProps {
-  event: Event
+  event: Event;
 }
 
 export function EventCard({ event }: EventCardProps) {
-  const isEventUpcoming = isUpcoming(event)
-  const isEventPast = isPast(event)
-  
+  const isEventUpcoming = isUpcoming(event);
+  const isEventPast = isPast(event);
+
   return (
-    <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
+    <Card className="flex h-full flex-col transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 flex-grow">
-            {event.title}
-          </h3>
-          <div className="flex gap-1 flex-shrink-0">
-            <Badge className={getStatusColor(event.status)}>
-              {event.status}
-            </Badge>
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <h3 className="line-clamp-2 flex-grow font-semibold text-gray-900">{event.title}</h3>
+          <div className="flex flex-shrink-0 gap-1">
+            <Badge className={getStatusColor(event.status)}>{event.status}</Badge>
           </div>
         </div>
-        
+
         {event.eventType && (
           <Badge variant="outline" className={getEventTypeColor(event.eventType)}>
             {event.eventType}
@@ -43,18 +47,18 @@ export function EventCard({ event }: EventCardProps) {
         )}
       </CardHeader>
 
-      <CardContent className="flex flex-col flex-grow">
-        <div className="space-y-3 flex-grow">
+      <CardContent className="flex flex-grow flex-col">
+        <div className="flex-grow space-y-3">
           {event.shortDescription && (
-            <p className="text-sm text-gray-600 line-clamp-2">
-              {event.shortDescription}
-            </p>
+            <p className="line-clamp-2 text-sm text-gray-600">{event.shortDescription}</p>
           )}
 
           <div className="space-y-2 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <CalendarDaysIcon className="h-4 w-4" />
-              <span>{formatDate(event.startDate)} at {formatTime(event.startDate)}</span>
+              <span>
+                {formatDate(event.startDate)} at {formatTime(event.startDate)}
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -74,7 +78,9 @@ export function EventCard({ event }: EventCardProps) {
             {event.capacity && (
               <div className="flex items-center gap-2">
                 <UsersIcon className="h-4 w-4" />
-                <span>{event.registeredCount || 0} / {event.capacity} registered</span>
+                <span>
+                  {event.registeredCount || 0} / {event.capacity} registered
+                </span>
               </div>
             )}
 
@@ -87,10 +93,10 @@ export function EventCard({ event }: EventCardProps) {
           </div>
         </div>
 
-        <div className="flex gap-2 mt-4">
+        <div className="mt-4 flex gap-2">
           <Link href={`/coach/events/${event.id}`} className="flex-1">
-            <Button variant="outline" className="w-full inline-flex items-center justify-center">
-              <EyeIcon className="h-4 w-4 mr-1" />
+            <Button variant="outline" className="inline-flex w-full items-center justify-center">
+              <EyeIcon className="mr-1 h-4 w-4" />
               View
             </Button>
           </Link>
@@ -102,5 +108,5 @@ export function EventCard({ event }: EventCardProps) {
         </div>
       </CardContent>
     </Card>
-  )
-} 
+  );
+}

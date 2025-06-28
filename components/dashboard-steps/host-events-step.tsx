@@ -1,21 +1,16 @@
-'use client'
+'use client';
 
-import { Card, CardHeader, CardContent, Button, EmptyState } from '@/components/ui'
-import { Badge } from '@/components/badge'
-import { 
-  CalendarDaysIcon,
-  UserGroupIcon,
-  PlusIcon,
-  ClockIcon
-} from '@heroicons/react/24/solid'
+import { Card, CardHeader, CardContent, Button, EmptyState } from '@/components/ui';
+import { Badge } from '@/components/badge';
+import { CalendarDaysIcon, UserGroupIcon, PlusIcon, ClockIcon } from '@heroicons/react/24/solid';
 
 interface EventTemplate {
-  id: string
-  title: string
-  description: string
-  duration: string
-  capacity: string
-  type: 'info-session' | 'demo-day' | 'coffee-chat'
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  capacity: string;
+  type: 'info-session' | 'demo-day' | 'coffee-chat';
 }
 
 const eventTemplates: EventTemplate[] = [
@@ -25,7 +20,7 @@ const eventTemplates: EventTemplate[] = [
     description: 'Comprehensive overview of TSA programs and enrollment process',
     duration: '1-2 hours',
     capacity: '20-50 people',
-    type: 'info-session'
+    type: 'info-session',
   },
   {
     id: 'demo-day',
@@ -33,7 +28,7 @@ const eventTemplates: EventTemplate[] = [
     description: 'Interactive demonstration of training methods and student activities',
     duration: '2-3 hours',
     capacity: '15-30 families',
-    type: 'demo-day'
+    type: 'demo-day',
   },
   {
     id: 'coffee-chat',
@@ -41,56 +36,61 @@ const eventTemplates: EventTemplate[] = [
     description: 'Informal Q&A session with current and prospective parents',
     duration: '1 hour',
     capacity: '10-20 people',
-    type: 'coffee-chat'
-  }
-]
+    type: 'coffee-chat',
+  },
+];
 
 export function HostEventsStep() {
   const getEventIcon = (type: string) => {
     switch (type) {
       case 'info-session':
-        return <UserGroupIcon className="h-5 w-5 text-blue-600" />
+        return <UserGroupIcon className="h-5 w-5 text-blue-600" />;
       case 'demo-day':
-        return <CalendarDaysIcon className="h-5 w-5 text-green-600" />
+        return <CalendarDaysIcon className="h-5 w-5 text-green-600" />;
       case 'coffee-chat':
-        return <UserGroupIcon className="h-5 w-5 text-purple-600" />
+        return <UserGroupIcon className="h-5 w-5 text-purple-600" />;
       default:
-        return <CalendarDaysIcon className="h-5 w-5 text-gray-400" />
+        return <CalendarDaysIcon className="h-5 w-5 text-gray-400" />;
     }
-  }
+  };
 
   const getEventColor = (type: string) => {
     switch (type) {
       case 'info-session':
-        return 'bg-blue-100'
+        return 'bg-blue-100';
       case 'demo-day':
-        return 'bg-green-100'
+        return 'bg-green-100';
       case 'coffee-chat':
-        return 'bg-purple-100'
+        return 'bg-purple-100';
       default:
-        return 'bg-gray-100'
+        return 'bg-gray-100';
     }
-  }
+  };
 
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Current Step: Host Events</h2>
-        <p className="text-gray-600">Plan and execute community events to attract prospective families</p>
+        <h2 className="mb-2 text-xl font-semibold text-gray-900">Current Step: Host Events</h2>
+        <p className="text-gray-600">
+          Plan and execute community events to attract prospective families
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Upcoming Events */}
         <Card>
           <CardHeader
             action={
-              <a href="#" className="text-sm font-medium text-[#004aad] hover:text-[#003888] transition-colors">
+              <a
+                href="#"
+                className="text-sm font-medium text-[#004aad] transition-colors hover:text-[#003888]"
+              >
                 Create Event
               </a>
             }
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="rounded-lg bg-blue-100 p-2">
                 <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Upcoming Events</h3>
@@ -102,8 +102,8 @@ export function HostEventsStep() {
               title="No events scheduled"
               description="Create your first community event to get started"
               action={{
-                label: "Create Event",
-                variant: "primary"
+                label: 'Create Event',
+                variant: 'primary',
               }}
             />
           </CardContent>
@@ -114,7 +114,7 @@ export function HostEventsStep() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
+                <div className="rounded-lg bg-green-100 p-2">
                   <UserGroupIcon className="h-5 w-5 text-green-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">Event Templates</h3>
@@ -124,11 +124,11 @@ export function HostEventsStep() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {eventTemplates.map((template) => (
-                <div key={template.id} className="p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-start justify-between mb-3">
+              {eventTemplates.map(template => (
+                <div key={template.id} className="rounded-lg border border-gray-200 p-4">
+                  <div className="mb-3 flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${getEventColor(template.type)}`}>
+                      <div className={`rounded-lg p-2 ${getEventColor(template.type)}`}>
                         {getEventIcon(template.type)}
                       </div>
                       <div>
@@ -137,7 +137,7 @@ export function HostEventsStep() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -149,9 +149,7 @@ export function HostEventsStep() {
                         {template.capacity}
                       </div>
                     </div>
-                    <Button variant="outline">
-                      Use Template
-                    </Button>
+                    <Button variant="outline">Use Template</Button>
                   </div>
                 </div>
               ))}
@@ -165,17 +163,15 @@ export function HostEventsStep() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">Ready to host your first event?</h4>
+              <h4 className="mb-1 font-semibold text-gray-900">Ready to host your first event?</h4>
               <p className="text-sm text-gray-500">
                 Start with a simple information session to introduce your school to the community.
               </p>
             </div>
-            <Button>
-              Create First Event
-            </Button>
+            <Button>Create First Event</Button>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
-} 
+  );
+}

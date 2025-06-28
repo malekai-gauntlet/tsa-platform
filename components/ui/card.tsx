@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { cn } from '@/lib/utils'
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  variant?: 'default' | 'elevated' | 'outlined'
+  children: React.ReactNode;
+  variant?: 'default' | 'elevated' | 'outlined';
 }
 
 interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  icon?: React.ReactNode
-  action?: React.ReactNode
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
 }
 
 interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  divided?: boolean
+  children: React.ReactNode;
+  divided?: boolean;
 }
 
 interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  sticky?: boolean
+  children: React.ReactNode;
+  sticky?: boolean;
 }
 
 /**
@@ -35,7 +35,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           // Base mobile-first styles
-          'bg-white rounded-lg sm:rounded-xl border overflow-hidden w-full',
+          'w-full overflow-hidden rounded-lg border bg-white sm:rounded-xl',
           // Variant styles
           {
             'border-gray-200': variant === 'default',
@@ -48,10 +48,10 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       >
         {children}
       </div>
-    )
+    );
   }
-)
-Card.displayName = 'Card'
+);
+Card.displayName = 'Card';
 
 /**
  * Card Header Component
@@ -63,37 +63,35 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          'px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 bg-gray-50/50',
+          'border-b border-gray-100 bg-gray-50/50 px-4 py-3 sm:px-6 sm:py-4',
           className
         )}
         {...props}
       >
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             {icon && (
-              <div className="p-1.5 sm:p-2 bg-blue-100 rounded-md sm:rounded-lg flex-shrink-0">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600">
-                  {icon}
-                </div>
+              <div className="flex-shrink-0 rounded-md bg-blue-100 p-1.5 sm:rounded-lg sm:p-2">
+                <div className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5">{icon}</div>
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+              <div className="truncate text-base font-semibold text-gray-900 sm:text-lg">
                 {children}
               </div>
             </div>
           </div>
           {action && (
-            <div className="text-sm font-medium text-[#004aad] hover:text-[#003888] transition-colors flex-shrink-0 min-h-[44px] flex items-center">
+            <div className="flex min-h-[44px] flex-shrink-0 items-center text-sm font-medium text-[#004aad] transition-colors hover:text-[#003888]">
               {action}
             </div>
           )}
         </div>
       </div>
-    )
+    );
   }
-)
-CardHeader.displayName = 'CardHeader'
+);
+CardHeader.displayName = 'CardHeader';
 
 /**
  * Card Content Component
@@ -115,10 +113,10 @@ export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
       >
         {children}
       </div>
-    )
+    );
   }
-)
-CardContent.displayName = 'CardContent'
+);
+CardContent.displayName = 'CardContent';
 
 /**
  * Card Footer Component
@@ -130,7 +128,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
       <div
         ref={ref}
         className={cn(
-          'px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-100 bg-gray-50/50',
+          'border-t border-gray-100 bg-gray-50/50 px-4 py-3 sm:px-6 sm:py-4',
           {
             'sticky bottom-0': sticky,
           },
@@ -140,29 +138,27 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
       >
         {children}
       </div>
-    )
+    );
   }
-)
-CardFooter.displayName = 'CardFooter'
+);
+CardFooter.displayName = 'CardFooter';
 
 /**
  * Card Title Component
  * Simple title component for card headers
  */
-export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <h3
-        ref={ref}
-        className={cn(
-          'text-lg font-semibold leading-none tracking-tight text-gray-900',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </h3>
-    )
-  }
-)
-CardTitle.displayName = 'CardTitle' 
+export const CardTitle = React.forwardRef<
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, children, ...props }, ref) => {
+  return (
+    <h3
+      ref={ref}
+      className={cn('text-lg leading-none font-semibold tracking-tight text-gray-900', className)}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+});
+CardTitle.displayName = 'CardTitle';

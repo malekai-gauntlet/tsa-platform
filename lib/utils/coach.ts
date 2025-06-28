@@ -1,76 +1,80 @@
-import type { Application, ApplicationStats } from '@/lib/types/coach'
+import type { Application, ApplicationStats } from '@/lib/types/coach';
 
 // Date formatting utility - only show year if different from current year
 export const formatDate = (dateString: string): string => {
-  const currentYear = new Date().getFullYear()
-  const date = new Date(dateString)
-  const dateYear = date.getFullYear()
-  
+  const currentYear = new Date().getFullYear();
+  const date = new Date(dateString);
+  const dateYear = date.getFullYear();
+
   if (dateYear === currentYear) {
-    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
   }
-  
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
-}
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+};
 
 // Calculate age from date of birth
 export const calculateAge = (dateOfBirth: string): number => {
-  const today = new Date()
-  const birthDate = new Date(dateOfBirth)
-  let age = today.getFullYear() - birthDate.getFullYear()
-  const monthDiff = today.getMonth() - birthDate.getMonth()
-  
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--
+    age--;
   }
-  return age
-}
+  return age;
+};
 
 // Get status badge color
 export const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case 'accepted':
-      return 'green'
+      return 'green';
     case 'pending':
-      return 'amber'
+      return 'amber';
     case 'expired':
-      return 'red'
+      return 'red';
     case 'under-review':
-      return 'blue'
+      return 'blue';
     case 'rejected':
-      return 'red'
+      return 'red';
     case 'waitlisted':
-      return 'orange'
+      return 'orange';
     default:
-      return 'zinc'
+      return 'zinc';
   }
-}
+};
 
 // Get application icon color
 export const getApplicationColor = (type: string): string => {
   switch (type) {
     case 'application':
-      return 'green'
+      return 'green';
     case 'interest-form':
-      return 'blue'
+      return 'blue';
     default:
-      return 'gray'
+      return 'gray';
   }
-}
+};
 
 // Get booking color
 export const getBookingColor = (eventType: string): string => {
   switch (eventType) {
     case 'call':
-      return 'blue'
+      return 'blue';
     case 'tour':
-      return 'green'
+      return 'green';
     case 'shadow-day':
-      return 'purple'
+      return 'purple';
     default:
-      return 'gray'
+      return 'gray';
   }
-}
+};
 
 // Calculate application stats
 export const calculateApplicationStats = (applications: Application[]): ApplicationStats => {
@@ -79,24 +83,24 @@ export const calculateApplicationStats = (applications: Application[]): Applicat
     pending: applications.filter(app => app.status === 'pending').length,
     accepted: applications.filter(app => app.status === 'accepted').length,
     thisWeek: applications.filter(app => {
-      const submittedDate = new Date(app.submittedAt)
-      const weekAgo = new Date()
-      weekAgo.setDate(weekAgo.getDate() - 7)
-      return submittedDate >= weekAgo
-    }).length
-  }
-}
+      const submittedDate = new Date(app.submittedAt);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return submittedDate >= weekAgo;
+    }).length,
+  };
+};
 
 // Generate time-based greeting
 export const generateGreeting = (firstName: string): string => {
-  const hour = new Date().getHours()
-  let timeGreeting = 'Good morning'
-  
+  const hour = new Date().getHours();
+  let timeGreeting = 'Good morning';
+
   if (hour >= 12 && hour < 17) {
-    timeGreeting = 'Good afternoon'
+    timeGreeting = 'Good afternoon';
   } else if (hour >= 17) {
-    timeGreeting = 'Good evening'
+    timeGreeting = 'Good evening';
   }
-  
-  return `${timeGreeting}, Coach ${firstName}`
-} 
+
+  return `${timeGreeting}, Coach ${firstName}`;
+};

@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
 export interface AddressData {
-  street: string
-  city: string
-  state: string
-  zip: string
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
 }
 
 interface AddressAutocompleteProps {
-  value?: string
-  onChange?: (value: string) => void
-  onAddressSelect?: (address: AddressData) => void
-  placeholder?: string
-  label?: string
-  className?: string
+  value?: string;
+  onChange?: (value: string) => void;
+  onAddressSelect?: (address: AddressData) => void;
+  placeholder?: string;
+  label?: string;
+  className?: string;
 }
 
 export function AddressAutocomplete({
@@ -24,31 +24,27 @@ export function AddressAutocomplete({
   onAddressSelect,
   placeholder = 'Enter address...',
   label,
-  className = ''
+  className = '',
 }: AddressAutocompleteProps) {
-  const [inputValue, setInputValue] = useState(value)
+  const [inputValue, setInputValue] = useState(value);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setInputValue(newValue)
-    onChange?.(newValue)
-  }
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    onChange?.(newValue);
+  };
 
   return (
     <div className={`relative ${className}`}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-        </label>
-      )}
+      {label && <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>}
       <input
         type="text"
         value={inputValue}
         onChange={handleInputChange}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
       {/* TODO: Add actual address autocomplete functionality */}
     </div>
-  )
-} 
+  );
+}
