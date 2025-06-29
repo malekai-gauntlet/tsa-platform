@@ -4,7 +4,7 @@
  */
 
 import { config } from '@/config/environments';
-import { invitationOperations, onboardingOperations } from './services/graphql-client';
+import { invitationOperations, onboardingOperations } from './graphql-client';
 
 export interface InvitationData {
   // Basic invitation info

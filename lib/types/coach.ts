@@ -1,5 +1,11 @@
 import type { AuthUser } from 'aws-amplify/auth';
 
+// Re-export everything from the coach submodules
+export * from './coach/index';
+export * from './coach/rsvp';
+export * from './coach/invitation';
+export * from './coach/event';
+
 export interface ParentInvitation {
   invitation_id: string;
   parent_email: string;

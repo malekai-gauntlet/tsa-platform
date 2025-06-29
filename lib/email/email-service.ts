@@ -5,7 +5,7 @@
  */
 
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
-import { TSAEmailTemplates, type InvitationEmailData } from './email-templates-tsa';
+import { TSAEmailTemplates, type InvitationEmailData } from './email-templates';
 
 interface InvitationEmailParams {
   email: string;
@@ -50,7 +50,7 @@ export class UnifiedEmailService {
   public async sendInvitationEmail(params: InvitationEmailParams): Promise<EmailResult> {
     try {
       console.log('🚀 Sending invitation email to:', params.email);
-      
+
       // Transform params to match TSA template interface
       const templateData: InvitationEmailData = {
         to: params.email,
@@ -61,12 +61,12 @@ export class UnifiedEmailService {
         role: params.role,
         sport: params.sport,
         recipientFirstName: params.firstName,
-        recipientLastName: params.lastName
+        recipientLastName: params.lastName,
       };
 
       // Generate email using centralized TSA template system
       const { html, text, subject } = TSAEmailTemplates.generateCoachInvitationEmail(templateData);
-      
+
       const command = new SendEmailCommand({
         Source: `${this.fromName} <${this.fromEmail}>`,
         Destination: {
@@ -92,13 +92,13 @@ export class UnifiedEmailService {
       });
 
       const response = await this.sesClient.send(command);
-      
+
       if (response.MessageId) {
         console.log('✅ Email sent successfully!');
         console.log(`   📧 To: ${params.email}`);
         console.log(`   🆔 SES Message ID: ${response.MessageId}`);
         console.log(`   🎨 Template: TSA Coach Invitation`);
-        
+
         return {
           success: true,
           messageId: response.MessageId,
@@ -108,7 +108,7 @@ export class UnifiedEmailService {
       }
     } catch (error: any) {
       console.error('❌ Error sending invitation email:', error);
-      
+
       // Handle specific SES errors
       if (error.name === 'MessageRejected') {
         return {
@@ -136,7 +136,7 @@ export class UnifiedEmailService {
           error: 'SES daily sending quota exceeded.',
         };
       }
-      
+
       return {
         success: false,
         error: error.message || 'Unknown error sending email via SES',

@@ -1,11 +1,7 @@
 import { generateClient } from 'aws-amplify/data';
 import { getCurrentUser } from 'aws-amplify/auth';
 import type { Schema } from '@/amplify/data/resource';
-import {
-  InvitationData,
-  InvitationValidationResponse,
-  OnboardingProgress,
-} from '@/lib/invitation-api';
+import { InvitationData, InvitationValidationResponse, OnboardingProgress } from './invitation-api';
 
 // Generate the typed GraphQL client
 export const client = generateClient<Schema>();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { fetchStudentApplications } from '@/lib/services/student-applications';
+import { fetchStudentApplications } from '@/lib/api/student-applications';
 import { calculateApplicationStats } from '@/lib/utils/coach';
 import type { Application, ApplicationStats } from '@/lib/types/coach';
 
