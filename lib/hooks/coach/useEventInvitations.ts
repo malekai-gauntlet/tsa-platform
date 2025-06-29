@@ -50,8 +50,9 @@ export function useEventInvitations(options: UseEventInvitationsOptions = {}) {
       // Check if the request was aborted
       if (abortController.signal.aborted) return;
 
-      // Convert to our EventInvitation format
-      const allEventInvitations = allInvitations.map(mapInvitationToEventInvitation);
+      // Convert to our EventInvitation format with type safety
+      const allEventInvitations = allInvitations.map((invitation: any) => 
+        mapInvitationToEventInvitation(invitation as InvitationType));
 
       // Filter invitations for this specific event
       const eventInvitations = allEventInvitations.filter(
@@ -95,8 +96,8 @@ export function useEventInvitations(options: UseEventInvitationsOptions = {}) {
         // Map form data to Invitation input
         const invitationInput = mapFormToInvitationInput(invitationForm, eventId, userId);
 
-        // Create invitation using Amplify client
-        await client.models.Invitation.create(invitationInput);
+        // Create invitation using Amplify client with proper typing
+        await client.models.Invitation.create(invitationInput as any);
 
         // Refresh the invitations list
         await fetchInvitations();
@@ -147,8 +148,20 @@ export function useEventInvitations(options: UseEventInvitationsOptions = {}) {
    */
   useEffect(() => {
     if (autoFetch && eventId) {
-      const cleanup = fetchInvitations();
-      return cleanup as () => void;
+      let cleanupFunction: (() => void) | undefined;
+      
+      // Use async IIFE and handle the Promise properly
+      (async () => {
+        const result = await fetchInvitations();
+        if (typeof result === 'function') {
+          cleanupFunction = result;
+        }
+      })();
+      
+      // Return cleanup function
+      return () => {
+        if (cleanupFunction) cleanupFunction();
+      };
     }
   }, [autoFetch, eventId, fetchInvitations]);
 

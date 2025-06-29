@@ -50,8 +50,9 @@ export function useEventRSVPs(options: UseEventRSVPsOptions = {}) {
       // Check if the request was aborted
       if (abortController.signal.aborted) return;
 
-      // Map from EventRegistration schema to our RSVP interface
-      const mappedRSVPs = registrations.map(mapEventRegistrationToRSVP);
+      // Map from EventRegistration schema to our RSVP interface with proper typing
+      const mappedRSVPs = registrations.map((registration: any) => 
+        mapEventRegistrationToRSVP(registration as EventRegistrationType));
 
       setRSVPs(mappedRSVPs);
     } catch (err) {
@@ -145,6 +146,7 @@ export function useEventRSVPs(options: UseEventRSVPsOptions = {}) {
         // Create using Amplify client
         const { data: newRegistration } = await client.models.EventRegistration.create({
           eventId,
+          userId: registrationData.userId || 'user-placeholder', // Adding required userId field
           studentName: registrationData.studentName || 'Unknown Student',
           registrationStatus: (registrationData.registrationStatus || 'PENDING') as any,
           registrationData: registrationData.registrationData || {},
@@ -173,8 +175,20 @@ export function useEventRSVPs(options: UseEventRSVPsOptions = {}) {
    */
   useEffect(() => {
     if (autoFetch && eventId) {
-      const cleanup = fetchRSVPs();
-      return cleanup as () => void;
+      let cleanupFunction: (() => void) | undefined;
+      
+      // Use async IIFE and handle the Promise properly
+      (async () => {
+        const result = await fetchRSVPs();
+        if (typeof result === 'function') {
+          cleanupFunction = result;
+        }
+      })();
+      
+      // Return cleanup function
+      return () => {
+        if (cleanupFunction) cleanupFunction();
+      };
     }
   }, [autoFetch, eventId, fetchRSVPs]);
 

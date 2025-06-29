@@ -1,4 +1,4 @@
-import { applicationOperations } from '@/lib/services/graphql-client';
+import { applicationOperations } from '@/lib/api/graphql-client';
 
 // StudentApplication type aligned with Enrollment schema
 export type StudentApplication = {

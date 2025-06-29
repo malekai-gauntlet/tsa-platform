@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { userOperations } from '@/lib/api/graphql-client';
-import { CoachProfile } from '@/lib/types/coach';
+import { CoachProfile, CoachProfilePreferences } from '@/lib/types/coach';
 import { handleApiError } from '@/lib/utils/coach/errorHandler';
 
 interface UseCoachProfileOptions {
@@ -57,29 +57,34 @@ export function useCoachProfile(options: UseCoachProfileOptions = {}): UseCoachP
       // Fetch profile data
       const profileData = await userOperations.getCurrentProfile();
 
-      // Handle profile photo and preferences
-      if (profileData?.preferences && typeof profileData.preferences === 'object') {
-        const prefs = profileData.preferences as Record<string, any>;
+      // Handle profile photo and preferences with proper type guard
+      if (profileData?.preferences) {
+        // Type guard to ensure preferences is an object
+        const prefs = profileData.preferences as CoachProfilePreferences;
 
-        if (prefs.profile_photo_url) {
+        // Safely access properties with optional chaining
+        if (prefs?.profile_photo_url) {
           setProfilePhoto(prefs.profile_photo_url);
         }
 
         // Set user name if available in profile
-        if (prefs.first_name || prefs.last_name) {
+        if (prefs?.first_name || prefs?.last_name) {
           const firstName = prefs.first_name || '';
           const lastName = prefs.last_name || '';
           setName(`${firstName} ${lastName}`.trim());
         }
       }
 
-      // Set full profile data
+      // Construct profile object properly to avoid duplicate userId
+      const { userId: _, ...profileDataWithoutUserId } = profileData || {};
+      
       setProfile({
         userId: user?.userId || '',
         email: user?.signInDetails?.loginId || '',
         name: name || user?.username || '',
-        profilePhoto: profileData?.preferences?.profile_photo_url || null,
-        ...profileData,
+        profilePhoto: profileData?.preferences ? 
+          (profileData.preferences as CoachProfilePreferences).profile_photo_url || null : null,
+        ...profileDataWithoutUserId,
       } as CoachProfile);
     } catch (err) {
       handleApiError(err, setError);
@@ -132,9 +137,9 @@ export function useCoachProfile(options: UseCoachProfileOptions = {}): UseCoachP
             ...prev,
             profilePhoto: url,
             preferences: {
-              ...((prev.preferences as any) || {}),
+              ...((prev.preferences as CoachProfilePreferences) || {}),
               profile_photo_url: url,
-            },
+            } as CoachProfilePreferences,
           }
         : null
     );

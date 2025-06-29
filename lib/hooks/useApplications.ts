@@ -24,7 +24,7 @@ export function useApplications({
   const recentApplications = useMemo(
     () =>
       applications
-        .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+        .sort((a, b) => new Date(b.submittedAt || b.createdAt).getTime() - new Date(a.submittedAt || a.createdAt).getTime())
         .slice(0, 2),
     [applications]
   );
@@ -49,12 +49,30 @@ export function useApplications({
         const transformedApplications: Application[] = studentApplications.map(
           (studentApp: any) => ({
             id: studentApp.invitation_id,
+            parentId: studentApp.parent_id || 'unknown',
+            studentName: `${studentApp.student_first_name || ''} ${studentApp.student_last_name || ''}`.trim() || 'Unknown Student',
+            studentAge: studentApp.student_age ? Number(studentApp.student_age) : undefined,
+            studentGrade: studentApp.grade_level || 'TBD',
+            enrollmentType: 'FULL_TIME' as const,
+            status: (studentApp.status === 'applied' ? 'PENDING' : studentApp.status?.toUpperCase() || 'PENDING') as 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED',
+            applicationData: {
+              sportInterest: studentApp.sport_interest,
+              specialRequirements: studentApp.special_accommodations,
+            },
+            startDate: studentApp.enrollment_date,
+            academicYear: studentApp.enrollment_date ? '2024-2025' : '2025-2026',
+            coachName: studentApp.coach_name,
+            sportInterest: studentApp.sport_interest,
+            currentStep: 1,
+            totalSteps: 5,
+            createdAt: studentApp.created_at,
+            updatedAt: studentApp.updated_at || studentApp.created_at,
+            
+            // Additional fields used in the frontend but not in the core model
             coachId: currentUserId,
             studentFirstName: studentApp.student_first_name,
             studentLastName: studentApp.student_last_name,
             studentDateOfBirth: studentApp.student_dob || '2010-01-01',
-            studentGrade: studentApp.grade_level || 'TBD',
-            startTerm: studentApp.enrollment_date ? 'Fall 2024' : 'Spring 2025',
             currentSchool: studentApp.current_school || 'Previous School',
             parentName: studentApp.parent1_name || 'Parent Name',
             parentRelationship: studentApp.parent1_relationship || 'Parent',
@@ -71,7 +89,6 @@ export function useApplications({
             specialAccommodations: studentApp.special_accommodations || '',
             tellUsAboutYou: studentApp.parent_background || '',
             type: 'application' as const,
-            status: studentApp.status === 'applied' ? 'pending' : (studentApp.status as any),
             submittedAt: studentApp.created_at,
             lastUpdated: studentApp.created_at,
             notes: `Coach: ${coachEmail}`,

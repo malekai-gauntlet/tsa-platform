@@ -6,36 +6,8 @@
 
 import { Schema } from '@/amplify/data/resource';
 
-/**
- * Extract Invitation type from Amplify Schema
- * Updated for Amplify Gen 2 (v6.15.x) compatibility
- * 
- * Since Schema is only a type and not a value, we need to define our type manually
- * based on the Amplify model structure.
- */
-export type InvitationType = {
-  id: string;
-  email: string;
-  invitedBy: string;
-  invitationType?: string;
-  status?: string;
-  token?: string;
-  expiresAt: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  city?: string;
-  state?: string;
-  bio?: string;
-  message?: string;
-  schoolName?: string;
-  schoolType?: string;
-  sport?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  acceptedAt?: string;
-  lastSentAt?: string;
-};
+// Extract Invitation type from Amplify Schema
+export type InvitationType = NonNullable<Schema['models']['Invitation']['record']>;
 
 /**
  * EventInvitation interface that maps between our frontend needs and the Amplify Schema
@@ -54,7 +26,7 @@ export interface EventInvitation {
   status: 'pending' | 'sent' | 'accepted' | 'declined'; // Mapped from Schema's PENDING/ACCEPTED states
   sent_at?: string; // Maps to Invitation.lastSentAt
   responded_at?: string; // Maps to Invitation.acceptedAt
-  created_at?: string; // Maps to Invitation.createdAt
+  created_at: string; // Maps to Invitation.createdAt
 
   // Additional data
   message?: string; // Maps to Invitation.message

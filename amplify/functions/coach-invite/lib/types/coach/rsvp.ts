@@ -6,26 +6,8 @@
 
 import { Schema } from '@/amplify/data/resource';
 
-/**
- * Extract EventRegistration type from Amplify Schema
- * Updated for Amplify Gen 2 (v6.15.x) compatibility
- * 
- * Since Schema is only a type and not a value, we need to define our type manually
- * based on the Amplify model structure.
- */
-export type EventRegistrationType = {
-  id?: string;
-  eventId: string;
-  userId: string;
-  studentName?: string;
-  registrationStatus?: string; 
-  paymentStatus?: string;
-  attendanceStatus?: string;
-  registrationData?: any;
-  notes?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
+// Extract EventRegistration type from Amplify Schema
+export type EventRegistrationType = NonNullable<Schema['models']['EventRegistration']['record']>;
 
 /**
  * RSVP interface that maps between our frontend needs and the Amplify Schema
@@ -34,7 +16,7 @@ export type EventRegistrationType = {
 export interface RSVP {
   // ID fields
   rsvp_id: string; // Maps to EventRegistration.id
-  event_id?: string; // Maps to EventRegistration.eventId
+  event_id: string; // Maps to EventRegistration.eventId
 
   // Parent Information
   parent_name: string; // Derived from User data
@@ -70,7 +52,7 @@ export function mapEventRegistrationToRSVP(registration: EventRegistrationType):
   const regData = registration.registrationData || {};
 
   return {
-    rsvp_id: registration.id || 'temp-id',
+    rsvp_id: registration.id,
     event_id: registration.eventId,
     parent_name: regData.parentName || 'Unknown Parent',
     parent_email: regData.parentEmail || 'Unknown Email',
@@ -110,7 +92,6 @@ export function mapRSVPToEventRegistrationUpdate(
   return {
     id: rsvp.rsvp_id,
     eventId: rsvp.event_id,
-    userId: 'user-placeholder', // Required field in the schema
     studentName: rsvp.student_name,
     registrationStatus: rsvp.rsvp_status?.toUpperCase() as any,
     notes: rsvp.additional_notes,

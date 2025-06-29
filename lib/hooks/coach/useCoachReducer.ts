@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducer, useCallback } from 'react';
-import { CoachState, CoachProfile, Event, Application } from '@/lib/types/coach';
+import { CoachState, CoachProfile, Event, Application, ApplicationStatus } from '@/lib/types/coach';
 
 // Define action types
 type CoachAction =
@@ -27,7 +27,7 @@ type CoachAction =
   | { type: 'FETCH_APPLICATIONS_START' }
   | { type: 'FETCH_APPLICATIONS_SUCCESS'; payload: Application[] }
   | { type: 'FETCH_APPLICATIONS_ERROR'; payload: string }
-  | { type: 'UPDATE_APPLICATION_STATUS'; payload: { id: string; status: string } }
+  | { type: 'UPDATE_APPLICATION_STATUS'; payload: { id: string; status: ApplicationStatus } }
   | { type: 'RESET_ERROR'; section: 'profile' | 'events' | 'applications' };
 
 // Initial state
@@ -217,7 +217,7 @@ function coachReducer(state: CoachState, action: CoachAction): CoachState {
           ...state.applications,
           data: state.applications.data.map(application =>
             application.id === action.payload.id
-              ? { ...application, status: action.payload.status }
+              ? { ...application, status: action.payload.status as ApplicationStatus }
               : application
           ),
         },
@@ -314,7 +314,15 @@ export function useCoachReducer() {
   }, []);
 
   const updateApplicationStatus = useCallback((id: string, status: string) => {
-    dispatch({ type: 'UPDATE_APPLICATION_STATUS', payload: { id, status } });
+    // Validate status and convert to expected ApplicationStatus type
+    const validStatus = ['PENDING', 'APPROVED', 'WAITLIST', 'REJECTED'].includes(status.toUpperCase()) 
+      ? status.toUpperCase() as ApplicationStatus 
+      : 'PENDING' as ApplicationStatus;
+    
+    dispatch({ 
+      type: 'UPDATE_APPLICATION_STATUS', 
+      payload: { id, status: validStatus } 
+    });
   }, []);
 
   const resetError = useCallback((section: 'profile' | 'events' | 'applications') => {

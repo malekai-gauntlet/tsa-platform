@@ -65,7 +65,6 @@ export function transformInvitationToOnboardingData(
     // System fields
     invitationToken: invitationData.token,
     invitationBased: true,
-    source: 'invitation' as const,
   };
 
   return transformed;
@@ -211,11 +210,29 @@ export function validatePersonalInfo(data: Partial<OnboardingFormData> | Persona
   if (!data.birthStateAbbreviation?.trim()) errors.push('Birth state is required');
   if (!data.sex?.trim()) errors.push('Gender is required');
 
-  // Address fields
-  if (!data.address?.trim()) errors.push('Street address is required');
-  if (!data.city?.trim()) errors.push('City is required');
-  if (!data.state?.trim()) errors.push('State is required');
-  if (!data.zipCode?.trim()) errors.push('ZIP code is required');
+  // Address fields - check if this is PersonalInfoData or OnboardingFormData
+  if ('address' in data && data.address && typeof data.address === 'object') {
+    // It's OnboardingFormData with structured address
+    const address = data.address as any;
+    if (!address.streetNumberName?.trim?.()) errors.push('Street address is required');
+    if (!address.city?.trim?.()) errors.push('City is required');
+    if (!address.stateAbbreviation?.trim?.()) errors.push('State is required');
+    if (!address.postalCode?.trim?.()) errors.push('ZIP code is required');
+  }
+  
+  // Legacy field handling for backwards compatibility
+  if ('streetAddress' in data && typeof data.streetAddress === 'string' && !data.streetAddress.trim()) {
+    errors.push('Street address is required');
+  }
+  if ('city' in data && typeof data.city === 'string' && !data.city.trim()) {
+    errors.push('City is required');
+  }
+  if ('state' in data && typeof data.state === 'string' && !data.state.trim()) {
+    errors.push('State is required');
+  }
+  if ('zipCode' in data && typeof data.zipCode === 'string' && !data.zipCode.trim()) {
+    errors.push('ZIP code is required');
+  }
 
   // Email format validation
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
@@ -246,8 +263,9 @@ export function validateRoleExperience(data: Partial<OnboardingFormData> | RoleE
 
   if (!data.roleType) errors.push('Role type is required');
   if (
-    typeof data.yearsOfPriorProfessionalExperience !== 'number' ||
-    data.yearsOfPriorProfessionalExperience < 0
+    'yearsOfPriorProfessionalExperience' in data && 
+    (typeof data.yearsOfPriorProfessionalExperience !== 'number' ||
+    data.yearsOfPriorProfessionalExperience < 0)
   ) {
     errors.push('Years of experience is required');
   }
@@ -264,7 +282,11 @@ export function validateSchoolSetup(data: Partial<OnboardingFormData> | SchoolSe
 } {
   const errors: string[] = [];
 
-  if (!data.nameOfInstitution?.trim()) errors.push('School name is required');
+  // Handle both flattened and structured data formats
+  const schoolName = 'nameOfInstitution' in data ? data.nameOfInstitution : 
+                     ('schoolName' in data ? data.schoolName : undefined);
+  
+  if (!schoolName?.trim()) errors.push('School name is required');
   if (!data.schoolType) errors.push('School type is required');
   if (!data.gradeLevels?.length) errors.push('At least one grade level is required');
   if (!data.academicYear) errors.push('Academic year is required');

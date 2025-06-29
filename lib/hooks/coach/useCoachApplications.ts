@@ -129,8 +129,20 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
    */
   useEffect(() => {
     if (autoFetch) {
-      const cleanup = fetchApplications();
-      return cleanup as () => void;
+      let cleanupFunction: (() => void) | undefined;
+      
+      // Use async IIFE and handle the Promise properly
+      (async () => {
+        const result = await fetchApplications();
+        if (typeof result === 'function') {
+          cleanupFunction = result;
+        }
+      })();
+      
+      // Return cleanup function
+      return () => {
+        if (cleanupFunction) cleanupFunction();
+      };
     }
   }, [autoFetch, fetchApplications]);
 

@@ -6,48 +6,8 @@
 
 import { Schema } from '@/amplify/data/resource';
 
-/**
- * Extract Event type from Amplify Schema
- * Updated for Amplify Gen 2 (v6.15.x) compatibility
- * 
- * Since Schema is only a type and not a value, we need to define our type manually
- * based on the Amplify model structure.
- */
-export type EventType = {
-  id: string;
-  title: string;
-  description?: string;
-  shortDescription?: string;
-  eventType?: string;
-  status?: string;
-  startDate: string;
-  endDate: string;
-  timezone?: string;
-  venue?: string;
-  address?: any;
-  capacity?: number;
-  registeredCount?: number;
-  price?: number;
-  currency?: string;
-  coachId: string;
-  coachName?: string;
-  requirements?: string[];
-  equipment?: string[];
-  tags?: string[];
-  images?: string[];
-  isPublic?: boolean;
-  isOnline?: boolean;
-  meetingUrl?: string;
-  registrationDeadline?: string;
-  ageGroups?: string[];
-  skillLevel?: string;
-  googleCalendarEventId?: string;
-  googleMeetUrl?: string;
-  googleCalendarSyncEnabled?: boolean;
-  googleCalendarLastSynced?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
+// Extract Event type from Amplify Schema
+export type EventType = NonNullable<Schema['models']['Event']['record']>;
 
 /**
  * Form data for creating events

@@ -122,9 +122,14 @@ export function useCoachEvents(options: UseCoachEventsOptions = {}) {
       const updatedEvent = await eventOperations.updateEvent(id, eventData);
 
       // Update local state
-      setEvents(prevEvents =>
-        prevEvents.map(event => (event.id === id ? { ...event, ...updatedEvent } : event))
-      );
+      setEvents(prevEvents => {
+        return prevEvents.map(event => {
+          if (event.id === id) {
+            return { ...event, ...updatedEvent } as Event;
+          }
+          return event;
+        });
+      });
 
       return updatedEvent as Event;
     } catch (err) {
@@ -140,8 +145,20 @@ export function useCoachEvents(options: UseCoachEventsOptions = {}) {
    */
   useEffect(() => {
     if (autoFetch) {
-      const cleanup = fetchEvents();
-      return cleanup as () => void;
+      let cleanupFunction: (() => void) | undefined;
+      
+      // Use async IIFE and handle the Promise properly
+      (async () => {
+        const result = await fetchEvents();
+        if (typeof result === 'function') {
+          cleanupFunction = result;
+        }
+      })();
+      
+      // Return cleanup function
+      return () => {
+        if (cleanupFunction) cleanupFunction();
+      };
     }
   }, [autoFetch, fetchEvents]);
 

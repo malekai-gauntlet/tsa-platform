@@ -9,14 +9,6 @@
 export { mapEventRegistrationToRSVP, mapRSVPToEventRegistrationUpdate } from './rsvp';
 export type { EventRegistrationType, RSVP } from './rsvp';
 
-// Application statistics interface
-export interface ApplicationStats {
-  total: number;
-  pending: number;
-  accepted: number;
-  thisWeek: number;
-}
-
 export { mapInvitationToEventInvitation, mapFormToInvitationInput } from './invitation';
 export type { EventInvitation, InvitationType, InvitationForm } from './invitation';
 
@@ -28,35 +20,6 @@ export type { EventType } from './event';
 // export { TicketType as TicketTypeDefinition } from './event';
 
 // Core data types
-export interface CoachProfilePreferences {
-  profile_photo_url?: string;
-  first_name?: string;
-  last_name?: string;
-  certification_level?: string;
-  program_focus?: string[];
-  football_type?: string;
-  has_physical_location?: boolean;
-  website?: string;
-  academic_year?: string;
-  [key: string]: any; // Allow additional preference fields for flexibility
-}
-
-export interface CoachAddress {
-  street?: string;
-  street2?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-}
-
-export interface EmergencyContact {
-  name?: string;
-  relationship?: string;
-  phone?: string;
-  email?: string;
-}
-
 export interface CoachProfile {
   userId: string;
   email?: string;
@@ -67,9 +30,9 @@ export interface CoachProfile {
   experience?: string;
   specialties?: string[];
   certifications?: string[];
-  preferences?: CoachProfilePreferences;
-  address?: CoachAddress;
-  emergencyContact?: EmergencyContact;
+  preferences?: Record<string, any>;
+  address?: Record<string, any>;
+  emergencyContact?: Record<string, any>;
   backgroundCheckStatus?: string;
   backgroundCheckDate?: string;
   onboardingComplete?: boolean;
@@ -120,9 +83,6 @@ export interface Event {
   updatedAt?: string;
 }
 
-// Application status type
-export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED';
-
 export interface Application {
   id: string;
   parentId: string;
@@ -130,7 +90,7 @@ export interface Application {
   studentAge?: number;
   studentGrade?: string;
   enrollmentType?: 'FULL_TIME' | 'PART_TIME' | 'AFTER_SCHOOL';
-  status: ApplicationStatus;
+  status: 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED';
   applicationData?: Record<string, any>;
   documents?: Record<string, any>;
   tuitionPlan?: Record<string, any>;
@@ -145,35 +105,9 @@ export interface Application {
   timelineStatus?: string;
   createdAt: string;
   updatedAt: string;
-  
-  // Additional fields used in transformations but not in the core model
-  submittedAt?: string;
-  coachId?: string;
-  studentFirstName?: string;
-  studentLastName?: string;
-  studentDateOfBirth?: string;
-  currentSchool?: string;
-  parentName?: string;
-  parentRelationship?: string;
-  parentEmail?: string;
-  parentPhone?: string;
-  parent2Name?: string;
-  parent2Email?: string;
-  parent2Relationship?: string;
-  parent2Phone?: string;
-  location?: string;
-  address?: string;
-  whyApplying?: string;
-  tellUsMore?: string;
-  specialAccommodations?: string;
-  tellUsAboutYou?: string;
-  type?: string;
-  lastUpdated?: string;
-  notes?: string;
 }
 
-// This interface is renamed to EventRSVP to resolve export conflicts with the type imported from ./rsvp
-export interface EventRSVP {
+export interface RSVP {
   rsvp_id: string;
   event_id: string;
   parent_name: string;
@@ -189,15 +123,6 @@ export interface EventRSVP {
   additional_notes?: string;
   created_at: string;
   updated_at: string;
-}
-
-// Coach Data from Auth and User records
-export interface CoachData {
-  currentUser: any;
-  coachRecord: any;
-  profileRecord: any;
-  coachLocation: string;
-  greeting: string;
 }
 
 // State types
