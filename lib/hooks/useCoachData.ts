@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { client } from '@/data';
+import { client } from '@/lib/api/graphql-client';
 import { extractDisplayNameFromEmail } from '@/lib/utils';
 import { generateGreeting } from '@/lib/utils/coach';
 import type { CoachData } from '@/lib/types/coach';

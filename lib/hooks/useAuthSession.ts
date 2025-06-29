@@ -31,8 +31,8 @@ export function useAuthSession() {
     });
 
     return hubListenerCancel;
-  /* eslint-disable react-hooks/exhaustive-deps */
-  // These functions are defined within the hook and would cause circular dependencies
+    /* eslint-disable react-hooks/exhaustive-deps */
+    // These functions are defined within the hook and would cause circular dependencies
   }, []);
 
   const checkAuthState = async () => {

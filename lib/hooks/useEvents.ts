@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { client } from '@/data';
+import { client } from '@/lib/api/graphql-client';
 import { transformEventFromGraphQL, filterEvents, calculateEventStats } from '@/lib/utils/events';
 import type { Event, EventFilters } from '@/lib/types/events';
 
