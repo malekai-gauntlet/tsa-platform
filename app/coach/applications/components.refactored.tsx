@@ -26,7 +26,9 @@ interface StatusBadgeProps {
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const getStatusBadgeVariant = status => {
+  const getStatusBadgeVariant = (
+    status: 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED'
+  ) => {
     const variants = {
       PENDING: 'bg-amber-100 text-amber-800 border-amber-200',
       WAITLIST: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -38,7 +40,9 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
 
   return (
     <div
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeVariant(status)}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeVariant(
+        status as 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED'
+      )}`}
     >
       {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
     </div>
@@ -108,10 +112,10 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
           {application.status === 'PENDING' && (
             <>
-              <Button onClick={() => onAccept(application.id)} size="sm" variant="default">
+              <Button onClick={() => onAccept(application.id)} size="sm" variant="primary">
                 Accept
               </Button>
-              <Button onClick={() => onReject(application.id)} size="sm" variant="destructive">
+              <Button onClick={() => onReject(application.id)} size="sm" variant="danger">
                 Reject
               </Button>
             </>
@@ -322,7 +326,7 @@ export function StudentApplicationsContent() {
 
         <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
           <div className="font-medium text-gray-500">Approved</div>
-          <div className="mt-1 text-3xl font-semibold text-green-600">{stats.approved}</div>
+          <div className="mt-1 text-3xl font-semibold text-green-600">{stats.accepted}</div>
         </div>
 
         <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5">

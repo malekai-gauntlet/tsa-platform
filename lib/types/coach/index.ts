@@ -107,22 +107,11 @@ export interface Application {
   updatedAt: string;
 }
 
-export interface RSVP {
-  rsvp_id: string;
-  event_id: string;
-  parent_name: string;
-  parent_email: string;
-  parent_phone?: string;
-  student_name: string;
-  student_age?: number;
-  rsvp_status: 'confirmed' | 'pending' | 'declined' | 'waitlist';
-  rsvp_date: string;
-  special_requirements?: string;
-  emergency_contact?: string;
-  emergency_phone?: string;
-  additional_notes?: string;
-  created_at: string;
-  updated_at: string;
+export interface ApplicationStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  thisWeek: number;
 }
 
 // State types

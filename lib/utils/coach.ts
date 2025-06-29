@@ -80,10 +80,10 @@ export const getBookingColor = (eventType: string): string => {
 export const calculateApplicationStats = (applications: Application[]): ApplicationStats => {
   return {
     total: applications.length,
-    pending: applications.filter(app => app.status === 'pending').length,
-    accepted: applications.filter(app => app.status === 'accepted').length,
+    pending: applications.filter(app => app.status === 'PENDING').length,
+    accepted: applications.filter(app => app.status === 'APPROVED').length,
     thisWeek: applications.filter(app => {
-      const submittedDate = new Date(app.submittedAt);
+      const submittedDate = new Date(app.createdAt);
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
       return submittedDate >= weekAgo;
@@ -103,4 +103,21 @@ export const generateGreeting = (firstName: string): string => {
   }
 
   return `${timeGreeting}, Coach ${firstName}`;
+};
+
+export const getStatusBadgeVariant = (
+  status: 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED' | string
+) => {
+  const variants: Record<string, string> = {
+    PENDING: 'bg-amber-100 text-amber-800 border-amber-200',
+    WAITLIST: 'bg-blue-100 text-blue-800 border-blue-200',
+    APPROVED: 'bg-green-100 text-green-800 border-green-200',
+    REJECTED: 'bg-red-100 text-red-800 border-red-200',
+  };
+  return variants[status] || 'bg-gray-100 text-gray-800 border-gray-200';
+};
+
+export const formatStatusText = (status: string) => {
+  if (!status) return 'Unknown';
+  return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().replace(/_/g, ' ');
 };

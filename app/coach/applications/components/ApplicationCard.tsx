@@ -107,7 +107,7 @@ export const ApplicationCard = React.memo<ApplicationCardProps>(
                 {!compact && onAccept && application.status === 'PENDING' && (
                   <Button
                     size="sm"
-                    variant="default"
+                    variant="primary"
                     className="h-8 bg-green-600 px-3 text-xs hover:bg-green-700"
                     onClick={() => onAccept(application.id)}
                   >
