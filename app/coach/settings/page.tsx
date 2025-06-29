@@ -14,7 +14,7 @@ import { Select } from '@/components/form';
 import { Text } from '@/components/data-display';
 import { Textarea } from '@/components/form';
 import { Switch, SwitchField } from '@/components/switch';
-import { getEvents } from '@/data';
+import { eventOperations } from '@/lib/api/graphql-client';
 import { Address } from '@/app/coach/settings/address';
 import Link from 'next/link';
 import { useRef } from 'react';

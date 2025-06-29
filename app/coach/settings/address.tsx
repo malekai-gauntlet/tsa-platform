@@ -3,7 +3,7 @@
 import { Input } from '@/components/form';
 import { Listbox, ListboxLabel, ListboxOption } from '@/components/form/listbox';
 import { Text } from '@/components/data-display';
-import { getCountries, type Country } from '@/data';
+import { getCountries, type Country } from '@/lib/constants/countries';
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
