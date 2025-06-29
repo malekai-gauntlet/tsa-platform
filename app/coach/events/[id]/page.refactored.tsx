@@ -26,7 +26,7 @@ import { useCoachEvents, useEventRSVPs, useEventInvitations } from '@/lib/hooks/
 import { EventHeader, EventActions, RSVPSection } from '../components';
 
 // Import types & utility functions
-import { InvitationForm } from '@/lib/hooks/coach/useEventInvitations';
+import { InvitationForm } from '@/lib/types/coach';
 import { formatDate, formatTime } from '@/lib/utils/coach/formatters';
 
 export default function EventView({ params }: { params: { id: string } }) {
@@ -80,7 +80,7 @@ export default function EventView({ params }: { params: { id: string } }) {
   /**
    * Handles deletion of an event
    */
-  const handleDeleteEvent = useCallback(async () => {
+  const handleDeleteEvent = useCallback(async (): Promise<boolean> => {
     try {
       setDeleteLoading(true);
       // Call Lambda API directly
@@ -91,12 +91,15 @@ export default function EventView({ params }: { params: { id: string } }) {
 
       if (response.ok) {
         router.push('/coach/events');
+        return true;
       } else {
         alert('Failed to delete event');
+        return false;
       }
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Failed to delete event');
+      return false;
     } finally {
       setDeleteLoading(false);
     }
@@ -204,7 +207,7 @@ export default function EventView({ params }: { params: { id: string } }) {
 
         <EventActions
           event={event}
-          onDelete={() => setShowDeleteDialog(true)}
+          onDelete={handleDeleteEvent}
           onSyncToGoogleCalendar={handleSyncToGoogleCalendar}
           onShowInviteModal={() => setShowInviteModal(true)}
           loading={{
@@ -215,13 +218,13 @@ export default function EventView({ params }: { params: { id: string } }) {
       </div>
 
       {/* Event photos */}
-      {event.photos && event.photos.length > 0 && (
+      {event.images && event.images.length > 0 && (
         <div className="mt-6">
           <Subheading>Photos</Subheading>
           <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {event.photos.map((photo, index) => (
+            {event.images.map((photo: string, index: number) => (
               <div key={index} className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img src={photo.url} alt={photo.filename} className="h-full w-full object-cover" />
+                <img src={photo} alt={`event-photo-${index}`} className="h-full w-full object-cover" />
               </div>
             ))}
           </div>
@@ -309,7 +312,7 @@ export default function EventView({ params }: { params: { id: string } }) {
             <div>
               <Subheading>Tags</Subheading>
               <div className="mt-4 flex flex-wrap gap-2">
-                {event.tags.map((tag, index) => (
+                {event.tags.map((tag: string, index: number) => (
                   <Badge key={index} color="blue">
                     {tag}
                   </Badge>
@@ -324,7 +327,7 @@ export default function EventView({ params }: { params: { id: string } }) {
               <Subheading>Requirements</Subheading>
               <div className="mt-4 rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
                 <ul className="space-y-2">
-                  {event.requirements.map((requirement, index) => (
+                  {event.requirements.map((requirement: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="mt-1 text-blue-600">•</span>
                       <span className="text-gray-700">{requirement}</span>
@@ -386,7 +389,7 @@ export default function EventView({ params }: { params: { id: string } }) {
                   required
                   value={invitationForm.invitee_email}
                   onChange={e =>
-                    setInvitationForm(prev => ({ ...prev, invitee_email: e.target.value }))
+                    setInvitationForm((prev: InvitationForm) => ({ ...prev, invitee_email: e.target.value }))
                   }
                   placeholder="participant@example.com"
                 />
@@ -400,7 +403,7 @@ export default function EventView({ params }: { params: { id: string } }) {
                   type="text"
                   value={invitationForm.invitee_name}
                   onChange={e =>
-                    setInvitationForm(prev => ({ ...prev, invitee_name: e.target.value }))
+                    setInvitationForm((prev: InvitationForm) => ({ ...prev, invitee_name: e.target.value }))
                   }
                   placeholder="John Smith"
                 />
@@ -413,7 +416,7 @@ export default function EventView({ params }: { params: { id: string } }) {
                 <textarea
                   rows={3}
                   value={invitationForm.message}
-                  onChange={e => setInvitationForm(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={e => setInvitationForm((prev: InvitationForm) => ({ ...prev, message: e.target.value }))}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#004aad] focus:ring-1 focus:ring-[#004aad] focus:outline-none"
                   placeholder="I'd love to have you join us for this event..."
                 />

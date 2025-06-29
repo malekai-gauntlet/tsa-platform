@@ -22,10 +22,12 @@ import { formatDateTime } from '@/lib/utils/coach/formatters';
 // Import RSVP type from our types directory
 import { RSVP } from '@/lib/types/coach';
 
+type RSVPStatus = 'confirmed' | 'pending' | 'declined' | 'waitlist';
+
 interface RSVPSectionProps {
   rsvps: RSVP[];
   loading: boolean;
-  onUpdateRSVPStatus: (rsvpId: string, status: string) => void;
+  onUpdateRSVPStatus: (rsvpId: string, status: RSVPStatus) => Promise<any>;
 }
 
 /**
@@ -34,7 +36,7 @@ interface RSVPSectionProps {
 export function RSVPSection({ rsvps, loading, onUpdateRSVPStatus }: RSVPSectionProps) {
   const [showRSVPs, setShowRSVPs] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<RSVPStatus | 'all'>('all');
 
   // Filter RSVPs based on search term and status
   const filteredRSVPs = rsvps.filter(rsvp => {
@@ -59,7 +61,7 @@ export function RSVPSection({ rsvps, loading, onUpdateRSVPStatus }: RSVPSectionP
   };
 
   // Helper function to get status badge
-  const getRSVPStatusBadge = (status: string) => {
+  const getRSVPStatusBadge = (status: RSVPStatus) => {
     switch (status) {
       case 'confirmed':
         return <Badge color="green">Confirmed</Badge>;
@@ -75,7 +77,7 @@ export function RSVPSection({ rsvps, loading, onUpdateRSVPStatus }: RSVPSectionP
   };
 
   // Helper function to get status icon
-  const getRSVPStatusIcon = (status: string) => {
+  const getRSVPStatusIcon = (status: RSVPStatus) => {
     switch (status) {
       case 'confirmed':
         return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
@@ -162,7 +164,10 @@ export function RSVPSection({ rsvps, loading, onUpdateRSVPStatus }: RSVPSectionP
               </InputGroup>
             </div>
             <div className="sm:w-48">
-              <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+              <Select
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value as RSVPStatus | 'all')}
+              >
                 <option value="all">All Statuses</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="pending">Pending</option>
@@ -274,7 +279,9 @@ export function RSVPSection({ rsvps, loading, onUpdateRSVPStatus }: RSVPSectionP
 
                           <Select
                             value={rsvp.rsvp_status}
-                            onChange={e => onUpdateRSVPStatus(rsvp.rsvp_id, e.target.value)}
+                            onChange={e =>
+                              onUpdateRSVPStatus(rsvp.rsvp_id, e.target.value as RSVPStatus)
+                            }
                             className="text-xs"
                           >
                             <option value="pending">Pending</option>

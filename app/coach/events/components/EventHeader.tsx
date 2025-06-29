@@ -53,8 +53,9 @@ export function EventHeader({ event }: EventHeaderProps) {
         <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-2">
           <Heading className="truncate">{event.title}</Heading>
           <Badge color={getStatusColor(event.status)}>
-            {event.status?.charAt(0).toUpperCase() + event.status?.slice(1).toLowerCase() ||
-              'Draft'}
+            {event.status
+              ? event.status.charAt(0).toUpperCase() + event.status.slice(1).toLowerCase()
+              : 'Draft'}
           </Badge>
           {event.status === 'PUBLISHED' || !event.status ? null : (
             <Badge color="zinc">Private</Badge>
