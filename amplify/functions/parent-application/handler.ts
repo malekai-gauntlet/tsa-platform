@@ -1,36 +1,7 @@
-import { Amplify } from 'aws-amplify';
-import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../data/resource';
+import { generateClient } from 'aws-amplify/data';
 
-// Gen2 automatically configures Amplify with environment variables
-Amplify.configure(
-  {
-    API: {
-      GraphQL: {
-        endpoint: process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT!,
-        region: process.env.AWS_REGION!,
-        defaultAuthMode: 'identityPool',
-      },
-    },
-  },
-  {
-    Auth: {
-      credentialsProvider: {
-        getCredentialsAndIdentityId: async () => ({
-          credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-            sessionToken: process.env.AWS_SESSION_TOKEN!,
-          },
-        }),
-        clearCredentialsAndIdentityId: () => {
-          /* noop */
-        },
-      },
-    },
-  }
-);
-
+// In Amplify Gen 2, functions used as GraphQL resolvers are automatically configured
 const dataClient = generateClient<Schema>();
 
 export const handler: Schema['parentApplication']['functionHandler'] = async event => {
@@ -68,11 +39,49 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
       address,
     } = event.arguments;
 
+    // Define required fields for comprehensive validation
+    const requiredFields = [
+      'parentEmail',
+      'parentFirstName', 
+      'parentLastName',
+      'parentPhone',
+      'studentName',
+      'sportInterest'
+    ];
+    
     // Validate required fields
-    if (!parentEmail || !studentName || !sportInterest) {
+    const { valid, missingFields } = validateRequiredFields(
+      event.arguments,
+      requiredFields
+    );
+    
+    if (!valid) {
       throw new Error(
-        'Missing required fields: parentEmail, studentName, and sportInterest are required'
+        `Missing required fields: ${missingFields.join(', ')}`
       );
+    }
+
+    // Validate email format
+    if (!validateEmail(parentEmail)) {
+      throw new Error('Invalid email format');
+    }
+
+    // Validate phone number
+    if (!validatePhone(parentPhone || undefined)) {
+      throw new Error('Invalid phone number format');
+    }
+
+    // Format the phone number for consistency
+    const formattedParentPhone = formatPhoneNumber(parentPhone || '');
+
+    // Validate date of birth (must be in the past)
+    if (studentDateOfBirth && !validatePastDate(studentDateOfBirth)) {
+      throw new Error('Invalid date of birth - must be a valid date in the past');
+    }
+
+    // Validate start date (must be in the future or today)
+    if (startDate && !validateFutureDate(startDate)) {
+      throw new Error('Invalid start date - must be today or a future date');
     }
 
     // Create or find the parent user
@@ -94,7 +103,7 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
           email: parentEmail,
           firstName: parentFirstName,
           lastName: parentLastName,
-          phone: parentPhone,
+          phone: formattedParentPhone,
           role: 'PARENT',
           status: 'PENDING',
           createdAt: new Date().toISOString(),
@@ -110,7 +119,6 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
         parentUser = createUserResult.data;
       }
     } catch (error: any) {
-      console.error('Error managing parent user:', error);
       throw new Error('Failed to create or find parent user');
     }
 
@@ -255,8 +263,7 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
         });
       }
     } catch (error: any) {
-      console.error('Error creating parent profile:', error);
-      // Don't throw here as enrollment was successful, just log the error
+      // Don't throw here as enrollment was successful
     }
 
     // Create analytics event for tracking
@@ -276,7 +283,6 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
         createdAt: new Date().toISOString(),
       });
     } catch (error: any) {
-      console.error('Error creating analytics event:', error);
       // Don't throw here as enrollment was successful
     }
 
@@ -299,15 +305,73 @@ export const handler: Schema['parentApplication']['functionHandler'] = async eve
       },
     };
   } catch (error: any) {
-    console.error('Parent application error:', error);
-
     return {
       success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'An unexpected error occurred while processing your application',
+      message: error instanceof Error ? error.message : 'An unexpected error occurred while processing your application',
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 };
+
+// Helper functions for validation
+function validateRequiredFields(data: Record<string, any>, requiredFields: string[]): { valid: boolean; missingFields: string[] } {
+  const missingFields = requiredFields.filter(field => !data[field]);
+  return {
+    valid: missingFields.length === 0,
+    missingFields
+  };
+}
+
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  return emailRegex.test(email);
+}
+
+function validatePhone(phone?: string): boolean {
+  if (!phone) return false;
+  const cleaned = phone.replace(/\D/g, '');
+  return cleaned.length >= 10 && cleaned.length <= 15;
+}
+
+function formatPhoneNumber(phone: string): string {
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return `+1${cleaned}`;
+  } else if (cleaned.length === 11 && cleaned.startsWith('1')) {
+    return `+${cleaned}`;
+  }
+  return phone;
+}
+
+function validateDateFormat(date?: string): boolean {
+  if (!date) return false;
+  
+  // Check for ISO format (YYYY-MM-DD)
+  const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (isoRegex.test(date)) {
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime());
+  }
+  
+  return false;
+}
+
+function validateFutureDate(date?: string): boolean {
+  if (!validateDateFormat(date)) return false;
+  
+  const parsedDate = new Date(date!);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset hours to compare dates only
+  
+  return parsedDate >= today;
+}
+
+function validatePastDate(date?: string): boolean {
+  if (!validateDateFormat(date)) return false;
+  
+  const parsedDate = new Date(date!);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset hours to compare dates only
+  
+  return parsedDate <= today;
+} 
