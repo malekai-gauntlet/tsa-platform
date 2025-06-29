@@ -157,21 +157,17 @@ export function useOnboardingState({
         const simulatedInvitationData = {
           email: 'test.coach@bypass.local',
           role: 'COACH',
-          first_name: 'Test', // Keep old format for invitation data compatibility
-          last_name: 'Coach',
-          firstName: 'Test', // Also include new format
+          firstName: 'Test',
           lastName: 'Coach',
           phone: '555-123-4567',
-          phone_formatted: '(555) 123-4567',
+          phoneFormatted: '(555) 123-4567',
           city: 'Dallas',
           state: 'TX',
           bio: 'Simulated coach for bypass mode testing',
-          full_name: 'Test Coach',
+          fullName: 'Test Coach',
           location: 'Dallas, TX',
-          school_name: 'Test Academy',
-          schoolName: 'Test Academy', // Also include new format
-          school_type: 'private',
-          schoolType: 'private', // Also include new format
+          schoolName: 'Test Academy',
+          schoolType: 'private',
           sport: 'Basketball',
         };
 
@@ -182,14 +178,14 @@ export function useOnboardingState({
         // Pre-fill form with simulated data using standardized field names
         setFormData(prev => ({
           ...prev,
-          firstName: simulatedInvitationData.first_name,
-          lastName: simulatedInvitationData.last_name,
+          firstName: simulatedInvitationData.firstName,
+          lastName: simulatedInvitationData.lastName,
           email: simulatedInvitationData.email,
           phone: simulatedInvitationData.phone,
           schoolCity: simulatedInvitationData.city,
           schoolState: simulatedInvitationData.state,
           bio: simulatedInvitationData.bio,
-          nameOfInstitution: simulatedInvitationData.school_name,
+          nameOfInstitution: simulatedInvitationData.schoolName,
           sport: simulatedInvitationData.sport,
         }));
       } else if (storedInvitationData) {
@@ -199,17 +195,16 @@ export function useOnboardingState({
         setFormData(prev => ({
           ...prev,
           // Map invitation fields to standardized form fields
-          firstName: storedInvitationData.first_name || storedInvitationData.firstName || '',
-          lastName: storedInvitationData.last_name || storedInvitationData.lastName || '',
+          firstName: storedInvitationData.firstName || '',
+          lastName: storedInvitationData.lastName || '',
           email: storedInvitationData.email || '',
-          phone: storedInvitationData.phone_formatted || storedInvitationData.phone || '',
+          phone: storedInvitationData.phoneFormatted || storedInvitationData.phone || '',
           schoolCity: storedInvitationData.city || '',
           schoolState: storedInvitationData.state || '',
           bio: storedInvitationData.bio || '',
           // Map school information if available
-          nameOfInstitution:
-            storedInvitationData.school_name || storedInvitationData.schoolName || '',
-          schoolType: storedInvitationData.school_type || storedInvitationData.schoolType || '',
+          nameOfInstitution: storedInvitationData.schoolName || '',
+          schoolType: storedInvitationData.schoolType || '',
           sport: storedInvitationData.sport || '',
         }));
       }

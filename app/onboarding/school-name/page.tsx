@@ -27,7 +27,7 @@ function SchoolNameContent() {
     isFieldPreFilled,
     getProgressPercentage,
   } = useOnboardingState({
-    currentStep: ONBOARDING_STEPS.SCHOOL_NAME,
+    currentStep: ONBOARDING_STEPS.SCHOOL_SETUP,
     requiredFields: ['nameOfInstitution'], // Just require school name fields
   });
 
@@ -172,7 +172,7 @@ function SchoolNameContent() {
             {invitationData && (
               <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Welcome, {invitationData.first_name}!</strong> Some fields have been
+                  <strong>Welcome, {invitationData.firstName}!</strong> Some fields have been
                   pre-filled from your invitation.
                 </p>
               </div>

@@ -77,7 +77,7 @@ export function RecentApplications({
 
       <div className="space-y-4">
         {applications.map((app: Application) => {
-          const IconComponent = app.type === 'application' ? AcademicCapIcon : AcademicCapIcon;
+          const IconComponent = AcademicCapIcon;
           return (
             <div
               key={app.id}
@@ -87,38 +87,24 @@ export function RecentApplications({
               <div className="flex items-start justify-between">
                 <div className="flex flex-1 items-start gap-4">
                   <div
-                    className={`rounded-lg p-3 ${
-                      getApplicationColor(app.type) === 'green'
-                        ? 'bg-green-100'
-                        : getApplicationColor(app.type) === 'blue'
-                          ? 'bg-blue-100'
-                          : 'bg-gray-100'
-                    }`}
+                    className={`rounded-lg p-3 ${'bg-blue-100'}`}
                   >
                     <IconComponent
-                      className={`h-5 w-5 ${
-                        getApplicationColor(app.type) === 'green'
-                          ? 'text-green-600'
-                          : getApplicationColor(app.type) === 'blue'
-                            ? 'text-blue-600'
-                            : 'text-gray-600'
-                      }`}
+                      className={`h-5 w-5 ${'text-blue-600'}`}
                     />
                   </div>
                   <div className="min-w-0 flex-1">
                     {/* Student Information */}
                     <div className="mb-3">
                       <h4 className="text-lg font-semibold text-gray-900">
-                        {app.studentFirstName} {app.studentLastName}
+                        {app.studentName}
                       </h4>
                       <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
                         <span>Grade {app.studentGrade}</span>
-                        <span>•</span>
-                        <span>{app.startTerm}</span>
-                        {app.currentSchool && (
+                        {app.startDate && (
                           <>
                             <span>•</span>
-                            <span>{app.currentSchool}</span>
+                            <span>{new Date(app.startDate).toLocaleDateString()}</span>
                           </>
                         )}
                       </div>
@@ -127,41 +113,20 @@ export function RecentApplications({
                     {/* Parent/Guardian Information */}
                     <div className="mb-3">
                       <p className="text-sm text-gray-700">
-                        <span className="font-medium">Parent/Guardian:</span> {app.parentName}
+                        <span className="font-medium">Parent ID:</span> {app.parentId}
                       </p>
-                      <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
-                        <span className="flex items-center gap-1">
-                          <EnvelopeIcon className="h-3 w-3" />
-                          {app.parentEmail}
-                        </span>
-                        {app.parentPhone && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <PhoneIcon className="h-3 w-3" />
-                              {app.parentPhone}
-                            </span>
-                          </>
-                        )}
-                      </div>
                     </div>
 
                     {/* Location & Additional Info */}
                     <div className="flex items-center gap-4 text-xs text-gray-500">
-                      {app.address && (
-                        <span className="flex items-center gap-1">
-                          <MapPinIcon className="h-3 w-3" />
-                          {app.address}
-                        </span>
-                      )}
-                      <span>Applied {formatDate(app.submittedAt)}</span>
+                      <span>Applied {formatDate(app.createdAt)}</span>
                     </div>
 
                     {/* Notes if available */}
-                    {app.notes && (
+                    {app.applicationData?.notes && (
                       <div className="mt-3 rounded-lg bg-blue-50 p-3">
                         <p className="text-sm text-blue-800">
-                          <span className="font-medium">Note:</span> {app.notes}
+                          <span className="font-medium">Note:</span> {app.applicationData.notes}
                         </p>
                       </div>
                     )}
@@ -202,7 +167,7 @@ export function RecentApplications({
                       className="text-xs font-medium text-gray-500 transition-colors hover:text-gray-700"
                       onClick={e => {
                         e.stopPropagation();
-                        window.location.href = `mailto:${app.parentEmail}`;
+                        // This should be adapted based on available parent contact info
                       }}
                     >
                       Contact

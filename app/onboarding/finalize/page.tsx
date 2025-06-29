@@ -28,27 +28,27 @@ export default function Finalize() {
     const onboardingData = {
       // Personal Information - prioritize invitation data, fallback to form data
       email: invitationData?.email || formData.email || '',
-      firstName: invitationData?.first_name || formData.first_name || '',
-      lastName: invitationData?.last_name || formData.last_name || '',
+      firstName: invitationData?.firstName || formData.firstName || '',
+      lastName: invitationData?.lastName || formData.lastName || '',
       phone: invitationData?.phone || formData.phone || '',
 
       // School Information from form data
-      school_name: formData.school_name || invitationData?.school_name || '',
+      schoolName: formData.schoolName || invitationData?.schoolName || '',
       sport: invitationData?.sport || formData.sport || '',
-      school_type: formData.school_type || invitationData?.school_type || '',
-      role_type: formData.role_type || '',
+      schoolType: formData.schoolType || invitationData?.schoolType || '',
+      roleType: formData.roleType || '',
 
       // Other required fields
-      grade_levels_served: formData.grade_levels_served || formData.grade_levels || [],
-      platform_agreement: formData.platform_agreement || false,
+      gradeLevelsServed: formData.gradeLevelsServed || formData.gradeLevels || [],
+      platformAgreement: formData.platformAgreement || false,
     };
 
     // Check required fields
     const requiredFields = [
-      'school_name',
+      'schoolName',
       'sport',
-      'school_type',
-      'role_type',
+      'schoolType',
+      'roleType',
       'email',
       'firstName',
       'lastName',
@@ -67,13 +67,13 @@ export default function Finalize() {
     }
 
     // Check platform agreement
-    if (!onboardingData.platform_agreement) {
+    if (!onboardingData.platformAgreement) {
       alert('Please go back and accept the platform agreement to continue');
       return;
     }
 
     // Check that grade levels are selected
-    if (!onboardingData.grade_levels_served || onboardingData.grade_levels_served.length === 0) {
+    if (!onboardingData.gradeLevelsServed || onboardingData.gradeLevelsServed.length === 0) {
       alert('Please go back and select at least one grade level to serve');
       return;
     }
@@ -110,45 +110,45 @@ export default function Finalize() {
   // Prepare display data with fallbacks
   const displayData = {
     // Personal Information - prioritize invitation data with field mapping
-    firstName: invitationData?.first_name || formData.first_name || 'Not provided',
-    lastName: invitationData?.last_name || formData.last_name || 'Not provided',
+    firstName: invitationData?.firstName || formData.firstName || 'Not provided',
+    lastName: invitationData?.lastName || formData.lastName || 'Not provided',
     email: invitationData?.email || formData.email || 'Not provided',
     phone: invitationData?.phone || formData.phone || 'Not provided',
 
     // School Information - handle both field formats
-    school_name: formData.school_name || invitationData?.school_name || 'Not provided',
+    schoolName: formData.schoolName || invitationData?.schoolName || 'Not provided',
     sport: invitationData?.sport || formData.sport || 'Not provided',
-    school_type: formData.school_type || invitationData?.school_type || 'Not provided',
-    role_type: formData.role_type || 'Not provided',
-    grade_levels_served: formData.grade_levels_served || formData.grade_levels || [],
-    football_type: formData.football_type || '',
-    academic_year: formData.academic_year || '2024-2025',
+    schoolType: formData.schoolType || invitationData?.schoolType || 'Not provided',
+    roleType: formData.roleType || 'Not provided',
+    gradeLevelsServed: formData.gradeLevelsServed || formData.gradeLevels || [],
+    footballType: formData.footballType || '',
+    academicYear: formData.academicYear || '2024-2025',
 
     // School Address
-    school_street: formData.school_street || '',
-    school_city: formData.school_city || invitationData?.city || '',
-    school_state: formData.school_state || invitationData?.state || '',
-    school_zip: formData.school_zip || '',
-    school_phone: formData.school_phone || '',
+    schoolStreet: formData.schoolStreet || '',
+    schoolCity: formData.schoolCity || invitationData?.city || '',
+    schoolState: formData.schoolState || invitationData?.state || '',
+    schoolZip: formData.schoolZip || '',
+    schoolPhone: formData.schoolPhone || '',
 
     // Location
-    has_physical_location: formData.has_physical_location || false,
+    hasPhysicalLocation: formData.hasPhysicalLocation || false,
 
     // Coach Profile
-    years_experience: formData.years_experience || 0,
-    certification_level: formData.certification_level || '',
-    grade_levels_teaching: formData.grade_levels_teaching || [],
+    yearsExperience: formData.yearsExperience || 0,
+    certificationLevel: formData.certificationLevel || '',
+    gradeLevelsTeaching: formData.gradeLevelsTeaching || [],
     specializations: formData.specializations || [],
 
     // Students
-    estimated_student_count: formData.estimated_student_count || 0,
-    student_grade_levels: formData.student_grade_levels || [],
-    enrollment_capacity: formData.enrollment_capacity || 0,
-    has_current_students: formData.has_current_students || false,
-    current_student_details: formData.current_student_details || '',
+    estimatedStudentCount: formData.estimatedStudentCount || 0,
+    studentGradeLevels: formData.studentGradeLevels || [],
+    enrollmentCapacity: formData.enrollmentCapacity || 0,
+    hasCurrentStudents: formData.hasCurrentStudents || false,
+    currentStudentDetails: formData.currentStudentDetails || '',
 
     // Agreements
-    platform_agreement: formData.platform_agreement || false,
+    platformAgreement: formData.platformAgreement || false,
   };
 
   if (onboardingLoading) {
@@ -225,29 +225,29 @@ export default function Finalize() {
               <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                 <div>
                   <span className="font-medium text-gray-700">School Name:</span>
-                  <span className="ml-2">{displayData.school_name}</span>
+                  <span className="ml-2">{displayData.schoolName}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">School Type:</span>
-                  <span className="ml-2">{formatSchoolType(displayData.school_type)}</span>
+                  <span className="ml-2">{formatSchoolType(displayData.schoolType)}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Sport:</span>
                   <span className="ml-2">{displayData.sport}</span>
                 </div>
-                {displayData.football_type && (
+                {displayData.footballType && (
                   <div>
                     <span className="font-medium text-gray-700">Football Type:</span>
-                    <span className="ml-2">{displayData.football_type}</span>
+                    <span className="ml-2">{displayData.footballType}</span>
                   </div>
                 )}
                 <div>
                   <span className="font-medium text-gray-700">Academic Year:</span>
-                  <span className="ml-2">{displayData.academic_year}</span>
+                  <span className="ml-2">{displayData.academicYear}</span>
                 </div>
                 <div className="md:col-span-2">
                   <span className="font-medium text-gray-700">Grade Levels Served:</span>
-                  <span className="ml-2">{formatGradeLevels(displayData.grade_levels_served)}</span>
+                  <span className="ml-2">{formatGradeLevels(displayData.gradeLevelsServed)}</span>
                 </div>
               </div>
             </div>
@@ -261,30 +261,30 @@ export default function Finalize() {
                 <div>
                   <span className="font-medium text-gray-700">Physical Location:</span>
                   <span className="ml-2">
-                    {displayData.has_physical_location
+                    {displayData.hasPhysicalLocation
                       ? 'Yes, has a physical location'
                       : 'No, operates without a fixed location'}
                   </span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Street Address:</span>
-                  <span className="ml-2">{displayData.school_street || 'Not provided'}</span>
+                  <span className="ml-2">{displayData.schoolStreet || 'Not provided'}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">City:</span>
-                  <span className="ml-2">{displayData.school_city || 'Not provided'}</span>
+                  <span className="ml-2">{displayData.schoolCity || 'Not provided'}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">State:</span>
-                  <span className="ml-2">{displayData.school_state || 'Not provided'}</span>
+                  <span className="ml-2">{displayData.schoolState || 'Not provided'}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">ZIP Code:</span>
-                  <span className="ml-2">{displayData.school_zip || 'Not provided'}</span>
+                  <span className="ml-2">{displayData.schoolZip || 'Not provided'}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">School Phone:</span>
-                  <span className="ml-2">{displayData.school_phone || 'Not provided'}</span>
+                  <span className="ml-2">{displayData.schoolPhone || 'Not provided'}</span>
                 </div>
               </div>
             </div>
@@ -295,21 +295,21 @@ export default function Finalize() {
               <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                 <div>
                   <span className="font-medium text-gray-700">Role:</span>
-                  <span className="ml-2">{formatRoleType(displayData.role_type)}</span>
+                  <span className="ml-2">{formatRoleType(displayData.roleType)}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Years Experience:</span>
-                  <span className="ml-2">{displayData.years_experience} years</span>
+                  <span className="ml-2">{displayData.yearsExperience} years</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Certification Level:</span>
-                  <span className="ml-2">{displayData.certification_level}</span>
+                  <span className="ml-2">{displayData.certificationLevel}</span>
                 </div>
-                {displayData.grade_levels_teaching.length > 0 && (
+                {displayData.gradeLevelsTeaching.length > 0 && (
                   <div className="md:col-span-2">
                     <span className="font-medium text-gray-700">Teaching Grade Levels:</span>
                     <span className="ml-2">
-                      {formatGradeLevels(displayData.grade_levels_teaching)}
+                      {formatGradeLevels(displayData.gradeLevelsTeaching)}
                     </span>
                   </div>
                 )}
@@ -329,34 +329,34 @@ export default function Finalize() {
                 <div>
                   <span className="font-medium text-gray-700">Has Current Students:</span>
                   <span className="ml-2">
-                    {displayData.has_current_students
+                    {displayData.hasCurrentStudents
                       ? 'Yes, currently have students'
                       : 'No, starting fresh'}
                   </span>
                 </div>
-                {displayData.has_current_students && (
+                {displayData.hasCurrentStudents && (
                   <>
                     <div>
                       <span className="font-medium text-gray-700">Estimated Count:</span>
-                      <span className="ml-2">{displayData.estimated_student_count}</span>
+                      <span className="ml-2">{displayData.estimatedStudentCount}</span>
                     </div>
                     <div>
                       <span className="font-medium text-gray-700">Enrollment Capacity:</span>
-                      <span className="ml-2">{displayData.enrollment_capacity}</span>
+                      <span className="ml-2">{displayData.enrollmentCapacity}</span>
                     </div>
-                    {displayData.student_grade_levels.length > 0 && (
+                    {displayData.studentGradeLevels.length > 0 && (
                       <div className="md:col-span-2">
                         <span className="font-medium text-gray-700">Student Grade Levels:</span>
                         <span className="ml-2">
-                          {formatGradeLevels(displayData.student_grade_levels)}
+                          {formatGradeLevels(displayData.studentGradeLevels)}
                         </span>
                       </div>
                     )}
-                    {displayData.current_student_details && (
+                    {displayData.currentStudentDetails && (
                       <div className="md:col-span-2">
                         <span className="font-medium text-gray-700">Student Details:</span>
                         <p className="ml-2 whitespace-pre-wrap text-gray-600">
-                          {displayData.current_student_details}
+                          {displayData.currentStudentDetails}
                         </p>
                       </div>
                     )}
@@ -374,9 +374,9 @@ export default function Finalize() {
                 <div>
                   <span className="font-medium text-gray-700">Platform Agreement:</span>
                   <span
-                    className={`ml-2 ${displayData.platform_agreement ? 'text-green-600' : 'text-red-600'}`}
+                    className={`ml-2 ${displayData.platformAgreement ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    {displayData.platform_agreement ? 'Accepted' : 'Not Accepted'}
+                    {displayData.platformAgreement ? 'Accepted' : 'Not Accepted'}
                   </span>
                 </div>
               </div>
