@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { CheckCircleIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import type { RecruitingStep, ResourceMaterial } from '../types';
 
@@ -10,7 +10,7 @@ interface RecruitingChecklistProps {
   onResourceClick: (resource: ResourceMaterial) => void;
 }
 
-export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = ({
+export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
   steps,
   completedSteps,
   processingSteps,
@@ -146,4 +146,6 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = ({
       )}
     </div>
   );
-};
+});
+
+RecruitingChecklist.displayName = 'RecruitingChecklist';
