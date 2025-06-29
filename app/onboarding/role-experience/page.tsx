@@ -1,16 +1,18 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ProgressFooter } from '@/components/progress-footer'
-import { buildInvitationURL, ONBOARDING_STEPS } from '@/lib/invitation-api'
-import { useOnboardingState } from '@/hooks/useOnboardingState'
-import { Link } from '@/components/link'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { ProgressFooter } from '@/components/progress-footer';
+import { buildInvitationURL, ONBOARDING_STEPS } from '@/lib/api/invitation-api';
+import { useOnboardingState } from '@/lib/hooks/onboarding';
+import { Link } from '@/components/link';
+import type { OnboardingFormData } from '@/lib/types/onboarding';
+import { validateRoleExperience } from '@/lib/utils/onboarding-data';
 
 export default function RoleExperience() {
-  const router = useRouter()
-  
+  const router = useRouter();
+
   // Use the onboarding state hook for hybrid local+server persistence
   const {
     formData,
@@ -25,142 +27,195 @@ export default function RoleExperience() {
     validateStep,
     markStepComplete,
     isFieldPreFilled,
-    getProgressPercentage
+    getProgressPercentage,
   } = useOnboardingState({
     currentStep: ONBOARDING_STEPS.ROLE_EXPERIENCE,
-    requiredFields: ['role_type', 'years_experience']
-  })
+    requiredFields: ['roleType', 'yearsOfPriorProfessionalExperience'],
+  });
 
-  const [showError, setShowError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Initialize form data and ensure defaults
   useEffect(() => {
     if (!onboardingLoading) {
-      const updates: any = {}
-      
-      // Always ensure role_type is 'coach'
-      if (!formData.role_type) {
-        updates.role_type = 'coach'
+      const updates: any = {};
+
+      // Always ensure roleType is 'COACH' (using Ed-Fi standard)
+      if (!formData.roleType) {
+        updates.roleType = 'COACH';
       }
-      
+
       // Always ensure Technology Education is included
-      const specializations = formData.specializations || []
+      const specializations = formData.specialties || [];
       if (!specializations.includes('Technology Education')) {
-        updates.specializations = [...specializations, 'Technology Education']
+        updates.specialties = [...specializations, 'Technology Education'];
       }
-      
-      // Auto-deduce certification level from years_experience
-      if (formData.years_experience && formData.years_experience !== formData.certification_level) {
-        updates.certification_level = autoDeduceCertificationLevel(formData.years_experience)
+
+      // Auto-deduce certification level from yearsOfPriorProfessionalExperience
+      if (
+        formData.yearsOfPriorProfessionalExperience !== undefined &&
+        String(formData.yearsOfPriorProfessionalExperience) !== formData.certificationLevel
+      ) {
+        updates.certificationLevel = autoDeduceCertificationLevel(
+          String(formData.yearsOfPriorProfessionalExperience)
+        );
       }
-      
+
       if (Object.keys(updates).length > 0) {
-        updateMultipleFields(updates)
+        updateMultipleFields(updates);
       }
     }
-  }, [formData.role_type, formData.years_experience, formData.specializations, formData.certification_level, onboardingLoading, updateMultipleFields])
+  }, [
+    formData.roleType,
+    formData.yearsOfPriorProfessionalExperience,
+    formData.specialties,
+    formData.certificationLevel,
+    onboardingLoading,
+    updateMultipleFields,
+  ]);
 
   const autoDeduceCertificationLevel = (yearsExperience: string): string => {
-    const years = parseInt(yearsExperience) || 0
-    if (years === 0) return 'Beginner'
-    if (years <= 2) return 'Novice'
-    if (years <= 5) return 'Intermediate'
-    if (years <= 10) return 'Advanced'
-    return 'Expert'
-  }
+    const years = parseInt(yearsExperience) || 0;
+    if (years === 0) return 'Beginner';
+    if (years <= 2) return 'Novice';
+    if (years <= 5) return 'Intermediate';
+    if (years <= 10) return 'Advanced';
+    return 'Expert';
+  };
 
   const sportSpecializations = [
-    'Basketball', 'Football', 'Soccer', 'Baseball', 'Track & Field', 
-    'Tennis', 'Volleyball', 'Swimming', 'Wrestling', 'Cross Country',
-    'Golf', 'Softball', 'Lacrosse', 'Hockey', 'Martial Arts'
-  ]
+    'Basketball',
+    'Football',
+    'Soccer',
+    'Baseball',
+    'Track & Field',
+    'Tennis',
+    'Volleyball',
+    'Swimming',
+    'Wrestling',
+    'Cross Country',
+    'Golf',
+    'Softball',
+    'Lacrosse',
+    'Hockey',
+    'Martial Arts',
+  ];
 
   const handleSpecializationToggle = (specialization: string) => {
-    const current = formData.specializations || []
-    
+    const current = formData.specialties || [];
+
     // Don't allow removing Technology Education
     if (specialization === 'Technology Education' && current.includes(specialization)) {
-      return
+      return;
     }
-    
+
     const updated = current.includes(specialization)
       ? current.filter((s: string) => s !== specialization)
-      : [...current, specialization]
-    
-    updateField('specializations', updated)
-  }
+      : [...current, specialization];
+
+    updateField('specialties', updated);
+  };
 
   const handleYearsExperienceChange = (value: string) => {
+    // Convert string to number for Ed-Fi compliance
+    const numericValue =
+      value === '0'
+        ? 0
+        : value === '1'
+          ? 1
+          : value === '2'
+            ? 2
+            : value === '3'
+              ? 3
+              : value === '4'
+                ? 4
+                : value === '5'
+                  ? 5
+                  : value === '6-10'
+                    ? 8 // Use middle value
+                    : value === '11-15'
+                      ? 13
+                      : value === '16-20'
+                        ? 18
+                        : value === '20+'
+                          ? 25
+                          : 0;
+
     updateMultipleFields({
-      years_experience: value,
-      certification_level: autoDeduceCertificationLevel(value)
-    })
-    setShowError(false)
-    setErrorMessage('')
-  }
+      yearsOfPriorProfessionalExperience: numericValue,
+      certificationLevel: autoDeduceCertificationLevel(value),
+    });
+    setShowError(false);
+    setErrorMessage('');
+  };
 
   const handleContinue = async () => {
-    if (!formData.years_experience) {
-      setShowError(true)
-      setErrorMessage('Please select your years of experience')
-      return
+    // Use standardized validation
+    const validationResult = validateRoleExperience(formData as Partial<OnboardingFormData>);
+
+    if (!validationResult.isValid) {
+      setShowError(true);
+      setErrorMessage(validationResult.errors.join(', '));
+      return;
     }
-    
+
     // Mark step as complete and save progress (hybrid: local + server)
-    const success = await markStepComplete()
-    
+    const success = await markStepComplete();
+
     if (success) {
-      router.push(buildInvitationURL('/onboarding/school-setup'))
+      router.push(buildInvitationURL('/onboarding/school-setup'));
     } else {
-      setErrorMessage('Failed to save progress. Please try again.')
-      setShowError(true)
+      setErrorMessage('Failed to save progress. Please try again.');
+      setShowError(true);
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white font-poppins pb-[88px]">
+    <div className="font-poppins flex min-h-screen flex-col bg-white pb-[88px]">
       {/* Header */}
-      <header className="px-10 py-5 flex justify-between items-center flex-shrink-0">
+      <header className="flex flex-shrink-0 items-center justify-between px-10 py-5">
         <Link href="/" aria-label="Homepage">
-          <img 
+          <img
             src="https://d6mzuygjyhq8s.cloudfront.net/images/TSA%20Final%20Logos%20-%20CMYK-01.svg"
             alt="Texas Sports Academy"
             className="h-12 w-auto"
           />
         </Link>
         <Link href={buildInvitationURL('/onboarding')}>
-          <button className="text-sm font-medium rounded-full px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors">
+          <button className="rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100">
             Exit
           </button>
         </Link>
       </header>
 
       {/* Main content */}
-      <main className="flex-grow flex items-center justify-center p-10">
-        <motion.div 
+      <main className="flex flex-grow items-center justify-center p-10">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="w-full max-w-4xl"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 text-[#222222]">
+          <h1 className="mb-8 text-center text-4xl font-bold text-[#222222] md:text-5xl">
             Your Coaching Experience
           </h1>
-          
-          <p className="text-xl text-center text-[#717171] mb-12">
+
+          <p className="mb-12 text-center text-xl text-[#717171]">
             Help us understand your coaching background so we can customize your experience.
           </p>
 
           <div className="space-y-8">
             {/* Years of Experience */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#222222] mb-4">Years of Coaching Experience</h3>
+              <h3 className="mb-4 text-2xl font-semibold text-[#222222]">
+                Years of Coaching Experience
+              </h3>
               <div className="max-w-md">
                 <select
-                  value={formData.years_experience}
-                  onChange={(e) => handleYearsExperienceChange(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                  value={formData.yearsOfPriorProfessionalExperience || ''}
+                  onChange={e => handleYearsExperienceChange(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Select your coaching experience</option>
                   <option value="0">New to coaching</option>
@@ -175,25 +230,30 @@ export default function RoleExperience() {
                   <option value="20+">20+ years</option>
                 </select>
               </div>
-              {formData.certification_level && (
-                <p className="text-sm text-blue-600 mt-2">
-                  Certification level: <span className="font-medium capitalize">{formData.certification_level}</span>
+              {formData.certificationLevel && (
+                <p className="mt-2 text-sm text-blue-600">
+                  Certification level:{' '}
+                  <span className="font-medium capitalize">{formData.certificationLevel}</span>
                 </p>
               )}
             </div>
 
             {/* Sports Specializations */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#222222] mb-4">Sports Expertise <span className="text-gray-500 text-lg">(Optional)</span></h3>
-              <p className="text-lg text-[#717171] mb-6">Select any sports you have experience coaching</p>
-              
+              <h3 className="mb-4 text-2xl font-semibold text-[#222222]">
+                Sports Expertise <span className="text-lg text-gray-500">(Optional)</span>
+              </h3>
+              <p className="mb-6 text-lg text-[#717171]">
+                Select any sports you have experience coaching
+              </p>
+
               <div className="flex flex-wrap gap-2">
-                {sportSpecializations.map((sport) => (
+                {sportSpecializations.map(sport => (
                   <button
                     key={sport}
                     onClick={() => handleSpecializationToggle(sport)}
-                    className={`px-3 py-2 rounded-lg border text-sm transition-all ${
-                      (formData.specializations || []).includes(sport)
+                    className={`rounded-lg border px-3 py-2 text-sm transition-all ${
+                      (formData.specialties || []).includes(sport)
                         ? 'border-[#174fa2] bg-blue-50 text-[#174fa2]'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
@@ -210,9 +270,9 @@ export default function RoleExperience() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg"
+              className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4"
             >
-              <p className="text-red-600 text-sm">{errorMessage}</p>
+              <p className="text-sm text-red-600">{errorMessage}</p>
             </motion.div>
           )}
         </motion.div>
@@ -222,11 +282,11 @@ export default function RoleExperience() {
       <ProgressFooter
         progressPercent={getProgressPercentage()}
         showBackButton={true}
-        backButtonHref={buildInvitationURL('/onboarding/school-name')}
+        backButtonHref={buildInvitationURL('/onboarding/personal-info')}
         nextButtonText="Continue"
         buttonAction={handleContinue}
         nextButtonClassName="bg-gradient-to-r from-[#004aad] to-[#0066ff] hover:from-[#003a8c] hover:to-[#0052cc] text-white"
       />
     </div>
-  )
-} 
+  );
+}

@@ -3,10 +3,10 @@
  * Handles pre-filled data, progress tracking, and DynamoDB synchronization
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { 
-  invitationAPI, 
-  InvitationData, 
+import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  invitationAPI,
+  InvitationData,
   OnboardingProgress,
   OnboardingStep,
   ONBOARDING_STEPS,
@@ -16,56 +16,13 @@ import {
   isFieldPreFilled,
   getPreFilledValue,
   getCachedInvitationToken,
-  storeInvitationData
-} from '@/lib/invitation-api'
+  storeInvitationData,
+} from '@/lib/api/invitation-api';
+import type { OnboardingFormData } from '@/lib/types/onboarding';
 
 interface UseOnboardingStateOptions {
   currentStep: OnboardingStep;
   requiredFields?: string[];
-}
-
-interface OnboardingFormData {
-  // Pre-filled from invitation (read-only)
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  city: string;
-  state: string;
-  bio: string;
-  
-  // Additional fields collected during onboarding
-  middle_name: string;
-  generation_code_suffix: string;
-  birth_date: string;
-  birth_city: string;
-  birth_state_abbreviation_descriptor: string;
-  gender: string;
-  hispanic_latino_ethnicity: boolean | undefined;
-  races: string[];
-  emergency_contact: string;
-  experience: string;
-  certifications: string[];
-  specialties: string[];
-  school_name: string;
-  school_type: string;
-  grade_levels: string[];
-  
-  // Role and experience fields
-  role_type: string;
-  years_experience: string;
-  certification_level: string;
-  specializations: string[];
-  
-  // Additional validation fields
-  cell_phone: string;
-  location: string;
-  grade_levels_served: string[];
-  sport: string;
-  platform_agreement: boolean;
-  
-  // Step-specific data
-  [key: string]: any;
 }
 
 interface UseOnboardingStateReturn {
@@ -73,17 +30,17 @@ interface UseOnboardingStateReturn {
   formData: OnboardingFormData;
   invitationData: InvitationData | null;
   progress: OnboardingProgress | null;
-  
+
   // Loading states
   isLoading: boolean;
   isSaving: boolean;
   lastSaved: Date | null;
   hasUnsavedChanges: boolean;
-  
+
   // Error states
   errors: Record<string, string>;
   hasErrors: boolean;
-  
+
   // Actions
   updateField: (field: string, value: any) => void;
   updateMultipleFields: (fields: Record<string, any>) => void;
@@ -91,7 +48,7 @@ interface UseOnboardingStateReturn {
   autoSave: () => Promise<boolean>;
   validateStep: () => boolean;
   markStepComplete: () => Promise<boolean>;
-  
+
   // Utilities
   isFieldPreFilled: (field: string) => boolean;
   getFieldValue: (field: string) => any;
@@ -101,53 +58,74 @@ interface UseOnboardingStateReturn {
   getProgressPercentage: () => number;
 }
 
-export function useOnboardingState({ 
-  currentStep, 
-  requiredFields = [] 
+export function useOnboardingState({
+  currentStep,
+  requiredFields = [],
 }: UseOnboardingStateOptions): UseOnboardingStateReturn {
-  
-  // State
+  // State - using standardized OnboardingFormData interface
   const [formData, setFormData] = useState<OnboardingFormData>({
-    // Pre-filled fields
-    first_name: '',
-    last_name: '',
+    // Personal Information (standardized camelCase)
     email: '',
+    firstName: '',
+    lastName: '',
+    middleName: '',
     phone: '',
-    city: '',
-    state: '',
-    bio: '',
-    
-    // Additional fields
-    middle_name: '',
-    generation_code_suffix: '',
-    birth_date: '',
-    birth_city: '',
-    birth_state_abbreviation_descriptor: '',
-    gender: '',
-    hispanic_latino_ethnicity: undefined,
+    birthDate: '',
+    birthCity: '',
+    birthStateAbbreviation: '',
+    sex: '',
+    hispanicLatinoEthnicity: false,
     races: [],
-    emergency_contact: '',
-    experience: '',
-    certifications: [],
+    generationCodeSuffix: '',
+
+    // Role and Experience (Ed-Fi compliant)
+    roleType: 'COACH',
+    experience: '0',
+    certificationLevel: '',
     specialties: [],
-    school_name: '',
-    school_type: '',
-    grade_levels: [],
-    
-    // Role and experience fields
-    role_type: '',
-    years_experience: '',
-    certification_level: '',
-    specializations: [],
-    
-    // Additional validation fields
-    cell_phone: '',
-    location: '',
-    grade_levels_served: [],
+    bio: '',
+    certifications: [],
+    yearsOfPriorProfessionalExperience: 0,
+
+    // School Information (direct EducationOrganization mapping)
+    nameOfInstitution: '',
+    shortNameOfInstitution: '',
+    schoolType: '',
+    gradeLevels: [],
+    hasPhysicalLocation: false,
+    website: '',
+    academicYear: '2024-2025',
+
+    // Address (flattened for JSON storage)
+    schoolStreet: '',
+    schoolCity: '',
+    schoolState: '',
+    schoolZip: '',
+    schoolPhone: '',
+
+    // School Focus
     sport: '',
-    platform_agreement: false
+    footballType: '',
+    schoolCategories: [],
+    programFocus: [],
+
+    // Student Planning
+    estimatedStudentCount: 0,
+    enrollmentCapacity: 100,
+    hasCurrentStudents: false,
+    currentStudentDetails: '',
+    studentGradeLevels: [],
+
+    // Agreements
+    platformAgreement: false,
+
+    // System fields
+    invitationBased: false,
+    invitationToken: '',
+    currentStep: 'PERSONAL_INFO',
+    completedSteps: [],
   });
-  
+
   const [invitationData, setInvitationData] = useState<InvitationData | null>(null);
   const [progress, setProgress] = useState<OnboardingProgress | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -163,137 +141,145 @@ export function useOnboardingState({
   const initializeOnboardingState = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       // Check local cache first
       const cachedProgress = getStoredOnboardingProgress();
       const storedInvitationData = getStoredInvitationData();
-      
+
       // Check if we're in bypass mode
-      const isInBypassMode = typeof window !== 'undefined' && 
-        (window.location.search.includes('bypass=true') || 
-         (!window.location.search.includes('invite=') && process.env.NODE_ENV === 'development'));
-      
+      const isInBypassMode =
+        typeof window !== 'undefined' &&
+        (window.location.search.includes('bypass=true') ||
+          (!window.location.search.includes('invite=') && process.env.NODE_ENV === 'development'));
+
       // Create simulated invitation data for bypass mode
       if (isInBypassMode && !storedInvitationData) {
         const simulatedInvitationData = {
           email: 'test.coach@bypass.local',
           role: 'COACH',
-          first_name: 'Test',
+          first_name: 'Test', // Keep old format for invitation data compatibility
           last_name: 'Coach',
+          firstName: 'Test', // Also include new format
+          lastName: 'Coach',
           phone: '555-123-4567',
+          phone_formatted: '(555) 123-4567',
           city: 'Dallas',
           state: 'TX',
           bio: 'Simulated coach for bypass mode testing',
-          firstName: 'Test',
-          lastName: 'Coach',
           full_name: 'Test Coach',
           location: 'Dallas, TX',
-          phone_formatted: '(555) 123-4567',
           school_name: 'Test Academy',
+          schoolName: 'Test Academy', // Also include new format
           school_type: 'private',
-          sport: 'Basketball'
+          schoolType: 'private', // Also include new format
+          sport: 'Basketball',
         };
-        
+
         console.log('🛠️ Bypass mode: Creating simulated invitation data');
         setInvitationData(simulatedInvitationData);
         storeInvitationData(simulatedInvitationData);
-        
-        // Pre-fill form with simulated data
+
+        // Pre-fill form with simulated data using standardized field names
         setFormData(prev => ({
           ...prev,
-          first_name: simulatedInvitationData.first_name,
-          last_name: simulatedInvitationData.last_name,
+          firstName: simulatedInvitationData.first_name,
+          lastName: simulatedInvitationData.last_name,
           email: simulatedInvitationData.email,
           phone: simulatedInvitationData.phone,
-          city: simulatedInvitationData.city,
-          state: simulatedInvitationData.state,
+          schoolCity: simulatedInvitationData.city,
+          schoolState: simulatedInvitationData.state,
           bio: simulatedInvitationData.bio,
-          school_name: simulatedInvitationData.school_name,
-          sport: simulatedInvitationData.sport
+          nameOfInstitution: simulatedInvitationData.school_name,
+          sport: simulatedInvitationData.sport,
         }));
       } else if (storedInvitationData) {
         setInvitationData(storedInvitationData);
-        
-        // Pre-fill form with invitation data - fix field name mapping
+
+        // Pre-fill form with invitation data using standardized field names
         setFormData(prev => ({
           ...prev,
-          // Map invitation fields to form fields correctly
-          first_name: storedInvitationData.first_name || '',
-          last_name: storedInvitationData.last_name || '',
+          // Map invitation fields to standardized form fields
+          firstName: storedInvitationData.first_name || storedInvitationData.firstName || '',
+          lastName: storedInvitationData.last_name || storedInvitationData.lastName || '',
           email: storedInvitationData.email || '',
           phone: storedInvitationData.phone_formatted || storedInvitationData.phone || '',
-          city: storedInvitationData.city || '',
-          state: storedInvitationData.state || '',
+          schoolCity: storedInvitationData.city || '',
+          schoolState: storedInvitationData.state || '',
           bio: storedInvitationData.bio || '',
-          // Also map school information if available
-          school_name: storedInvitationData.school_name || '',
-          sport: storedInvitationData.sport || ''
+          // Map school information if available
+          nameOfInstitution:
+            storedInvitationData.school_name || storedInvitationData.schoolName || '',
+          schoolType: storedInvitationData.school_type || storedInvitationData.schoolType || '',
+          sport: storedInvitationData.sport || '',
         }));
       }
-      
+
       // If we have cached progress, use it first
       if (cachedProgress) {
         setProgress(cachedProgress);
         setLastSaved(new Date(cachedProgress.last_updated));
-        
+
         // Merge cached step data into form
         if (cachedProgress.step_data) {
           setFormData(prev => ({
             ...prev,
-            ...cachedProgress.step_data
+            ...cachedProgress.step_data,
           }));
         }
       }
-      
+
       // Then try to get fresh data from server
       const email = storedInvitationData?.email || cachedProgress?.email;
       const invitationToken = getCachedInvitationToken();
-      
+
       console.log('🔍 Attempting to fetch server data:', {
         email,
         invitationToken,
         hasStoredInvitation: !!storedInvitationData,
-        hasCachedProgress: !!cachedProgress
+        hasCachedProgress: !!cachedProgress,
       });
-      
+
       if (email) {
         try {
-          const backendProgress = await invitationAPI.getOnboardingProgress(email, invitationToken || undefined);
-          
+          const backendProgress = await invitationAPI.getOnboardingProgress(
+            email,
+            invitationToken || undefined
+          );
+
           console.log('📡 Server response received:', {
             hasBackendProgress: !!backendProgress,
             backendProgress: backendProgress,
             serverStepData: backendProgress?.step_data,
             serverCompletedSteps: backendProgress?.completed_steps,
             serverCurrentStep: backendProgress?.current_step,
-            serverLastUpdated: backendProgress?.last_updated
+            serverLastUpdated: backendProgress?.last_updated,
           });
-          
+
           if (backendProgress) {
             // Check if server data is newer than cached data
             const serverDate = new Date(backendProgress.last_updated);
             const cachedDate = cachedProgress ? new Date(cachedProgress.last_updated) : new Date(0);
-            
+
             console.log('📅 Date comparison:', {
               serverDate: serverDate.toISOString(),
               cachedDate: cachedDate.toISOString(),
-              serverIsNewer: serverDate > cachedDate
+              serverIsNewer: serverDate > cachedDate,
             });
-            
+
             if (serverDate > cachedDate) {
               console.log('🔄 Server data is newer, using server progress');
               console.log('📊 Merging server step data into form:', backendProgress.step_data);
-              
+
               setProgress(backendProgress);
               setLastSaved(serverDate);
               storeOnboardingProgress(backendProgress);
-              
+
               // Merge server step data into form
               if (backendProgress.step_data) {
                 setFormData(prev => {
                   const mergedData = {
                     ...prev,
-                    ...backendProgress.step_data
+                    ...backendProgress.step_data,
                   };
                   console.log('🔀 Form data after server merge:', mergedData);
                   return mergedData;
@@ -311,9 +297,9 @@ export function useOnboardingState({
               completed_steps: [],
               step_data: {},
               last_updated: new Date().toISOString(),
-              invitation_based: !!invitationToken
+              invitation_based: !!invitationToken,
             };
-            
+
             // ✅ Create backend session immediately
             console.log('Creating new backend onboarding session for:', email);
             const backendCreated = await invitationAPI.updateOnboardingProgress(
@@ -323,7 +309,7 @@ export function useOnboardingState({
               [],
               invitationToken || undefined
             );
-            
+
             if (backendCreated) {
               console.log('✅ Backend session created successfully');
               setProgress(newProgress);
@@ -340,10 +326,9 @@ export function useOnboardingState({
           // Continue with cached data if server fails
         }
       }
-      
+
       // Load any additional cached form data from localStorage
       loadCachedFormData();
-      
     } catch (error) {
       console.error('Error initializing onboarding state:', error);
     } finally {
@@ -360,21 +345,21 @@ export function useOnboardingState({
   // Define autoSave before it's used in useEffect
   const autoSave = useCallback(async (): Promise<boolean> => {
     if (isSaving || !hasUnsavedChanges) return false;
-    
+
     try {
       setIsSaving(true);
-      
+
       const email = invitationData?.email || progress?.email;
       const invitationToken = getCachedInvitationToken();
-      
+
       if (!email) {
         console.error('No email available for auto-save');
         return false;
       }
-      
+
       // Merge current formData with existing step_data to avoid overwriting
       const mergedStepData = { ...progress!.step_data, ...formData };
-      
+
       const success = await invitationAPI.updateOnboardingProgress(
         email,
         currentStep,
@@ -382,23 +367,23 @@ export function useOnboardingState({
         getCompletedSteps(),
         invitationToken || undefined
       );
-      
+
       if (success) {
         setHasUnsavedChanges(false);
         setLastSaved(new Date());
-        
+
         // Update local progress - MERGE step data instead of overwriting
         const updatedProgress: OnboardingProgress = {
           ...progress!,
           current_step: currentStep,
           step_data: { ...progress!.step_data, ...formData },
           completed_steps: getCompletedSteps(),
-          last_updated: new Date().toISOString()
+          last_updated: new Date().toISOString(),
         };
-        
+
         setProgress(updatedProgress);
         storeOnboardingProgress(updatedProgress);
-        
+
         console.log('✅ Auto-save completed successfully');
         return true;
       } else {
@@ -411,12 +396,20 @@ export function useOnboardingState({
     } finally {
       setIsSaving(false);
     }
-  }, [isSaving, hasUnsavedChanges, invitationData, progress, currentStep, formData, getCompletedSteps]);
+  }, [
+    isSaving,
+    hasUnsavedChanges,
+    invitationData,
+    progress,
+    currentStep,
+    formData,
+    getCompletedSteps,
+  ]);
 
   // Initialize onboarding state on mount
   useEffect(() => {
     initializeOnboardingState();
-    
+
     // Cleanup timeout on unmount
     return () => {
       if (autoSaveTimeoutRef.current) {
@@ -432,7 +425,7 @@ export function useOnboardingState({
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
-      
+
       autoSaveTimeoutRef.current = setTimeout(() => {
         autoSave();
       }, 5000); // 5 seconds debounce (simplified from multiple mechanisms)
@@ -445,55 +438,61 @@ export function useOnboardingState({
     console.log('📋 Using server progress data instead of individual field cache');
   };
 
-  const updateField = useCallback((field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setHasUnsavedChanges(true);
-    
-    // Clear error for this field
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  }, [errors]);
+  const updateField = useCallback(
+    (field: string, value: any) => {
+      setFormData(prev => ({ ...prev, [field]: value }));
+      setHasUnsavedChanges(true);
 
-  const updateMultipleFields = useCallback((fields: Record<string, any>) => {
-    setFormData(prev => ({ ...prev, ...fields }));
-    setHasUnsavedChanges(true);
-    
-    // Clear errors for updated fields
-    const updatedErrorKeys = Object.keys(fields).filter(key => errors[key]);
-    if (updatedErrorKeys.length > 0) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        updatedErrorKeys.forEach(key => delete newErrors[key]);
-        return newErrors;
-      });
-    }
-  }, [errors]);
+      // Clear error for this field
+      if (errors[field]) {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }
+    },
+    [errors]
+  );
+
+  const updateMultipleFields = useCallback(
+    (fields: Record<string, any>) => {
+      setFormData(prev => ({ ...prev, ...fields }));
+      setHasUnsavedChanges(true);
+
+      // Clear errors for updated fields
+      const updatedErrorKeys = Object.keys(fields).filter(key => errors[key]);
+      if (updatedErrorKeys.length > 0) {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          updatedErrorKeys.forEach(key => delete newErrors[key]);
+          return newErrors;
+        });
+      }
+    },
+    [errors]
+  );
 
   const saveProgress = useCallback(async () => {
     if (!progress || !invitationData?.email) return false;
-    
+
     setIsSaving(true);
-    
+
     try {
       const updatedProgress: OnboardingProgress = {
         ...progress,
         current_step: currentStep,
         step_data: { ...progress.step_data, ...formData },
-        last_updated: new Date().toISOString()
+        last_updated: new Date().toISOString(),
       };
-      
+
       console.log('💾 Saving progress to server:', {
         email: invitationData.email,
         currentStep,
         formData,
         mergedStepData: updatedProgress.step_data,
-        completedSteps: progress.completed_steps
+        completedSteps: progress.completed_steps,
       });
-      
+
       // Get the invitation token from cache
       const invitationToken = getCachedInvitationToken();
-      
+
       // Save to backend
       const success = await invitationAPI.updateOnboardingProgress(
         invitationData.email,
@@ -502,14 +501,14 @@ export function useOnboardingState({
         progress.completed_steps,
         invitationToken || undefined
       );
-      
+
       console.log('📤 Server save result:', {
         success,
         email: invitationData.email,
         currentStep,
-        invitationToken: invitationToken ? 'present' : 'missing'
+        invitationToken: invitationToken ? 'present' : 'missing',
       });
-      
+
       if (success) {
         setProgress(updatedProgress);
         storeOnboardingProgress(updatedProgress);
@@ -517,7 +516,7 @@ export function useOnboardingState({
         setHasUnsavedChanges(false);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('❌ Error saving progress:', error);
@@ -529,66 +528,66 @@ export function useOnboardingState({
 
   const validateStep = useCallback(() => {
     const newErrors: Record<string, string> = {};
-    
+
     requiredFields.forEach(field => {
       const value = formData[field as keyof OnboardingFormData];
       if (!value || (Array.isArray(value) && value.length === 0)) {
         newErrors[field] = `${field.replace('_', ' ')} is required`;
       }
     });
-    
-    // Custom validation rules
-    if (requiredFields.includes('birth_date') && formData.birth_date) {
-      const birthDate = new Date(formData.birth_date);
+
+    // Custom validation rules using standardized field names
+    if (requiredFields.includes('birthDate') && formData.birthDate) {
+      const birthDate = new Date(formData.birthDate);
       const today = new Date();
       const age = today.getFullYear() - birthDate.getFullYear();
       if (age < 18) {
-        newErrors.birth_date = 'You must be at least 18 years old';
+        newErrors.birthDate = 'You must be at least 18 years old';
       }
     }
-    
+
     if (requiredFields.includes('email') && formData.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
         newErrors.email = 'Please enter a valid email address';
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, requiredFields]);
 
   const markStepComplete = useCallback(async () => {
     if (!progress || !validateStep()) return false;
-    
+
     const completedSteps = [...progress.completed_steps];
     if (!completedSteps.includes(currentStep)) {
       completedSteps.push(currentStep);
     }
-    
+
     setIsSaving(true);
-    
+
     try {
       const updatedProgress: OnboardingProgress = {
         ...progress,
         current_step: currentStep,
         completed_steps: completedSteps,
         step_data: { ...progress.step_data, ...formData },
-        last_updated: new Date().toISOString()
+        last_updated: new Date().toISOString(),
       };
-      
+
       console.log('✅ Marking step complete and saving to server:', {
         email: invitationData?.email || progress.email,
         currentStep,
         newCompletedSteps: completedSteps,
         formData,
         mergedStepData: updatedProgress.step_data,
-        previousCompletedSteps: progress.completed_steps
+        previousCompletedSteps: progress.completed_steps,
       });
-      
+
       // Get the invitation token from cache
       const invitationToken = getCachedInvitationToken();
-      
+
       // Save to backend
       const success = await invitationAPI.updateOnboardingProgress(
         invitationData?.email || progress.email,
@@ -597,15 +596,15 @@ export function useOnboardingState({
         completedSteps,
         invitationToken || undefined
       );
-      
+
       console.log('🎯 Step completion server result:', {
         success,
         email: invitationData?.email || progress.email,
         currentStep,
         completedStepsCount: completedSteps.length,
-        invitationToken: invitationToken ? 'present' : 'missing'
+        invitationToken: invitationToken ? 'present' : 'missing',
       });
-      
+
       if (success) {
         setProgress(updatedProgress);
         storeOnboardingProgress(updatedProgress);
@@ -613,7 +612,7 @@ export function useOnboardingState({
         setHasUnsavedChanges(false);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('❌ Error marking step complete:', error);
@@ -624,13 +623,19 @@ export function useOnboardingState({
   }, [progress, invitationData, currentStep, formData, validateStep]);
 
   // Utility functions
-  const isFieldPreFilledFn = useCallback((field: string) => {
-    return isFieldPreFilled(field, invitationData);
-  }, [invitationData]);
+  const isFieldPreFilledFn = useCallback(
+    (field: string) => {
+      return isFieldPreFilled(field, invitationData);
+    },
+    [invitationData]
+  );
 
-  const getFieldValue = useCallback((field: string) => {
-    return formData[field as keyof OnboardingFormData];
-  }, [formData]);
+  const getFieldValue = useCallback(
+    (field: string) => {
+      return formData[field as keyof OnboardingFormData];
+    },
+    [formData]
+  );
 
   const getCurrentStepIndex = useCallback(() => {
     const stepOrder = Object.values(ONBOARDING_STEPS);
@@ -652,17 +657,17 @@ export function useOnboardingState({
     formData,
     invitationData,
     progress,
-    
+
     // Loading states
     isLoading,
     isSaving,
     lastSaved,
     hasUnsavedChanges,
-    
+
     // Error states
     errors,
     hasErrors: Object.keys(errors).length > 0,
-    
+
     // Actions
     updateField,
     updateMultipleFields,
@@ -670,13 +675,13 @@ export function useOnboardingState({
     autoSave,
     validateStep,
     markStepComplete,
-    
+
     // Utilities
     isFieldPreFilled: isFieldPreFilledFn,
     getFieldValue,
     getCompletedSteps,
     getCurrentStepIndex,
     getTotalSteps,
-    getProgressPercentage
+    getProgressPercentage,
   };
-} 
+}
