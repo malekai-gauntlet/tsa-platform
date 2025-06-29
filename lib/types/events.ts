@@ -43,5 +43,4 @@ export type EventType = Event['eventType'];
 export type EventStatus = Event['status'];
 export type SkillLevel = Event['skillLevel'];
 
-// Re-export Event type from data layer if needed
-export type { Event as DataEvent } from '@/data';
+// Event type is already defined above - no need to re-export from data layer

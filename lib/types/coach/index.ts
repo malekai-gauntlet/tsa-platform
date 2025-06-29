@@ -9,15 +9,8 @@
 export { mapEventRegistrationToRSVP, mapRSVPToEventRegistrationUpdate } from './rsvp';
 export type { EventRegistrationType, RSVP } from './rsvp';
 
-export { 
-  mapInvitationToEventInvitation,
-  mapFormToInvitationInput 
-} from './invitation';
-export type { 
-  EventInvitation,
-  InvitationType,
-  InvitationForm 
-} from './invitation';
+export { mapInvitationToEventInvitation, mapFormToInvitationInput } from './invitation';
+export type { EventInvitation, InvitationType, InvitationForm } from './invitation';
 
 export { mapFormDataToEventInput } from './event';
 export type { EventType } from './event';
