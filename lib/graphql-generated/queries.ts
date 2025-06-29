@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from './API';
+import * as APITypes from "./API";
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -29,7 +29,10 @@ export const getAnalyticsEvent = /* GraphQL */ `query GetAnalyticsEvent($id: ID!
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetAnalyticsEventQueryVariables, APITypes.GetAnalyticsEventQuery>;
+` as GeneratedQuery<
+  APITypes.GetAnalyticsEventQueryVariables,
+  APITypes.GetAnalyticsEventQuery
+>;
 export const getApiKey = /* GraphQL */ `query GetApiKey($id: ID!) {
   getApiKey(id: $id) {
     createdAt
@@ -71,7 +74,10 @@ export const getApiKeyRotation = /* GraphQL */ `query GetApiKeyRotation($id: ID!
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetApiKeyRotationQueryVariables, APITypes.GetApiKeyRotationQuery>;
+` as GeneratedQuery<
+  APITypes.GetApiKeyRotationQueryVariables,
+  APITypes.GetApiKeyRotationQuery
+>;
 export const getApiKeyUsage = /* GraphQL */ `query GetApiKeyUsage($id: ID!) {
   getApiKeyUsage(id: $id) {
     createdAt
@@ -95,7 +101,10 @@ export const getApiKeyUsage = /* GraphQL */ `query GetApiKeyUsage($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetApiKeyUsageQueryVariables, APITypes.GetApiKeyUsageQuery>;
+` as GeneratedQuery<
+  APITypes.GetApiKeyUsageQueryVariables,
+  APITypes.GetApiKeyUsageQuery
+>;
 export const getAuditLog = /* GraphQL */ `query GetAuditLog($id: ID!) {
   getAuditLog(id: $id) {
     action
@@ -113,7 +122,10 @@ export const getAuditLog = /* GraphQL */ `query GetAuditLog($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetAuditLogQueryVariables, APITypes.GetAuditLogQuery>;
+` as GeneratedQuery<
+  APITypes.GetAuditLogQueryVariables,
+  APITypes.GetAuditLogQuery
+>;
 export const getCoachPayout = /* GraphQL */ `query GetCoachPayout($id: ID!) {
   getCoachPayout(id: $id) {
     coachEmail
@@ -132,7 +144,10 @@ export const getCoachPayout = /* GraphQL */ `query GetCoachPayout($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetCoachPayoutQueryVariables, APITypes.GetCoachPayoutQuery>;
+` as GeneratedQuery<
+  APITypes.GetCoachPayoutQueryVariables,
+  APITypes.GetCoachPayoutQuery
+>;
 export const getDescriptor = /* GraphQL */ `query GetDescriptor($id: ID!) {
   getDescriptor(id: $id) {
     codeValue
@@ -149,7 +164,10 @@ export const getDescriptor = /* GraphQL */ `query GetDescriptor($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetDescriptorQueryVariables, APITypes.GetDescriptorQuery>;
+` as GeneratedQuery<
+  APITypes.GetDescriptorQueryVariables,
+  APITypes.GetDescriptorQuery
+>;
 export const getDocumentCategory = /* GraphQL */ `query GetDocumentCategory($id: ID!) {
   getDocumentCategory(id: $id) {
     categoryDescription
@@ -164,7 +182,10 @@ export const getDocumentCategory = /* GraphQL */ `query GetDocumentCategory($id:
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetDocumentCategoryQueryVariables, APITypes.GetDocumentCategoryQuery>;
+` as GeneratedQuery<
+  APITypes.GetDocumentCategoryQueryVariables,
+  APITypes.GetDocumentCategoryQuery
+>;
 export const getEducationOrganization = /* GraphQL */ `query GetEducationOrganization($id: ID!) {
   getEducationOrganization(id: $id) {
     addresses
@@ -212,7 +233,10 @@ export const getEnrollment = /* GraphQL */ `query GetEnrollment($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetEnrollmentQueryVariables, APITypes.GetEnrollmentQuery>;
+` as GeneratedQuery<
+  APITypes.GetEnrollmentQueryVariables,
+  APITypes.GetEnrollmentQuery
+>;
 export const getEvent = /* GraphQL */ `query GetEvent($id: ID!) {
   getEvent(id: $id) {
     address
@@ -301,7 +325,10 @@ export const getInvitation = /* GraphQL */ `query GetInvitation($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetInvitationQueryVariables, APITypes.GetInvitationQuery>;
+` as GeneratedQuery<
+  APITypes.GetInvitationQueryVariables,
+  APITypes.GetInvitationQuery
+>;
 export const getLLCIncorporation = /* GraphQL */ `query GetLLCIncorporation($id: ID!) {
   getLLCIncorporation(id: $id) {
     businessName
@@ -321,7 +348,10 @@ export const getLLCIncorporation = /* GraphQL */ `query GetLLCIncorporation($id:
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetLLCIncorporationQueryVariables, APITypes.GetLLCIncorporationQuery>;
+` as GeneratedQuery<
+  APITypes.GetLLCIncorporationQueryVariables,
+  APITypes.GetLLCIncorporationQuery
+>;
 export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
   getMessage(id: $id) {
     attachments
@@ -342,7 +372,10 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetMessageQueryVariables, APITypes.GetMessageQuery>;
+` as GeneratedQuery<
+  APITypes.GetMessageQueryVariables,
+  APITypes.GetMessageQuery
+>;
 export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
   getNotification(id: $id) {
     content
@@ -362,7 +395,10 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetNotificationQueryVariables, APITypes.GetNotificationQuery>;
+` as GeneratedQuery<
+  APITypes.GetNotificationQueryVariables,
+  APITypes.GetNotificationQuery
+>;
 export const getOnboardingProgress = /* GraphQL */ `query GetOnboardingProgress($id: ID!) {
   getOnboardingProgress(id: $id) {
     completedSteps
@@ -440,7 +476,10 @@ export const getPaymentRecord = /* GraphQL */ `query GetPaymentRecord($id: ID!) 
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetPaymentRecordQueryVariables, APITypes.GetPaymentRecordQuery>;
+` as GeneratedQuery<
+  APITypes.GetPaymentRecordQueryVariables,
+  APITypes.GetPaymentRecordQuery
+>;
 export const getProfile = /* GraphQL */ `query GetProfile($id: ID!) {
   getProfile(id: $id) {
     address
@@ -463,7 +502,10 @@ export const getProfile = /* GraphQL */ `query GetProfile($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetProfileQueryVariables, APITypes.GetProfileQuery>;
+` as GeneratedQuery<
+  APITypes.GetProfileQueryVariables,
+  APITypes.GetProfileQuery
+>;
 export const getQuiz = /* GraphQL */ `query GetQuiz($id: ID!) {
   getQuiz(id: $id) {
     category
@@ -500,7 +542,10 @@ export const getQuizAttempt = /* GraphQL */ `query GetQuizAttempt($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetQuizAttemptQueryVariables, APITypes.GetQuizAttemptQuery>;
+` as GeneratedQuery<
+  APITypes.GetQuizAttemptQueryVariables,
+  APITypes.GetQuizAttemptQuery
+>;
 export const getSchool = /* GraphQL */ `query GetSchool($id: ID!) {
   getSchool(id: $id) {
     administrativeFundingControl
@@ -540,7 +585,10 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetSessionQueryVariables, APITypes.GetSessionQuery>;
+` as GeneratedQuery<
+  APITypes.GetSessionQueryVariables,
+  APITypes.GetSessionQuery
+>;
 export const getStaff = /* GraphQL */ `query GetStaff($id: ID!) {
   getStaff(id: $id) {
     birthDate
@@ -614,7 +662,10 @@ export const getStudent = /* GraphQL */ `query GetStudent($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetStudentQueryVariables, APITypes.GetStudentQuery>;
+` as GeneratedQuery<
+  APITypes.GetStudentQueryVariables,
+  APITypes.GetStudentQuery
+>;
 export const getStudentDocument = /* GraphQL */ `query GetStudentDocument($id: ID!) {
   getStudentDocument(id: $id) {
     createdAt
@@ -640,9 +691,11 @@ export const getStudentDocument = /* GraphQL */ `query GetStudentDocument($id: I
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetStudentDocumentQueryVariables, APITypes.GetStudentDocumentQuery>;
-export const getStudentEducationOrganizationResponsibleContactPerson =
-  /* GraphQL */ `query GetStudentEducationOrganizationResponsibleContactPerson($id: ID!) {
+` as GeneratedQuery<
+  APITypes.GetStudentDocumentQueryVariables,
+  APITypes.GetStudentDocumentQuery
+>;
+export const getStudentEducationOrganizationResponsibleContactPerson = /* GraphQL */ `query GetStudentEducationOrganizationResponsibleContactPerson($id: ID!) {
   getStudentEducationOrganizationResponsibleContactPerson(id: $id) {
     contactAddress
     contactEmailAddress
@@ -662,11 +715,10 @@ export const getStudentEducationOrganizationResponsibleContactPerson =
   }
 }
 ` as GeneratedQuery<
-    APITypes.GetStudentEducationOrganizationResponsibleContactPersonQueryVariables,
-    APITypes.GetStudentEducationOrganizationResponsibleContactPersonQuery
-  >;
-export const getStudentParentAssociation =
-  /* GraphQL */ `query GetStudentParentAssociation($id: ID!) {
+  APITypes.GetStudentEducationOrganizationResponsibleContactPersonQueryVariables,
+  APITypes.GetStudentEducationOrganizationResponsibleContactPersonQuery
+>;
+export const getStudentParentAssociation = /* GraphQL */ `query GetStudentParentAssociation($id: ID!) {
   getStudentParentAssociation(id: $id) {
     contactPriority
     contactRestrictions
@@ -685,11 +737,10 @@ export const getStudentParentAssociation =
   }
 }
 ` as GeneratedQuery<
-    APITypes.GetStudentParentAssociationQueryVariables,
-    APITypes.GetStudentParentAssociationQuery
-  >;
-export const getStudentSchoolAssociation =
-  /* GraphQL */ `query GetStudentSchoolAssociation($id: ID!) {
+  APITypes.GetStudentParentAssociationQueryVariables,
+  APITypes.GetStudentParentAssociationQuery
+>;
+export const getStudentSchoolAssociation = /* GraphQL */ `query GetStudentSchoolAssociation($id: ID!) {
   getStudentSchoolAssociation(id: $id) {
     admissionStatus
     applicationStatus
@@ -710,9 +761,9 @@ export const getStudentSchoolAssociation =
   }
 }
 ` as GeneratedQuery<
-    APITypes.GetStudentSchoolAssociationQueryVariables,
-    APITypes.GetStudentSchoolAssociationQuery
-  >;
+  APITypes.GetStudentSchoolAssociationQueryVariables,
+  APITypes.GetStudentSchoolAssociationQuery
+>;
 export const getTuitionSetting = /* GraphQL */ `query GetTuitionSetting($id: ID!) {
   getTuitionSetting(id: $id) {
     allowPaymentPlans
@@ -732,7 +783,10 @@ export const getTuitionSetting = /* GraphQL */ `query GetTuitionSetting($id: ID!
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetTuitionSettingQueryVariables, APITypes.GetTuitionSettingQuery>;
+` as GeneratedQuery<
+  APITypes.GetTuitionSettingQueryVariables,
+  APITypes.GetTuitionSettingQuery
+>;
 export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
   getUser(id: $id) {
     amplifyUserId
@@ -782,7 +836,10 @@ export const listAnalyticsEvents = /* GraphQL */ `query ListAnalyticsEvents(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListAnalyticsEventsQueryVariables, APITypes.ListAnalyticsEventsQuery>;
+` as GeneratedQuery<
+  APITypes.ListAnalyticsEventsQueryVariables,
+  APITypes.ListAnalyticsEventsQuery
+>;
 export const listApiKeyRotations = /* GraphQL */ `query ListApiKeyRotations(
   $filter: ModelApiKeyRotationFilterInput
   $limit: Int
@@ -806,7 +863,10 @@ export const listApiKeyRotations = /* GraphQL */ `query ListApiKeyRotations(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListApiKeyRotationsQueryVariables, APITypes.ListApiKeyRotationsQuery>;
+` as GeneratedQuery<
+  APITypes.ListApiKeyRotationsQueryVariables,
+  APITypes.ListApiKeyRotationsQuery
+>;
 export const listApiKeyUsages = /* GraphQL */ `query ListApiKeyUsages(
   $filter: ModelApiKeyUsageFilterInput
   $limit: Int
@@ -838,7 +898,10 @@ export const listApiKeyUsages = /* GraphQL */ `query ListApiKeyUsages(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListApiKeyUsagesQueryVariables, APITypes.ListApiKeyUsagesQuery>;
+` as GeneratedQuery<
+  APITypes.ListApiKeyUsagesQueryVariables,
+  APITypes.ListApiKeyUsagesQuery
+>;
 export const listApiKeys = /* GraphQL */ `query ListApiKeys(
   $filter: ModelApiKeyFilterInput
   $limit: Int
@@ -872,7 +935,10 @@ export const listApiKeys = /* GraphQL */ `query ListApiKeys(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListApiKeysQueryVariables, APITypes.ListApiKeysQuery>;
+` as GeneratedQuery<
+  APITypes.ListApiKeysQueryVariables,
+  APITypes.ListApiKeysQuery
+>;
 export const listAuditLogs = /* GraphQL */ `query ListAuditLogs(
   $filter: ModelAuditLogFilterInput
   $limit: Int
@@ -898,7 +964,10 @@ export const listAuditLogs = /* GraphQL */ `query ListAuditLogs(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListAuditLogsQueryVariables, APITypes.ListAuditLogsQuery>;
+` as GeneratedQuery<
+  APITypes.ListAuditLogsQueryVariables,
+  APITypes.ListAuditLogsQuery
+>;
 export const listCoachPayouts = /* GraphQL */ `query ListCoachPayouts(
   $filter: ModelCoachPayoutFilterInput
   $limit: Int
@@ -925,7 +994,10 @@ export const listCoachPayouts = /* GraphQL */ `query ListCoachPayouts(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListCoachPayoutsQueryVariables, APITypes.ListCoachPayoutsQuery>;
+` as GeneratedQuery<
+  APITypes.ListCoachPayoutsQueryVariables,
+  APITypes.ListCoachPayoutsQuery
+>;
 export const listDescriptors = /* GraphQL */ `query ListDescriptors(
   $filter: ModelDescriptorFilterInput
   $limit: Int
@@ -950,7 +1022,10 @@ export const listDescriptors = /* GraphQL */ `query ListDescriptors(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListDescriptorsQueryVariables, APITypes.ListDescriptorsQuery>;
+` as GeneratedQuery<
+  APITypes.ListDescriptorsQueryVariables,
+  APITypes.ListDescriptorsQuery
+>;
 export const listDocumentCategories = /* GraphQL */ `query ListDocumentCategories(
   $filter: ModelDocumentCategoryFilterInput
   $limit: Int
@@ -1048,7 +1123,10 @@ export const listEnrollments = /* GraphQL */ `query ListEnrollments(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListEnrollmentsQueryVariables, APITypes.ListEnrollmentsQuery>;
+` as GeneratedQuery<
+  APITypes.ListEnrollmentsQueryVariables,
+  APITypes.ListEnrollmentsQuery
+>;
 export const listEventRegistrations = /* GraphQL */ `query ListEventRegistrations(
   $filter: ModelEventRegistrationFilterInput
   $limit: Int
@@ -1130,7 +1208,10 @@ export const listEvents = /* GraphQL */ `query ListEvents(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListEventsQueryVariables, APITypes.ListEventsQuery>;
+` as GeneratedQuery<
+  APITypes.ListEventsQueryVariables,
+  APITypes.ListEventsQuery
+>;
 export const listInvitations = /* GraphQL */ `query ListInvitations(
   $filter: ModelInvitationFilterInput
   $limit: Int
@@ -1165,7 +1246,10 @@ export const listInvitations = /* GraphQL */ `query ListInvitations(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListInvitationsQueryVariables, APITypes.ListInvitationsQuery>;
+` as GeneratedQuery<
+  APITypes.ListInvitationsQueryVariables,
+  APITypes.ListInvitationsQuery
+>;
 export const listLLCIncorporations = /* GraphQL */ `query ListLLCIncorporations(
   $filter: ModelLLCIncorporationFilterInput
   $limit: Int
@@ -1225,7 +1309,10 @@ export const listMessages = /* GraphQL */ `query ListMessages(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListMessagesQueryVariables, APITypes.ListMessagesQuery>;
+` as GeneratedQuery<
+  APITypes.ListMessagesQueryVariables,
+  APITypes.ListMessagesQuery
+>;
 export const listNotifications = /* GraphQL */ `query ListNotifications(
   $filter: ModelNotificationFilterInput
   $limit: Int
@@ -1253,7 +1340,10 @@ export const listNotifications = /* GraphQL */ `query ListNotifications(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListNotificationsQueryVariables, APITypes.ListNotificationsQuery>;
+` as GeneratedQuery<
+  APITypes.ListNotificationsQueryVariables,
+  APITypes.ListNotificationsQuery
+>;
 export const listOnboardingProgresses = /* GraphQL */ `query ListOnboardingProgresses(
   $filter: ModelOnboardingProgressFilterInput
   $limit: Int
@@ -1321,7 +1411,10 @@ export const listParents = /* GraphQL */ `query ListParents(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListParentsQueryVariables, APITypes.ListParentsQuery>;
+` as GeneratedQuery<
+  APITypes.ListParentsQueryVariables,
+  APITypes.ListParentsQuery
+>;
 export const listPaymentRecords = /* GraphQL */ `query ListPaymentRecords(
   $filter: ModelPaymentRecordFilterInput
   $limit: Int
@@ -1359,7 +1452,10 @@ export const listPaymentRecords = /* GraphQL */ `query ListPaymentRecords(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListPaymentRecordsQueryVariables, APITypes.ListPaymentRecordsQuery>;
+` as GeneratedQuery<
+  APITypes.ListPaymentRecordsQueryVariables,
+  APITypes.ListPaymentRecordsQuery
+>;
 export const listProfiles = /* GraphQL */ `query ListProfiles(
   $filter: ModelProfileFilterInput
   $limit: Int
@@ -1390,7 +1486,10 @@ export const listProfiles = /* GraphQL */ `query ListProfiles(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListProfilesQueryVariables, APITypes.ListProfilesQuery>;
+` as GeneratedQuery<
+  APITypes.ListProfilesQueryVariables,
+  APITypes.ListProfilesQuery
+>;
 export const listQuizAttempts = /* GraphQL */ `query ListQuizAttempts(
   $filter: ModelQuizAttemptFilterInput
   $limit: Int
@@ -1417,7 +1516,10 @@ export const listQuizAttempts = /* GraphQL */ `query ListQuizAttempts(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListQuizAttemptsQueryVariables, APITypes.ListQuizAttemptsQuery>;
+` as GeneratedQuery<
+  APITypes.ListQuizAttemptsQueryVariables,
+  APITypes.ListQuizAttemptsQuery
+>;
 export const listQuizzes = /* GraphQL */ `query ListQuizzes(
   $filter: ModelQuizFilterInput
   $limit: Int
@@ -1443,7 +1545,10 @@ export const listQuizzes = /* GraphQL */ `query ListQuizzes(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListQuizzesQueryVariables, APITypes.ListQuizzesQuery>;
+` as GeneratedQuery<
+  APITypes.ListQuizzesQueryVariables,
+  APITypes.ListQuizzesQuery
+>;
 export const listSchools = /* GraphQL */ `query ListSchools(
   $filter: ModelSchoolFilterInput
   $limit: Int
@@ -1471,7 +1576,10 @@ export const listSchools = /* GraphQL */ `query ListSchools(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListSchoolsQueryVariables, APITypes.ListSchoolsQuery>;
+` as GeneratedQuery<
+  APITypes.ListSchoolsQueryVariables,
+  APITypes.ListSchoolsQuery
+>;
 export const listSessions = /* GraphQL */ `query ListSessions(
   $filter: ModelSessionFilterInput
   $limit: Int
@@ -1499,7 +1607,10 @@ export const listSessions = /* GraphQL */ `query ListSessions(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListSessionsQueryVariables, APITypes.ListSessionsQuery>;
+` as GeneratedQuery<
+  APITypes.ListSessionsQueryVariables,
+  APITypes.ListSessionsQuery
+>;
 export const listStaff = /* GraphQL */ `query ListStaff(
   $filter: ModelStaffFilterInput
   $limit: Int
@@ -1604,8 +1715,7 @@ export const listStudentDocuments = /* GraphQL */ `query ListStudentDocuments(
   APITypes.ListStudentDocumentsQueryVariables,
   APITypes.ListStudentDocumentsQuery
 >;
-export const listStudentEducationOrganizationResponsibleContactPeople =
-  /* GraphQL */ `query ListStudentEducationOrganizationResponsibleContactPeople(
+export const listStudentEducationOrganizationResponsibleContactPeople = /* GraphQL */ `query ListStudentEducationOrganizationResponsibleContactPeople(
   $filter: ModelStudentEducationOrganizationResponsibleContactPersonFilterInput
   $limit: Int
   $nextToken: String
@@ -1637,9 +1747,9 @@ export const listStudentEducationOrganizationResponsibleContactPeople =
   }
 }
 ` as GeneratedQuery<
-    APITypes.ListStudentEducationOrganizationResponsibleContactPeopleQueryVariables,
-    APITypes.ListStudentEducationOrganizationResponsibleContactPeopleQuery
-  >;
+  APITypes.ListStudentEducationOrganizationResponsibleContactPeopleQueryVariables,
+  APITypes.ListStudentEducationOrganizationResponsibleContactPeopleQuery
+>;
 export const listStudentParentAssociations = /* GraphQL */ `query ListStudentParentAssociations(
   $filter: ModelStudentParentAssociationFilterInput
   $limit: Int
@@ -1744,7 +1854,10 @@ export const listStudents = /* GraphQL */ `query ListStudents(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListStudentsQueryVariables, APITypes.ListStudentsQuery>;
+` as GeneratedQuery<
+  APITypes.ListStudentsQueryVariables,
+  APITypes.ListStudentsQuery
+>;
 export const listTuitionSettings = /* GraphQL */ `query ListTuitionSettings(
   $filter: ModelTuitionSettingFilterInput
   $limit: Int
@@ -1772,7 +1885,10 @@ export const listTuitionSettings = /* GraphQL */ `query ListTuitionSettings(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListTuitionSettingsQueryVariables, APITypes.ListTuitionSettingsQuery>;
+` as GeneratedQuery<
+  APITypes.ListTuitionSettingsQueryVariables,
+  APITypes.ListTuitionSettingsQuery
+>;
 export const listUsers = /* GraphQL */ `query ListUsers(
   $filter: ModelUserFilterInput
   $limit: Int

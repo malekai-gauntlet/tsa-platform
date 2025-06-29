@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from './API';
+import * as APITypes from "./API";
 type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionInput: InputType;
   __generatedSubscriptionOutput: OutputType;
@@ -35,8 +35,7 @@ export const onCreateAnalyticsEvent = /* GraphQL */ `subscription OnCreateAnalyt
   APITypes.OnCreateAnalyticsEventSubscriptionVariables,
   APITypes.OnCreateAnalyticsEventSubscription
 >;
-export const onCreateApiKey =
-  /* GraphQL */ `subscription OnCreateApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
+export const onCreateApiKey = /* GraphQL */ `subscription OnCreateApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
   onCreateApiKey(filter: $filter) {
     createdAt
     createdBy
@@ -62,9 +61,9 @@ export const onCreateApiKey =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateApiKeySubscriptionVariables,
-    APITypes.OnCreateApiKeySubscription
-  >;
+  APITypes.OnCreateApiKeySubscriptionVariables,
+  APITypes.OnCreateApiKeySubscription
+>;
 export const onCreateApiKeyRotation = /* GraphQL */ `subscription OnCreateApiKeyRotation(
   $filter: ModelSubscriptionApiKeyRotationFilterInput
 ) {
@@ -115,8 +114,7 @@ export const onCreateApiKeyUsage = /* GraphQL */ `subscription OnCreateApiKeyUsa
   APITypes.OnCreateApiKeyUsageSubscriptionVariables,
   APITypes.OnCreateApiKeyUsageSubscription
 >;
-export const onCreateAuditLog =
-  /* GraphQL */ `subscription OnCreateAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
+export const onCreateAuditLog = /* GraphQL */ `subscription OnCreateAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
   onCreateAuditLog(filter: $filter) {
     action
     changes
@@ -134,9 +132,9 @@ export const onCreateAuditLog =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateAuditLogSubscriptionVariables,
-    APITypes.OnCreateAuditLogSubscription
-  >;
+  APITypes.OnCreateAuditLogSubscriptionVariables,
+  APITypes.OnCreateAuditLogSubscription
+>;
 export const onCreateCoachPayout = /* GraphQL */ `subscription OnCreateCoachPayout(
   $filter: ModelSubscriptionCoachPayoutFilterInput
   $owner: String
@@ -204,8 +202,7 @@ export const onCreateDocumentCategory = /* GraphQL */ `subscription OnCreateDocu
   APITypes.OnCreateDocumentCategorySubscriptionVariables,
   APITypes.OnCreateDocumentCategorySubscription
 >;
-export const onCreateEducationOrganization =
-  /* GraphQL */ `subscription OnCreateEducationOrganization(
+export const onCreateEducationOrganization = /* GraphQL */ `subscription OnCreateEducationOrganization(
   $filter: ModelSubscriptionEducationOrganizationFilterInput
 ) {
   onCreateEducationOrganization(filter: $filter) {
@@ -225,9 +222,9 @@ export const onCreateEducationOrganization =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateEducationOrganizationSubscriptionVariables,
-    APITypes.OnCreateEducationOrganizationSubscription
-  >;
+  APITypes.OnCreateEducationOrganizationSubscriptionVariables,
+  APITypes.OnCreateEducationOrganizationSubscription
+>;
 export const onCreateEnrollment = /* GraphQL */ `subscription OnCreateEnrollment(
   $filter: ModelSubscriptionEnrollmentFilterInput
 ) {
@@ -534,8 +531,7 @@ export const onCreatePaymentRecord = /* GraphQL */ `subscription OnCreatePayment
   APITypes.OnCreatePaymentRecordSubscriptionVariables,
   APITypes.OnCreatePaymentRecordSubscription
 >;
-export const onCreateProfile =
-  /* GraphQL */ `subscription OnCreateProfile($filter: ModelSubscriptionProfileFilterInput) {
+export const onCreateProfile = /* GraphQL */ `subscription OnCreateProfile($filter: ModelSubscriptionProfileFilterInput) {
   onCreateProfile(filter: $filter) {
     address
     backgroundCheckDate
@@ -558,11 +554,10 @@ export const onCreateProfile =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateProfileSubscriptionVariables,
-    APITypes.OnCreateProfileSubscription
-  >;
-export const onCreateQuiz =
-  /* GraphQL */ `subscription OnCreateQuiz($filter: ModelSubscriptionQuizFilterInput) {
+  APITypes.OnCreateProfileSubscriptionVariables,
+  APITypes.OnCreateProfileSubscription
+>;
+export const onCreateQuiz = /* GraphQL */ `subscription OnCreateQuiz($filter: ModelSubscriptionQuizFilterInput) {
   onCreateQuiz(filter: $filter) {
     category
     createdAt
@@ -580,9 +575,9 @@ export const onCreateQuiz =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateQuizSubscriptionVariables,
-    APITypes.OnCreateQuizSubscription
-  >;
+  APITypes.OnCreateQuizSubscriptionVariables,
+  APITypes.OnCreateQuizSubscription
+>;
 export const onCreateQuizAttempt = /* GraphQL */ `subscription OnCreateQuizAttempt(
   $filter: ModelSubscriptionQuizAttemptFilterInput
   $owner: String
@@ -608,8 +603,7 @@ export const onCreateQuizAttempt = /* GraphQL */ `subscription OnCreateQuizAttem
   APITypes.OnCreateQuizAttemptSubscriptionVariables,
   APITypes.OnCreateQuizAttemptSubscription
 >;
-export const onCreateSchool =
-  /* GraphQL */ `subscription OnCreateSchool($filter: ModelSubscriptionSchoolFilterInput) {
+export const onCreateSchool = /* GraphQL */ `subscription OnCreateSchool($filter: ModelSubscriptionSchoolFilterInput) {
   onCreateSchool(filter: $filter) {
     administrativeFundingControl
     charterStatus
@@ -629,9 +623,9 @@ export const onCreateSchool =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateSchoolSubscriptionVariables,
-    APITypes.OnCreateSchoolSubscription
-  >;
+  APITypes.OnCreateSchoolSubscriptionVariables,
+  APITypes.OnCreateSchoolSubscription
+>;
 export const onCreateSession = /* GraphQL */ `subscription OnCreateSession(
   $filter: ModelSubscriptionSessionFilterInput
   $owner: String
@@ -692,8 +686,7 @@ export const onCreateStaff = /* GraphQL */ `subscription OnCreateStaff(
   APITypes.OnCreateStaffSubscriptionVariables,
   APITypes.OnCreateStaffSubscription
 >;
-export const onCreateStaffSchoolAssociation =
-  /* GraphQL */ `subscription OnCreateStaffSchoolAssociation(
+export const onCreateStaffSchoolAssociation = /* GraphQL */ `subscription OnCreateStaffSchoolAssociation(
   $filter: ModelSubscriptionStaffSchoolAssociationFilterInput
 ) {
   onCreateStaffSchoolAssociation(filter: $filter) {
@@ -711,11 +704,10 @@ export const onCreateStaffSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateStaffSchoolAssociationSubscriptionVariables,
-    APITypes.OnCreateStaffSchoolAssociationSubscription
-  >;
-export const onCreateStudent =
-  /* GraphQL */ `subscription OnCreateStudent($filter: ModelSubscriptionStudentFilterInput) {
+  APITypes.OnCreateStaffSchoolAssociationSubscriptionVariables,
+  APITypes.OnCreateStaffSchoolAssociationSubscription
+>;
+export const onCreateStudent = /* GraphQL */ `subscription OnCreateStudent($filter: ModelSubscriptionStudentFilterInput) {
   onCreateStudent(filter: $filter) {
     admissionDate
     applicationDate
@@ -742,9 +734,9 @@ export const onCreateStudent =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateStudentSubscriptionVariables,
-    APITypes.OnCreateStudentSubscription
-  >;
+  APITypes.OnCreateStudentSubscriptionVariables,
+  APITypes.OnCreateStudentSubscription
+>;
 export const onCreateStudentDocument = /* GraphQL */ `subscription OnCreateStudentDocument(
   $filter: ModelSubscriptionStudentDocumentFilterInput
 ) {
@@ -776,8 +768,7 @@ export const onCreateStudentDocument = /* GraphQL */ `subscription OnCreateStude
   APITypes.OnCreateStudentDocumentSubscriptionVariables,
   APITypes.OnCreateStudentDocumentSubscription
 >;
-export const onCreateStudentEducationOrganizationResponsib1252c =
-  /* GraphQL */ `subscription OnCreateStudentEducationOrganizationResponsib1252c(
+export const onCreateStudentEducationOrganizationResponsib1252c = /* GraphQL */ `subscription OnCreateStudentEducationOrganizationResponsib1252c(
   $filter: ModelSubscriptionStudentEducationOrganizationResponsibleContactPersonFilterInput
 ) {
   onCreateStudentEducationOrganizationResponsib1252c(filter: $filter) {
@@ -799,11 +790,10 @@ export const onCreateStudentEducationOrganizationResponsib1252c =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateStudentEducationOrganizationResponsib1252cSubscriptionVariables,
-    APITypes.OnCreateStudentEducationOrganizationResponsib1252cSubscription
-  >;
-export const onCreateStudentParentAssociation =
-  /* GraphQL */ `subscription OnCreateStudentParentAssociation(
+  APITypes.OnCreateStudentEducationOrganizationResponsib1252cSubscriptionVariables,
+  APITypes.OnCreateStudentEducationOrganizationResponsib1252cSubscription
+>;
+export const onCreateStudentParentAssociation = /* GraphQL */ `subscription OnCreateStudentParentAssociation(
   $filter: ModelSubscriptionStudentParentAssociationFilterInput
 ) {
   onCreateStudentParentAssociation(filter: $filter) {
@@ -824,11 +814,10 @@ export const onCreateStudentParentAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateStudentParentAssociationSubscriptionVariables,
-    APITypes.OnCreateStudentParentAssociationSubscription
-  >;
-export const onCreateStudentSchoolAssociation =
-  /* GraphQL */ `subscription OnCreateStudentSchoolAssociation(
+  APITypes.OnCreateStudentParentAssociationSubscriptionVariables,
+  APITypes.OnCreateStudentParentAssociationSubscription
+>;
+export const onCreateStudentSchoolAssociation = /* GraphQL */ `subscription OnCreateStudentSchoolAssociation(
   $filter: ModelSubscriptionStudentSchoolAssociationFilterInput
 ) {
   onCreateStudentSchoolAssociation(filter: $filter) {
@@ -851,9 +840,9 @@ export const onCreateStudentSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateStudentSchoolAssociationSubscriptionVariables,
-    APITypes.OnCreateStudentSchoolAssociationSubscription
-  >;
+  APITypes.OnCreateStudentSchoolAssociationSubscriptionVariables,
+  APITypes.OnCreateStudentSchoolAssociationSubscription
+>;
 export const onCreateTuitionSetting = /* GraphQL */ `subscription OnCreateTuitionSetting(
   $filter: ModelSubscriptionTuitionSettingFilterInput
   $owner: String
@@ -880,8 +869,7 @@ export const onCreateTuitionSetting = /* GraphQL */ `subscription OnCreateTuitio
   APITypes.OnCreateTuitionSettingSubscriptionVariables,
   APITypes.OnCreateTuitionSettingSubscription
 >;
-export const onCreateUser =
-  /* GraphQL */ `subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
+export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
   onCreateUser(filter: $filter) {
     amplifyUserId
     createdAt
@@ -901,9 +889,9 @@ export const onCreateUser =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnCreateUserSubscriptionVariables,
-    APITypes.OnCreateUserSubscription
-  >;
+  APITypes.OnCreateUserSubscriptionVariables,
+  APITypes.OnCreateUserSubscription
+>;
 export const onDeleteAnalyticsEvent = /* GraphQL */ `subscription OnDeleteAnalyticsEvent(
   $filter: ModelSubscriptionAnalyticsEventFilterInput
 ) {
@@ -931,8 +919,7 @@ export const onDeleteAnalyticsEvent = /* GraphQL */ `subscription OnDeleteAnalyt
   APITypes.OnDeleteAnalyticsEventSubscriptionVariables,
   APITypes.OnDeleteAnalyticsEventSubscription
 >;
-export const onDeleteApiKey =
-  /* GraphQL */ `subscription OnDeleteApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
+export const onDeleteApiKey = /* GraphQL */ `subscription OnDeleteApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
   onDeleteApiKey(filter: $filter) {
     createdAt
     createdBy
@@ -958,9 +945,9 @@ export const onDeleteApiKey =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteApiKeySubscriptionVariables,
-    APITypes.OnDeleteApiKeySubscription
-  >;
+  APITypes.OnDeleteApiKeySubscriptionVariables,
+  APITypes.OnDeleteApiKeySubscription
+>;
 export const onDeleteApiKeyRotation = /* GraphQL */ `subscription OnDeleteApiKeyRotation(
   $filter: ModelSubscriptionApiKeyRotationFilterInput
 ) {
@@ -1011,8 +998,7 @@ export const onDeleteApiKeyUsage = /* GraphQL */ `subscription OnDeleteApiKeyUsa
   APITypes.OnDeleteApiKeyUsageSubscriptionVariables,
   APITypes.OnDeleteApiKeyUsageSubscription
 >;
-export const onDeleteAuditLog =
-  /* GraphQL */ `subscription OnDeleteAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
+export const onDeleteAuditLog = /* GraphQL */ `subscription OnDeleteAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
   onDeleteAuditLog(filter: $filter) {
     action
     changes
@@ -1030,9 +1016,9 @@ export const onDeleteAuditLog =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteAuditLogSubscriptionVariables,
-    APITypes.OnDeleteAuditLogSubscription
-  >;
+  APITypes.OnDeleteAuditLogSubscriptionVariables,
+  APITypes.OnDeleteAuditLogSubscription
+>;
 export const onDeleteCoachPayout = /* GraphQL */ `subscription OnDeleteCoachPayout(
   $filter: ModelSubscriptionCoachPayoutFilterInput
   $owner: String
@@ -1100,8 +1086,7 @@ export const onDeleteDocumentCategory = /* GraphQL */ `subscription OnDeleteDocu
   APITypes.OnDeleteDocumentCategorySubscriptionVariables,
   APITypes.OnDeleteDocumentCategorySubscription
 >;
-export const onDeleteEducationOrganization =
-  /* GraphQL */ `subscription OnDeleteEducationOrganization(
+export const onDeleteEducationOrganization = /* GraphQL */ `subscription OnDeleteEducationOrganization(
   $filter: ModelSubscriptionEducationOrganizationFilterInput
 ) {
   onDeleteEducationOrganization(filter: $filter) {
@@ -1121,9 +1106,9 @@ export const onDeleteEducationOrganization =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteEducationOrganizationSubscriptionVariables,
-    APITypes.OnDeleteEducationOrganizationSubscription
-  >;
+  APITypes.OnDeleteEducationOrganizationSubscriptionVariables,
+  APITypes.OnDeleteEducationOrganizationSubscription
+>;
 export const onDeleteEnrollment = /* GraphQL */ `subscription OnDeleteEnrollment(
   $filter: ModelSubscriptionEnrollmentFilterInput
 ) {
@@ -1430,8 +1415,7 @@ export const onDeletePaymentRecord = /* GraphQL */ `subscription OnDeletePayment
   APITypes.OnDeletePaymentRecordSubscriptionVariables,
   APITypes.OnDeletePaymentRecordSubscription
 >;
-export const onDeleteProfile =
-  /* GraphQL */ `subscription OnDeleteProfile($filter: ModelSubscriptionProfileFilterInput) {
+export const onDeleteProfile = /* GraphQL */ `subscription OnDeleteProfile($filter: ModelSubscriptionProfileFilterInput) {
   onDeleteProfile(filter: $filter) {
     address
     backgroundCheckDate
@@ -1454,11 +1438,10 @@ export const onDeleteProfile =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteProfileSubscriptionVariables,
-    APITypes.OnDeleteProfileSubscription
-  >;
-export const onDeleteQuiz =
-  /* GraphQL */ `subscription OnDeleteQuiz($filter: ModelSubscriptionQuizFilterInput) {
+  APITypes.OnDeleteProfileSubscriptionVariables,
+  APITypes.OnDeleteProfileSubscription
+>;
+export const onDeleteQuiz = /* GraphQL */ `subscription OnDeleteQuiz($filter: ModelSubscriptionQuizFilterInput) {
   onDeleteQuiz(filter: $filter) {
     category
     createdAt
@@ -1476,9 +1459,9 @@ export const onDeleteQuiz =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteQuizSubscriptionVariables,
-    APITypes.OnDeleteQuizSubscription
-  >;
+  APITypes.OnDeleteQuizSubscriptionVariables,
+  APITypes.OnDeleteQuizSubscription
+>;
 export const onDeleteQuizAttempt = /* GraphQL */ `subscription OnDeleteQuizAttempt(
   $filter: ModelSubscriptionQuizAttemptFilterInput
   $owner: String
@@ -1504,8 +1487,7 @@ export const onDeleteQuizAttempt = /* GraphQL */ `subscription OnDeleteQuizAttem
   APITypes.OnDeleteQuizAttemptSubscriptionVariables,
   APITypes.OnDeleteQuizAttemptSubscription
 >;
-export const onDeleteSchool =
-  /* GraphQL */ `subscription OnDeleteSchool($filter: ModelSubscriptionSchoolFilterInput) {
+export const onDeleteSchool = /* GraphQL */ `subscription OnDeleteSchool($filter: ModelSubscriptionSchoolFilterInput) {
   onDeleteSchool(filter: $filter) {
     administrativeFundingControl
     charterStatus
@@ -1525,9 +1507,9 @@ export const onDeleteSchool =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteSchoolSubscriptionVariables,
-    APITypes.OnDeleteSchoolSubscription
-  >;
+  APITypes.OnDeleteSchoolSubscriptionVariables,
+  APITypes.OnDeleteSchoolSubscription
+>;
 export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession(
   $filter: ModelSubscriptionSessionFilterInput
   $owner: String
@@ -1588,8 +1570,7 @@ export const onDeleteStaff = /* GraphQL */ `subscription OnDeleteStaff(
   APITypes.OnDeleteStaffSubscriptionVariables,
   APITypes.OnDeleteStaffSubscription
 >;
-export const onDeleteStaffSchoolAssociation =
-  /* GraphQL */ `subscription OnDeleteStaffSchoolAssociation(
+export const onDeleteStaffSchoolAssociation = /* GraphQL */ `subscription OnDeleteStaffSchoolAssociation(
   $filter: ModelSubscriptionStaffSchoolAssociationFilterInput
 ) {
   onDeleteStaffSchoolAssociation(filter: $filter) {
@@ -1607,11 +1588,10 @@ export const onDeleteStaffSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteStaffSchoolAssociationSubscriptionVariables,
-    APITypes.OnDeleteStaffSchoolAssociationSubscription
-  >;
-export const onDeleteStudent =
-  /* GraphQL */ `subscription OnDeleteStudent($filter: ModelSubscriptionStudentFilterInput) {
+  APITypes.OnDeleteStaffSchoolAssociationSubscriptionVariables,
+  APITypes.OnDeleteStaffSchoolAssociationSubscription
+>;
+export const onDeleteStudent = /* GraphQL */ `subscription OnDeleteStudent($filter: ModelSubscriptionStudentFilterInput) {
   onDeleteStudent(filter: $filter) {
     admissionDate
     applicationDate
@@ -1638,9 +1618,9 @@ export const onDeleteStudent =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteStudentSubscriptionVariables,
-    APITypes.OnDeleteStudentSubscription
-  >;
+  APITypes.OnDeleteStudentSubscriptionVariables,
+  APITypes.OnDeleteStudentSubscription
+>;
 export const onDeleteStudentDocument = /* GraphQL */ `subscription OnDeleteStudentDocument(
   $filter: ModelSubscriptionStudentDocumentFilterInput
 ) {
@@ -1672,8 +1652,7 @@ export const onDeleteStudentDocument = /* GraphQL */ `subscription OnDeleteStude
   APITypes.OnDeleteStudentDocumentSubscriptionVariables,
   APITypes.OnDeleteStudentDocumentSubscription
 >;
-export const onDeleteStudentEducationOrganizationResponsib192cd =
-  /* GraphQL */ `subscription OnDeleteStudentEducationOrganizationResponsib192cd(
+export const onDeleteStudentEducationOrganizationResponsib192cd = /* GraphQL */ `subscription OnDeleteStudentEducationOrganizationResponsib192cd(
   $filter: ModelSubscriptionStudentEducationOrganizationResponsibleContactPersonFilterInput
 ) {
   onDeleteStudentEducationOrganizationResponsib192cd(filter: $filter) {
@@ -1695,11 +1674,10 @@ export const onDeleteStudentEducationOrganizationResponsib192cd =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteStudentEducationOrganizationResponsib192cdSubscriptionVariables,
-    APITypes.OnDeleteStudentEducationOrganizationResponsib192cdSubscription
-  >;
-export const onDeleteStudentParentAssociation =
-  /* GraphQL */ `subscription OnDeleteStudentParentAssociation(
+  APITypes.OnDeleteStudentEducationOrganizationResponsib192cdSubscriptionVariables,
+  APITypes.OnDeleteStudentEducationOrganizationResponsib192cdSubscription
+>;
+export const onDeleteStudentParentAssociation = /* GraphQL */ `subscription OnDeleteStudentParentAssociation(
   $filter: ModelSubscriptionStudentParentAssociationFilterInput
 ) {
   onDeleteStudentParentAssociation(filter: $filter) {
@@ -1720,11 +1698,10 @@ export const onDeleteStudentParentAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteStudentParentAssociationSubscriptionVariables,
-    APITypes.OnDeleteStudentParentAssociationSubscription
-  >;
-export const onDeleteStudentSchoolAssociation =
-  /* GraphQL */ `subscription OnDeleteStudentSchoolAssociation(
+  APITypes.OnDeleteStudentParentAssociationSubscriptionVariables,
+  APITypes.OnDeleteStudentParentAssociationSubscription
+>;
+export const onDeleteStudentSchoolAssociation = /* GraphQL */ `subscription OnDeleteStudentSchoolAssociation(
   $filter: ModelSubscriptionStudentSchoolAssociationFilterInput
 ) {
   onDeleteStudentSchoolAssociation(filter: $filter) {
@@ -1747,9 +1724,9 @@ export const onDeleteStudentSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteStudentSchoolAssociationSubscriptionVariables,
-    APITypes.OnDeleteStudentSchoolAssociationSubscription
-  >;
+  APITypes.OnDeleteStudentSchoolAssociationSubscriptionVariables,
+  APITypes.OnDeleteStudentSchoolAssociationSubscription
+>;
 export const onDeleteTuitionSetting = /* GraphQL */ `subscription OnDeleteTuitionSetting(
   $filter: ModelSubscriptionTuitionSettingFilterInput
   $owner: String
@@ -1776,8 +1753,7 @@ export const onDeleteTuitionSetting = /* GraphQL */ `subscription OnDeleteTuitio
   APITypes.OnDeleteTuitionSettingSubscriptionVariables,
   APITypes.OnDeleteTuitionSettingSubscription
 >;
-export const onDeleteUser =
-  /* GraphQL */ `subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
+export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
   onDeleteUser(filter: $filter) {
     amplifyUserId
     createdAt
@@ -1797,9 +1773,9 @@ export const onDeleteUser =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnDeleteUserSubscriptionVariables,
-    APITypes.OnDeleteUserSubscription
-  >;
+  APITypes.OnDeleteUserSubscriptionVariables,
+  APITypes.OnDeleteUserSubscription
+>;
 export const onUpdateAnalyticsEvent = /* GraphQL */ `subscription OnUpdateAnalyticsEvent(
   $filter: ModelSubscriptionAnalyticsEventFilterInput
 ) {
@@ -1827,8 +1803,7 @@ export const onUpdateAnalyticsEvent = /* GraphQL */ `subscription OnUpdateAnalyt
   APITypes.OnUpdateAnalyticsEventSubscriptionVariables,
   APITypes.OnUpdateAnalyticsEventSubscription
 >;
-export const onUpdateApiKey =
-  /* GraphQL */ `subscription OnUpdateApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
+export const onUpdateApiKey = /* GraphQL */ `subscription OnUpdateApiKey($filter: ModelSubscriptionApiKeyFilterInput) {
   onUpdateApiKey(filter: $filter) {
     createdAt
     createdBy
@@ -1854,9 +1829,9 @@ export const onUpdateApiKey =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateApiKeySubscriptionVariables,
-    APITypes.OnUpdateApiKeySubscription
-  >;
+  APITypes.OnUpdateApiKeySubscriptionVariables,
+  APITypes.OnUpdateApiKeySubscription
+>;
 export const onUpdateApiKeyRotation = /* GraphQL */ `subscription OnUpdateApiKeyRotation(
   $filter: ModelSubscriptionApiKeyRotationFilterInput
 ) {
@@ -1907,8 +1882,7 @@ export const onUpdateApiKeyUsage = /* GraphQL */ `subscription OnUpdateApiKeyUsa
   APITypes.OnUpdateApiKeyUsageSubscriptionVariables,
   APITypes.OnUpdateApiKeyUsageSubscription
 >;
-export const onUpdateAuditLog =
-  /* GraphQL */ `subscription OnUpdateAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
+export const onUpdateAuditLog = /* GraphQL */ `subscription OnUpdateAuditLog($filter: ModelSubscriptionAuditLogFilterInput) {
   onUpdateAuditLog(filter: $filter) {
     action
     changes
@@ -1926,9 +1900,9 @@ export const onUpdateAuditLog =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateAuditLogSubscriptionVariables,
-    APITypes.OnUpdateAuditLogSubscription
-  >;
+  APITypes.OnUpdateAuditLogSubscriptionVariables,
+  APITypes.OnUpdateAuditLogSubscription
+>;
 export const onUpdateCoachPayout = /* GraphQL */ `subscription OnUpdateCoachPayout(
   $filter: ModelSubscriptionCoachPayoutFilterInput
   $owner: String
@@ -1996,8 +1970,7 @@ export const onUpdateDocumentCategory = /* GraphQL */ `subscription OnUpdateDocu
   APITypes.OnUpdateDocumentCategorySubscriptionVariables,
   APITypes.OnUpdateDocumentCategorySubscription
 >;
-export const onUpdateEducationOrganization =
-  /* GraphQL */ `subscription OnUpdateEducationOrganization(
+export const onUpdateEducationOrganization = /* GraphQL */ `subscription OnUpdateEducationOrganization(
   $filter: ModelSubscriptionEducationOrganizationFilterInput
 ) {
   onUpdateEducationOrganization(filter: $filter) {
@@ -2017,9 +1990,9 @@ export const onUpdateEducationOrganization =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateEducationOrganizationSubscriptionVariables,
-    APITypes.OnUpdateEducationOrganizationSubscription
-  >;
+  APITypes.OnUpdateEducationOrganizationSubscriptionVariables,
+  APITypes.OnUpdateEducationOrganizationSubscription
+>;
 export const onUpdateEnrollment = /* GraphQL */ `subscription OnUpdateEnrollment(
   $filter: ModelSubscriptionEnrollmentFilterInput
 ) {
@@ -2326,8 +2299,7 @@ export const onUpdatePaymentRecord = /* GraphQL */ `subscription OnUpdatePayment
   APITypes.OnUpdatePaymentRecordSubscriptionVariables,
   APITypes.OnUpdatePaymentRecordSubscription
 >;
-export const onUpdateProfile =
-  /* GraphQL */ `subscription OnUpdateProfile($filter: ModelSubscriptionProfileFilterInput) {
+export const onUpdateProfile = /* GraphQL */ `subscription OnUpdateProfile($filter: ModelSubscriptionProfileFilterInput) {
   onUpdateProfile(filter: $filter) {
     address
     backgroundCheckDate
@@ -2350,11 +2322,10 @@ export const onUpdateProfile =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateProfileSubscriptionVariables,
-    APITypes.OnUpdateProfileSubscription
-  >;
-export const onUpdateQuiz =
-  /* GraphQL */ `subscription OnUpdateQuiz($filter: ModelSubscriptionQuizFilterInput) {
+  APITypes.OnUpdateProfileSubscriptionVariables,
+  APITypes.OnUpdateProfileSubscription
+>;
+export const onUpdateQuiz = /* GraphQL */ `subscription OnUpdateQuiz($filter: ModelSubscriptionQuizFilterInput) {
   onUpdateQuiz(filter: $filter) {
     category
     createdAt
@@ -2372,9 +2343,9 @@ export const onUpdateQuiz =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateQuizSubscriptionVariables,
-    APITypes.OnUpdateQuizSubscription
-  >;
+  APITypes.OnUpdateQuizSubscriptionVariables,
+  APITypes.OnUpdateQuizSubscription
+>;
 export const onUpdateQuizAttempt = /* GraphQL */ `subscription OnUpdateQuizAttempt(
   $filter: ModelSubscriptionQuizAttemptFilterInput
   $owner: String
@@ -2400,8 +2371,7 @@ export const onUpdateQuizAttempt = /* GraphQL */ `subscription OnUpdateQuizAttem
   APITypes.OnUpdateQuizAttemptSubscriptionVariables,
   APITypes.OnUpdateQuizAttemptSubscription
 >;
-export const onUpdateSchool =
-  /* GraphQL */ `subscription OnUpdateSchool($filter: ModelSubscriptionSchoolFilterInput) {
+export const onUpdateSchool = /* GraphQL */ `subscription OnUpdateSchool($filter: ModelSubscriptionSchoolFilterInput) {
   onUpdateSchool(filter: $filter) {
     administrativeFundingControl
     charterStatus
@@ -2421,9 +2391,9 @@ export const onUpdateSchool =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateSchoolSubscriptionVariables,
-    APITypes.OnUpdateSchoolSubscription
-  >;
+  APITypes.OnUpdateSchoolSubscriptionVariables,
+  APITypes.OnUpdateSchoolSubscription
+>;
 export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession(
   $filter: ModelSubscriptionSessionFilterInput
   $owner: String
@@ -2484,8 +2454,7 @@ export const onUpdateStaff = /* GraphQL */ `subscription OnUpdateStaff(
   APITypes.OnUpdateStaffSubscriptionVariables,
   APITypes.OnUpdateStaffSubscription
 >;
-export const onUpdateStaffSchoolAssociation =
-  /* GraphQL */ `subscription OnUpdateStaffSchoolAssociation(
+export const onUpdateStaffSchoolAssociation = /* GraphQL */ `subscription OnUpdateStaffSchoolAssociation(
   $filter: ModelSubscriptionStaffSchoolAssociationFilterInput
 ) {
   onUpdateStaffSchoolAssociation(filter: $filter) {
@@ -2503,11 +2472,10 @@ export const onUpdateStaffSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateStaffSchoolAssociationSubscriptionVariables,
-    APITypes.OnUpdateStaffSchoolAssociationSubscription
-  >;
-export const onUpdateStudent =
-  /* GraphQL */ `subscription OnUpdateStudent($filter: ModelSubscriptionStudentFilterInput) {
+  APITypes.OnUpdateStaffSchoolAssociationSubscriptionVariables,
+  APITypes.OnUpdateStaffSchoolAssociationSubscription
+>;
+export const onUpdateStudent = /* GraphQL */ `subscription OnUpdateStudent($filter: ModelSubscriptionStudentFilterInput) {
   onUpdateStudent(filter: $filter) {
     admissionDate
     applicationDate
@@ -2534,9 +2502,9 @@ export const onUpdateStudent =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateStudentSubscriptionVariables,
-    APITypes.OnUpdateStudentSubscription
-  >;
+  APITypes.OnUpdateStudentSubscriptionVariables,
+  APITypes.OnUpdateStudentSubscription
+>;
 export const onUpdateStudentDocument = /* GraphQL */ `subscription OnUpdateStudentDocument(
   $filter: ModelSubscriptionStudentDocumentFilterInput
 ) {
@@ -2568,8 +2536,7 @@ export const onUpdateStudentDocument = /* GraphQL */ `subscription OnUpdateStude
   APITypes.OnUpdateStudentDocumentSubscriptionVariables,
   APITypes.OnUpdateStudentDocumentSubscription
 >;
-export const onUpdateStudentEducationOrganizationResponsib1c1df =
-  /* GraphQL */ `subscription OnUpdateStudentEducationOrganizationResponsib1c1df(
+export const onUpdateStudentEducationOrganizationResponsib1c1df = /* GraphQL */ `subscription OnUpdateStudentEducationOrganizationResponsib1c1df(
   $filter: ModelSubscriptionStudentEducationOrganizationResponsibleContactPersonFilterInput
 ) {
   onUpdateStudentEducationOrganizationResponsib1c1df(filter: $filter) {
@@ -2591,11 +2558,10 @@ export const onUpdateStudentEducationOrganizationResponsib1c1df =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateStudentEducationOrganizationResponsib1c1dfSubscriptionVariables,
-    APITypes.OnUpdateStudentEducationOrganizationResponsib1c1dfSubscription
-  >;
-export const onUpdateStudentParentAssociation =
-  /* GraphQL */ `subscription OnUpdateStudentParentAssociation(
+  APITypes.OnUpdateStudentEducationOrganizationResponsib1c1dfSubscriptionVariables,
+  APITypes.OnUpdateStudentEducationOrganizationResponsib1c1dfSubscription
+>;
+export const onUpdateStudentParentAssociation = /* GraphQL */ `subscription OnUpdateStudentParentAssociation(
   $filter: ModelSubscriptionStudentParentAssociationFilterInput
 ) {
   onUpdateStudentParentAssociation(filter: $filter) {
@@ -2616,11 +2582,10 @@ export const onUpdateStudentParentAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateStudentParentAssociationSubscriptionVariables,
-    APITypes.OnUpdateStudentParentAssociationSubscription
-  >;
-export const onUpdateStudentSchoolAssociation =
-  /* GraphQL */ `subscription OnUpdateStudentSchoolAssociation(
+  APITypes.OnUpdateStudentParentAssociationSubscriptionVariables,
+  APITypes.OnUpdateStudentParentAssociationSubscription
+>;
+export const onUpdateStudentSchoolAssociation = /* GraphQL */ `subscription OnUpdateStudentSchoolAssociation(
   $filter: ModelSubscriptionStudentSchoolAssociationFilterInput
 ) {
   onUpdateStudentSchoolAssociation(filter: $filter) {
@@ -2643,9 +2608,9 @@ export const onUpdateStudentSchoolAssociation =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateStudentSchoolAssociationSubscriptionVariables,
-    APITypes.OnUpdateStudentSchoolAssociationSubscription
-  >;
+  APITypes.OnUpdateStudentSchoolAssociationSubscriptionVariables,
+  APITypes.OnUpdateStudentSchoolAssociationSubscription
+>;
 export const onUpdateTuitionSetting = /* GraphQL */ `subscription OnUpdateTuitionSetting(
   $filter: ModelSubscriptionTuitionSettingFilterInput
   $owner: String
@@ -2672,8 +2637,7 @@ export const onUpdateTuitionSetting = /* GraphQL */ `subscription OnUpdateTuitio
   APITypes.OnUpdateTuitionSettingSubscriptionVariables,
   APITypes.OnUpdateTuitionSettingSubscription
 >;
-export const onUpdateUser =
-  /* GraphQL */ `subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
+export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
   onUpdateUser(filter: $filter) {
     amplifyUserId
     createdAt
@@ -2693,6 +2657,6 @@ export const onUpdateUser =
   }
 }
 ` as GeneratedSubscription<
-    APITypes.OnUpdateUserSubscriptionVariables,
-    APITypes.OnUpdateUserSubscription
-  >;
+  APITypes.OnUpdateUserSubscriptionVariables,
+  APITypes.OnUpdateUserSubscription
+>;

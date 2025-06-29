@@ -294,6 +294,7 @@ const schema = a.schema({
       allow.groups(['admin']).to(['create', 'read', 'update', 'delete']), // Allow admin users only
       allow.authenticated().to(['read']), // Allow authenticated users to read invitations
       allow.guest().to(['read']), // Allow public read access for invitation validation only
+      allow.publicApiKey().to(['create', 'read']), // Allow API key access for coach invite function
     ]),
 
   OnboardingProgress: a
@@ -1031,7 +1032,11 @@ const schema = a.schema({
       createdAt: a.datetime(),
     })
     .authorization(allow => [allow.groups(['admin']).to(['read', 'create'])]),
-});
+}).authorization(allow => [
+  // Grant the functions access to the data they need
+  allow.resource(coachInvite).to(['query', 'mutate']),
+  allow.resource(parentApplication).to(['query', 'mutate']),
+]);
 
 export type Schema = ClientSchema<typeof schema>;
 
