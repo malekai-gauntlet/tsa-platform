@@ -1,1 +1,1 @@
-export { default as LockedRoute } from './LockedRoute';
+export { LockedRoute, LockedLegal } from './LockedRoute';

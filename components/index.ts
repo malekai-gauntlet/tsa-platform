@@ -7,10 +7,8 @@ export * from './form';
 export * from './layout';
 export * from './navigation';
 export * from './data-display';
-export * from './feedback';
 export * from './auth';
 export * from './integration';
-export * from './ui';
 
 // Also re-export domain specific components
 export * from './coach';
