@@ -165,6 +165,15 @@ tippecanoe -o tsa-districts.mbtiles --maximum-zoom=12 public/Current_Districts_2
 - `npm run deploy:dev` - Run development deployment script
 - `npm run sandbox` - Start Amplify sandbox
 
+### Documentation
+
+For detailed development information, see:
+
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)** - Complete guide for developers including architecture, standards, and best practices
+- **[API Integration](docs/API_INTEGRATION.md)** - GraphQL and REST API usage examples
+- **[Vector Tiles Setup](docs/VECTOR_TILES_SETUP.md)** - Mapbox vector tiles configuration for production optimization
+- **[Onboarding Improvements](docs/ONBOARDING_IMPROVEMENTS.md)** - System improvement recommendations and patterns
+
 ## Monitoring
 
 - **Mapbox Usage**: [Mapbox Statistics](https://account.mapbox.com/statistics/)

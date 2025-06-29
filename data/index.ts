@@ -1,4 +1,4 @@
-import { eventOperations, client } from '@/lib/services/graphql-client';
+import { eventOperations, client } from '@/lib/api/graphql-client';
 
 // Re-export the GraphQL client for direct model access
 export { client };
