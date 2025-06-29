@@ -12,6 +12,7 @@ import {
   isInvitationOnboarding,
   getCachedInvitationToken,
   clearInvitationData,
+  ONBOARDING_STEPS,
 } from '@/lib/api/invitation-api';
 
 function CompleteContent() {
@@ -28,7 +29,7 @@ function CompleteContent() {
     invitationData,
     isLoading: onboardingLoading,
   } = useOnboardingState({
-    currentStep: 'complete',
+    currentStep: ONBOARDING_STEPS.COMPLETE,
     requiredFields: [],
   });
 
@@ -119,7 +120,7 @@ function CompleteContent() {
       // System fields
       invitationBased: isInvitationOnboarding(),
       invitationToken: getCachedInvitationToken() || '',
-      currentStep: 'complete',
+      currentStep: ONBOARDING_STEPS.COMPLETE,
       completedSteps: [
         'PERSONAL_INFO',
         'ROLE_EXPERIENCE',

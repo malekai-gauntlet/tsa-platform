@@ -112,15 +112,15 @@ const SESSION_KEYS = {
 
 // Onboarding step definitions
 export const ONBOARDING_STEPS = {
-  PERSONAL_INFO: 'personal-info',
-  ROLE_EXPERIENCE: 'role-experience',
-  SCHOOL_SETUP: 'school-setup',
-  SCHOOL_FOCUS: 'school-focus',
-  STUDENT_PLANNING: 'student-planning',
-  STUDENTS: 'students',
-  AGREEMENTS: 'agreements',
-  FINALIZE: 'finalize',
-  COMPLETE: 'complete',
+  PERSONAL_INFO: 'PERSONAL_INFO',
+  ROLE_EXPERIENCE: 'ROLE_EXPERIENCE',
+  SCHOOL_SETUP: 'SCHOOL_SETUP',
+  SCHOOL_FOCUS: 'SCHOOL_FOCUS',
+  STUDENT_PLANNING: 'STUDENT_PLANNING',
+  STUDENTS: 'STUDENTS',
+  AGREEMENTS: 'AGREEMENTS',
+  FINALIZE: 'FINALIZE',
+  COMPLETE: 'COMPLETE',
 } as const;
 
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[keyof typeof ONBOARDING_STEPS];
