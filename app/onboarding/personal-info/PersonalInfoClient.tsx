@@ -65,7 +65,7 @@ export function PersonalInfoClient({ invite, bypass }: PersonalInfoClientProps) 
     const success = await markStepComplete();
 
     if (success) {
-      // Build next URL with proper params
+      // Build next URL with params
       let nextUrl = '/onboarding/role-experience';
       const params = new URLSearchParams();
 

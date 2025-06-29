@@ -3,9 +3,9 @@
 ## Core Concepts
 
 - Utilize App Router for routing
-- Implement proper metadata management
-- Use proper caching strategies
-- Implement proper error boundaries
+- Implement metadata management
+- Use caching strategies
+- Implement error boundaries
 
 ## Components and Features
 
@@ -14,8 +14,8 @@
   - Link component for client-side navigation
   - Script component for external scripts
   - Head component for metadata
-- Implement proper loading states
-- Use proper data fetching methods
+- Implement loading states
+- Use data fetching methods
 
 ## Server Components
 

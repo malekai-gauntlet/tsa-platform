@@ -5,13 +5,13 @@
 - Use JSDoc for documentation
 - Document all public functions, classes, methods, and interfaces
 - Add examples when appropriate
-- Use complete sentences with proper punctuation
+- Use complete sentences with punctuation
 - Keep descriptions clear and concise
 
 ## Markdown Guidelines
 
-- Use proper markdown formatting
-- Use proper code blocks
-- Use proper links
-- Use proper headings
-- Use proper lists
+- Use markdown formatting
+- Use code blocks
+- Use links
+- Use headings
+- Use lists

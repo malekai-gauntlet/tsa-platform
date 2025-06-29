@@ -25,7 +25,7 @@ export type StudentApplication = {
   updatedAt?: string;
 };
 
-// Transform Enrollment to StudentApplication with proper field mapping
+// Transform Enrollment to StudentApplication with field mapping
 function transformEnrollmentToApplication(enrollment: any): StudentApplication {
   return {
     id: enrollment.id,

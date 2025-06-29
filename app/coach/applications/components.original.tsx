@@ -351,7 +351,7 @@ const ApplicationManagementTable = React.memo<ApplicationTableProps>(
 );
 ApplicationManagementTable.displayName = 'ApplicationManagementTable';
 
-// Main content component with proper useEffect and cleanup
+// Main content component with useEffect and cleanup
 export function StudentApplicationsContent() {
   const [applications, setApplications] = useState<StudentApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -460,7 +460,7 @@ export function StudentApplicationsContent() {
     [applications]
   );
 
-  // Proper useEffect with cleanup following .cursor rules
+  // useEffect with cleanup following .cursor rules
   useEffect(() => {
     let isMounted = true;
 

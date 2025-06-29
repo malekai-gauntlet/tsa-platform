@@ -174,7 +174,7 @@ export default function StudentApplicationDetailPage(): JSX.Element {
     }
   }, [applicationId]);
 
-  // Proper useEffect with cleanup following .cursor rules
+  // useEffect with cleanup following .cursor rules
   useEffect(() => {
     let isMounted = true;
 

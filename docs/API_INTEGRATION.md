@@ -332,7 +332,7 @@ const handleRestError = async response => {
 ### Request Optimization
 
 - Use GraphQL fragments to avoid over-fetching
-- Implement proper pagination for large datasets
+- Implement pagination for large datasets
 - Cache responses when appropriate
 - Use optimistic updates for better UX
 
@@ -348,4 +348,4 @@ const handleRestError = async response => {
 - Always include authentication tokens in requests
 - Handle token expiration gracefully
 - Use refresh tokens when available
-- Implement proper logout functionality
+- Implement logout functionality

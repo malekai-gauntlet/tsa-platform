@@ -445,7 +445,7 @@ export const STORAGE_KEYS = {
 } as const;
 
 /**
- * Save step data to localStorage with proper serialization
+ * Save step data to localStorage with serialization
  */
 export function saveStepData<T>(key: string, data: T): void {
   try {
@@ -456,7 +456,7 @@ export function saveStepData<T>(key: string, data: T): void {
 }
 
 /**
- * Load step data from localStorage with proper deserialization
+ * Load step data from localStorage with deserialization
  */
 export function loadStepData<T>(key: string, defaultValue: T): T {
   try {

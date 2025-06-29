@@ -5,7 +5,7 @@
 - Use useState for component-level state
 - Implement useReducer for complex state
 - Use useContext for shared state
-- Implement proper state initialization
+- Implement state initialization
 
 ## Global State
 

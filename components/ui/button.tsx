@@ -14,7 +14,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * Button Component
- * Mobile-first responsive design following TSA theme with proper touch targets
+ * Mobile-first responsive design following TSA theme with touch targets
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -38,7 +38,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          // Base mobile-first styles with proper touch targets
+          // Base mobile-first styles with touch targets
           'inline-flex items-center justify-center font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
           // Ensure minimum touch target size on mobile
           'min-h-[44px] touch-manipulation',

@@ -3,8 +3,8 @@
 ## Form Validation
 
 - Use Zod for schema validation
-- Implement proper error messages
-- Use proper form libraries (e.g., React Hook Form)
+- Implement error messages
+- Use form libraries (e.g., React Hook Form)
 
 ## Error Boundaries
 

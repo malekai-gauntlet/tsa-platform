@@ -154,7 +154,7 @@ tippecanoe -o tsa-districts.mbtiles --maximum-zoom=12 public/Current_Districts_2
 2. **Environment Management**: Automatic configuration via `amplify_outputs.json`
 3. **Error Handling**: Graceful fallbacks for missing tokens/data
 4. **Performance**: Optimized for large geo-spatial datasets
-5. **Security**: Environment variables, proper token management
+5. **Security**: Environment variables, token management
 
 ### Available Scripts
 

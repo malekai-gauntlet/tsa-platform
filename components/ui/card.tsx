@@ -55,7 +55,7 @@ Card.displayName = 'Card';
 
 /**
  * Card Header Component
- * Mobile-first responsive header with proper touch targets
+ * Mobile-first responsive header with touch targets
  */
 export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, children, icon, action, ...props }, ref) => {
@@ -120,7 +120,7 @@ CardContent.displayName = 'CardContent';
 
 /**
  * Card Footer Component
- * Mobile-first responsive footer with proper touch targets
+ * Mobile-first responsive footer with touch targets
  */
 export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, children, sticky = false, ...props }, ref) => {

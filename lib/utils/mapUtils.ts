@@ -40,7 +40,7 @@ export function setupDistrictLayers(map: Map): void {
           // 422: Invalid zoom level or raster tileset
           possibleCauses: [
             'Check if tileset exists and is accessible',
-            'Verify access token has proper permissions',
+            'Verify access token has permissions',
             'Confirm tileset is vector (not raster)',
             'Check network connectivity to api.mapbox.com',
           ],

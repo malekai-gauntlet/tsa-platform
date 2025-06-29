@@ -3,7 +3,7 @@
  *
  * This file exports all coach-related hooks for easier imports.
  *
- * @note When using these hooks, make sure to provide the proper parameters
+ * @note When using these hooks, make sure to provide the parameters
  * and handle errors appropriately.
  */
 

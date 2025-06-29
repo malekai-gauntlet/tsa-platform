@@ -129,7 +129,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
 
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     try {
-      // Call original onClick if it exists - cast to proper type
+      // Call original onClick if it exists - cast to type
       if ('onClick' in props && props.onClick) {
         const onClick = props.onClick as (e: React.MouseEvent<HTMLElement>) => void;
         onClick(e);

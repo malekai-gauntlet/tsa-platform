@@ -41,7 +41,7 @@ This guide provides essential information for developers working on the TSA Plat
 Use components from `/components/ui/` as the primary component library. These components:
 
 - Follow modern React patterns
-- Include proper TypeScript types
+- Include TypeScript types
 - Support consistent theming
 - Have built-in accessibility features
 
@@ -84,7 +84,7 @@ import { ExtendedBadge } from '@/components/ui/badge-extended';
 
 - Consolidate form components under `/components/form/`
 - Use consistent validation patterns
-- Implement proper error handling
+- Implement error handling
 
 ## Code Standards
 
@@ -194,12 +194,12 @@ const UserCard = React.memo(({ user, onEdit }) => {
 
 - Validate all user inputs on both client and server
 - Sanitize data before displaying
-- Use proper TypeScript types to catch issues early
+- Use TypeScript types to catch issues early
 
 ### Authentication
 
 - Use AWS Amplify Auth for authentication
-- Implement proper route protection
+- Implement route protection
 - Handle auth state consistently across the app
 
 ## Deployment

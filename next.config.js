@@ -41,7 +41,7 @@ const nextConfig = {
       tls: false,
     };
 
-    // Ensure proper chunk splitting
+    // Ensure chunk splitting
     if (!isServer) {
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,

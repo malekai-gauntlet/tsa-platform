@@ -18,7 +18,7 @@ interface ListItemProps {
 
 /**
  * List Item Component
- * Mobile-first responsive list item with proper touch targets
+ * Mobile-first responsive list item with touch targets
  */
 export const ListItem: React.FC<ListItemProps> = ({
   title,
@@ -37,7 +37,7 @@ export const ListItem: React.FC<ListItemProps> = ({
   const content = (
     <div
       className={cn(
-        // Base mobile-first styles with proper touch targets
+        // Base mobile-first styles with touch targets
         'flex items-center gap-3 p-3 transition-colors sm:p-4',
         // Ensure minimum touch target height
         'min-h-[56px]',

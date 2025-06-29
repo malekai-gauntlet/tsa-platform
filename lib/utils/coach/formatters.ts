@@ -125,7 +125,7 @@ export function getStatusBadgeVariant(status: string): string {
 }
 
 /**
- * Returns the appropriate status display text with proper capitalization
+ * Returns the appropriate status display text with capitalization
  * @param status Status string
  * @returns Properly formatted status text
  */

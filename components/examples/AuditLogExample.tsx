@@ -149,7 +149,7 @@ export function AuditLogExample() {
     try {
       const { data: auditLogs } = await client.models.AuditLog.list({
         limit: 20,
-        // Note: You'd want to add proper filtering and sorting here
+        // Note: You'd want to add filtering and sorting here
       });
 
       console.log('Recent audit logs:', auditLogs);

@@ -36,7 +36,7 @@ export const vectorTiles = {
   // - Format: Vector tiles (.mvt) for optimal performance vs GeoJSON
 } as const;
 
-// TSA district styling with proper TypeScript interfaces
+// TSA district styling with TypeScript interfaces
 interface DistrictFillStyle {
   readonly color: string;
   readonly opacity: number;

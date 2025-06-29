@@ -12,7 +12,7 @@ export default function Finalize() {
   const router = useRouter();
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  // Use the onboarding state hook for proper data management
+  // Use the onboarding state hook for data management
   const {
     formData,
     invitationData,
@@ -24,7 +24,7 @@ export default function Finalize() {
   });
 
   const handleConfirm = () => {
-    // Get data from both formData and invitationData with proper field mapping
+    // Get data from both formData and invitationData with field mapping
     const onboardingData = {
       // Personal Information - prioritize invitation data, fallback to form data
       email: invitationData?.email || formData.email || '',
@@ -107,9 +107,9 @@ export default function Finalize() {
     return roles[role] || role;
   };
 
-  // Prepare display data with proper fallbacks
+  // Prepare display data with fallbacks
   const displayData = {
-    // Personal Information - prioritize invitation data with proper field mapping
+    // Personal Information - prioritize invitation data with field mapping
     firstName: invitationData?.first_name || formData.first_name || 'Not provided',
     lastName: invitationData?.last_name || formData.last_name || 'Not provided',
     email: invitationData?.email || formData.email || 'Not provided',

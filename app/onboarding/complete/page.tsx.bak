@@ -1703,7 +1703,7 @@ export default function Complete() {
 }
 
   /**
-   * Complete onboarding using the API route (with proper authentication)
+   * Complete onboarding using the API route (with authentication)
    * This replaces direct AppSync calls to avoid authentication issues
    */
   const completeOnboardingWithAppSync = async (structuredData: OnboardingData): Promise<OnboardingResponse & {

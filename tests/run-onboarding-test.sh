@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Onboarding E2E Test Runner
-# Runs the complete onboarding flow test with proper setup
+# Runs the complete onboarding flow test with setup
 
 echo "🚀 Starting Onboarding E2E Test Suite..."
 echo "=================================="

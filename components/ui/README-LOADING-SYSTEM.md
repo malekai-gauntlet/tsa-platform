@@ -220,7 +220,7 @@ src/lib/
 - **Consistent TSA branding** in all loading states
 - **Better perceived performance** with skeleton loading
 - **Unified developer experience** with reusable components
-- **Accessibility improvements** with proper loading text
+- **Accessibility improvements** with loading text
 
 ## 🔧 Examples in Use
 
