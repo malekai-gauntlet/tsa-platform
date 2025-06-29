@@ -1,8 +1,8 @@
 'use client';
 
-import { Input } from '@/components/input';
-import { Listbox, ListboxLabel, ListboxOption } from '@/components/listbox';
-import { Text } from '@/components/text';
+import { Input } from '@/components/form';
+import { Listbox, ListboxLabel, ListboxOption } from '@/components/form/listbox';
+import { Text } from '@/components/data-display';
 import { getCountries, type Country } from '@/data';
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from 'aws-amplify/auth';

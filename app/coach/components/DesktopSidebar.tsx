@@ -7,10 +7,7 @@ import {
   SidebarHeader,
   SidebarSection,
 } from '@/components/sidebar';
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-} from '@heroicons/react/16/solid';
+import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/16/solid';
 import { SidebarNavigation } from './SidebarNavigation';
 import { UserDropdown } from './UserDropdown';
 

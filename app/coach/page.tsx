@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heading, Subheading } from '@/components/heading';
 import { ArrowRightIcon, AcademicCapIcon, EnvelopeIcon } from '@heroicons/react/24/solid';
+import { Link } from '@/components/link';
 import { useSearchParams } from 'next/navigation';
 
 // Custom hooks and components
@@ -106,13 +107,13 @@ export default function CoachDashboard() {
                 >
                   Copy Application Link
                 </button>
-                <a
+                <Link
                   href="/coach/applications"
                   className="flex items-center gap-1 text-sm font-medium text-[#004aad] transition-colors hover:text-[#003888]"
                 >
                   Manage All
                   <ArrowRightIcon className="h-4 w-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>

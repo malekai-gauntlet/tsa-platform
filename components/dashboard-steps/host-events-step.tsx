@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardHeader, CardContent, Button, EmptyState } from '@/components/ui';
-import { Badge } from '@/components/badge';
+import { Badge } from '@/components/data-display';
 import { CalendarDaysIcon, UserGroupIcon, PlusIcon, ClockIcon } from '@heroicons/react/24/solid';
 
 interface EventTemplate {

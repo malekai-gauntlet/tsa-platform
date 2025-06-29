@@ -1,11 +1,18 @@
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import { StudentApplicationsContent } from '@/app/coach/applications/components.refactored';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Student Applications',
-  description: 'Review and manage student applications',
-};
+import { Suspense } from 'react';
+import { StudentApplicationsContent } from './components.refactored';
+
+/**
+ * Applications page using the refactored components
+ */
+export default function ApplicationsPage() {
+  return (
+    <Suspense fallback={<ApplicationsLoader />}>
+      <StudentApplicationsContent />
+    </Suspense>
+  );
+}
 
 /**
  * Loading state component for applications
@@ -26,14 +33,5 @@ function ApplicationsLoader() {
         <div key={i} className="h-32 animate-pulse rounded-lg bg-gray-200"></div>
       ))}
     </div>
-  );
-}
-
-// Main page component (server component)
-export default function StudentApplicationsPage() {
-  return (
-    <Suspense fallback={<ApplicationsLoader />}>
-      <StudentApplicationsContent />
-    </Suspense>
   );
 }

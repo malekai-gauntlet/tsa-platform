@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Heading } from '@/components/heading';
+import { Heading } from '@/components/data-display';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -24,7 +24,7 @@ import {
   acceptStudentApplication,
   rejectStudentApplication,
   type StudentApplication,
-} from '@/lib/services/student-applications';
+} from '@/lib/api/student-applications';
 
 // TypeScript interfaces following .cursor rules
 interface StatusBadgeProps {

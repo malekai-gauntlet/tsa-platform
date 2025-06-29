@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Heading } from '@/components/heading';
+import { Heading } from '@/components/data-display';
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -36,7 +36,7 @@ import {
   acceptStudentApplication,
   rejectStudentApplication,
   type StudentApplication,
-} from '@/lib/services/student-applications';
+} from '@/lib/api/student-applications';
 
 // Debug info type definition
 interface DebugInfo {

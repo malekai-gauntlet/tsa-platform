@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect, Suspense, useCallback } from 'react';
 
-import { Avatar } from '@/components/avatar';
-import { Badge } from '@/components/badge';
+import { Avatar } from '@/components/data-display';
+import { Badge } from '@/components/data-display';
 import { Button } from '@/components/ui/button';
 import { Checkbox, CheckboxField } from '@/components/checkbox';
-import { Divider } from '@/components/divider';
+import { Divider } from '@/components/layout';
 import { Heading, Subheading } from '@/components/heading';
-import { Input } from '@/components/input';
+import { Input } from '@/components/form';
 import { Label, Fieldset } from '@/components/fieldset';
-import { Select } from '@/components/select';
-import { Text } from '@/components/text';
-import { Textarea } from '@/components/textarea';
+import { Select } from '@/components/form';
+import { Text } from '@/components/data-display';
+import { Textarea } from '@/components/form';
 import { Switch, SwitchField } from '@/components/switch';
 import { getEvents } from '@/data';
 import { Address } from '@/app/coach/settings/address';
@@ -21,7 +21,7 @@ import { useRef } from 'react';
 import { PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { CalendarDaysIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { useSearchParams } from 'next/navigation';
-import { GoogleCalendarConnection } from '@/components/GoogleCalendarConnection';
+import { GoogleCalendarConnection } from '@/components/integration';
 
 // AWS Amplify imports
 import { getCurrentUser, fetchAuthSession, AuthUser } from 'aws-amplify/auth';
@@ -76,6 +76,7 @@ function SettingsContent() {
   const [secretClickCount, setSecretClickCount] = useState(0);
 
   // Load user data on component mount
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     loadUserData();
   }, []);

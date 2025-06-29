@@ -8,6 +8,7 @@ import {
   CalendarDaysIcon,
   MapPinIcon,
 } from '@heroicons/react/24/solid';
+import { Link } from '@/components/link';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, getApplicationColor, getStatusBadgeColor } from '@/lib/utils/coach';
 import { createSchoolApplicationURL } from '@/lib/utils';
@@ -65,13 +66,13 @@ export function RecentApplications({
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">Recent Applications</h3>
-        <a
+        <Link
           href="/coach/applications"
           className="flex items-center gap-1 text-sm font-medium text-[#004aad] transition-colors hover:text-[#003888]"
         >
           View All ({applications.length})
           <ChevronRightIcon className="h-4 w-4" />
-        </a>
+        </Link>
       </div>
 
       <div className="space-y-4">

@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/button';
-import { Input } from '@/components/input';
-import { Textarea } from '@/components/textarea';
-import { Select } from '@/components/select';
-import { Heading } from '@/components/heading';
-import { Link } from '@/components/link';
+import { Input } from '@/components/form';
+import { Textarea } from '@/components/form';
+import { Select } from '@/components/form';
+import { Heading } from '@/components/data-display';
+import { Link } from '@/components/navigation';
 import { ChevronLeftIcon } from '@heroicons/react/16/solid';
 import { getCurrentUser } from 'aws-amplify/auth';
 
@@ -69,7 +69,7 @@ export default function EditEventPage() {
     try {
       setLoading(true);
       // Use Amplify GraphQL to fetch event
-      const { eventOperations } = await import('@/lib/services/graphql-client');
+      const { eventOperations } = await import('@/lib/api/graphql-client');
       const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
       const event = await eventOperations.getEventById(eventId);
 
@@ -135,7 +135,7 @@ export default function EditEventPage() {
 
     try {
       // Use Amplify GraphQL to update event
-      const { eventOperations } = await import('@/lib/services/graphql-client');
+      const { eventOperations } = await import('@/lib/api/graphql-client');
 
       // Convert form data to GraphQL format
       const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);

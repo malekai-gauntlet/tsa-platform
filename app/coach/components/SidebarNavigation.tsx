@@ -21,11 +21,7 @@ interface LockedSidebarItemProps {
   isCollapsed?: boolean;
 }
 
-function LockedSidebarItem({
-  children,
-  title,
-  isCollapsed = false,
-}: LockedSidebarItemProps) {
+function LockedSidebarItem({ children, title, isCollapsed = false }: LockedSidebarItemProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleMouseEnter = () => {
@@ -79,8 +75,12 @@ interface SidebarNavigationProps {
   onItemClick?: () => void;
 }
 
-export function SidebarNavigation({ pathname, isCollapsed = false, onItemClick }: SidebarNavigationProps) {
-  const iconClass = isCollapsed ? "h-8 w-8" : "h-6 w-6";
+export function SidebarNavigation({
+  pathname,
+  isCollapsed = false,
+  onItemClick,
+}: SidebarNavigationProps) {
+  const iconClass = isCollapsed ? 'h-8 w-8' : 'h-6 w-6';
 
   return (
     <>
@@ -151,7 +151,9 @@ export function SidebarNavigation({ pathname, isCollapsed = false, onItemClick }
       <LockedSidebarItem title="Real Estate" isCollapsed={isCollapsed}>
         <SidebarItem href="#" onClick={(e: React.MouseEvent) => e.preventDefault()}>
           <BuildingOffice2Icon className={iconClass} />
-          {!isCollapsed && <SidebarLabel className="text-base text-white">Real Estate</SidebarLabel>}
+          {!isCollapsed && (
+            <SidebarLabel className="text-base text-white">Real Estate</SidebarLabel>
+          )}
         </SidebarItem>
       </LockedSidebarItem>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar } from '@/components/avatar';
+import { Avatar } from '@/components/data-display';
 import {
   Dropdown,
   DropdownButton,

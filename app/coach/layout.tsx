@@ -1,11 +1,12 @@
 'use client';
 
 // Feature flag to toggle between original and refactored layout
-const USE_REFACTORED_LAYOUT = process.env.NODE_ENV === 'development' || 
+const USE_REFACTORED_LAYOUT =
+  process.env.NODE_ENV === 'development' ||
   (typeof window !== 'undefined' && localStorage.getItem('use-refactored-layout') === 'true');
 
 import { CoachLayoutRefactored } from './components/CoachLayoutRefactored';
-import { Avatar } from '@/components/avatar';
+import { Avatar } from '@/components/data-display';
 import {
   Dropdown,
   DropdownButton,
@@ -50,7 +51,7 @@ import {
 } from '@heroicons/react/20/solid';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
-import { userOperations } from '@/lib/services/graphql-client';
+import { userOperations } from '@/lib/api/graphql-client';
 
 function AccountDropdownMenu({ anchor }: { anchor: 'top start' | 'bottom end' }) {
   const handleSignOut = async () => {

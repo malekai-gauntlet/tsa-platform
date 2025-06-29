@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { Button } from '@/components/button';
 import { Heading } from '@/components/data-display';
 import { Input } from '@/components/form';
@@ -9,365 +8,38 @@ import { Textarea } from '@/components/form';
 import { Select } from '@/components/form';
 import { AddressAutocomplete } from '@/components/form';
 import { GoogleCalendarConnection } from '@/components/integration';
-import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '@/amplify/data/resource';
 import { CalendarDaysIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
-// Generate AppSync client similar to student applications
-const client = generateClient<Schema>();
+// Import the event form hook
+import { useEventForm } from '@/lib/hooks/coach';
 
-// IMPORTANT: Always use getCoachApiUrl() from SSM config - DO NOT hardcode API endpoints!
-// This ensures centralized configuration management and prevents broken URLs during infrastructure changes
-
-interface AddressData {
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-}
-
-interface TicketType {
-  name: string;
-  description: string;
-  cost: number;
-  currency: string;
-  quantity_total?: number;
-  include_fee: boolean;
-}
-
-interface EventFormData {
-  title: string;
-  description: string;
-  venue_name: string;
-  address_line_1: string;
-  address_line_2: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-  timezone: string;
-  category: string;
-  capacity: string;
-  registration_deadline: string;
-  visibility: 'public' | 'private';
-  ticket_types: TicketType[];
-  image: File | null;
-  bannerImage: File | null;
-}
-
+/**
+ * Refactored Create Event page using custom hooks
+ */
 function CreateEventContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-
-  // Google Calendar integration states
-  const [showGoogleCalendarCTA, setShowGoogleCalendarCTA] = useState(false);
-  const [createdEvent, setCreatedEvent] = useState<any>(null);
-  const [syncToGoogleCalendar, setSyncToGoogleCalendar] = useState(true);
-  const [googleCalendarSyncing, setGoogleCalendarSyncing] = useState(false);
-  const [formData, setFormData] = useState<EventFormData>({
-    title: '',
-    description: '',
-    venue_name: '',
-    address_line_1: '',
-    address_line_2: '',
-    city: '',
-    state: '',
-    postal_code: '',
-    country: 'US',
-    start_date: '',
-    end_date: '',
-    start_time: '',
-    end_time: '',
-    timezone: 'America/Chicago',
-    category: 'training',
-    capacity: '',
-    registration_deadline: '',
-    visibility: 'public',
-    ticket_types: [
-      {
-        name: 'General Admission',
-        description: '',
-        cost: 0,
-        currency: 'USD',
-        include_fee: true,
-      },
-    ],
-    image: null,
-    bannerImage: null,
-  });
-
-  // Pre-fill date from URL parameters if provided
-  useEffect(() => {
-    const dateParam = searchParams.get('date');
-    if (dateParam) {
-      setFormData(prev => ({
-        ...prev,
-        start_date: dateParam,
-      }));
-    }
-  }, [searchParams]);
-
-  const handleInputChange = (
-    field: keyof EventFormData,
-    value: string | boolean | string[] | TicketType[] | File | null
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image file size must be less than 5MB');
-        return;
-      }
-
-      setFormData(prev => ({ ...prev, image: file }));
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = e => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
-        return;
-      }
-
-      // Validate file size (max 10MB for banner images)
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Banner image file size must be less than 10MB');
-        return;
-      }
-
-      setFormData(prev => ({ ...prev, bannerImage: file }));
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = e => {
-        setBannerImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleAddressSelect = (address: AddressData) => {
-    setFormData(prev => ({
-      ...prev,
-      address_line_1: address.street,
-      city: address.city,
-      state: address.state,
-      postal_code: address.zip,
-    }));
-  };
-
-  const formatDateTime = (date: string, time: string) => {
-    if (!date || !time) return '';
-    const datetime = new Date(`${date}T${time}`);
-    return datetime.toISOString();
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      // Validate required fields
-      if (
-        !formData.title ||
-        !formData.description ||
-        !formData.start_date ||
-        !formData.start_time
-      ) {
-        alert('Please fill in all required fields');
-        return;
-      }
-
-      // Format dates with timezone
-      const start_date = formatDateTime(formData.start_date, formData.start_time);
-      const end_date = formatDateTime(
-        formData.end_date || formData.start_date,
-        formData.end_time || formData.start_time
-      );
-
-      if (!start_date || !end_date) {
-        alert('Please provide valid dates and times');
-        return;
-      }
-
-      // Get authenticated user
-      const user = await getCurrentUser();
-      if (!user) {
-        alert('You must be logged in to create events');
-        return;
-      }
-
-      // Map form category to schema eventType
-      const eventTypeMap: { [key: string]: any } = {
-        training: 'TRAINING',
-        competition: 'COMPETITION',
-        camp: 'CAMP',
-        clinic: 'WORKSHOP',
-        tournament: 'TOURNAMENT',
-        social: 'WORKSHOP',
-        fundraiser: 'WORKSHOP',
-      };
-
-      // Prepare address object
-      const addressObj = {
-        street: formData.address_line_1,
-        street2: formData.address_line_2 || '',
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.postal_code,
-        country: formData.country,
-      };
-
-      // Create event using AppSync client
-      const { data: event, errors } = await client.models.Event.create({
-        title: formData.title,
-        description: formData.description,
-        shortDescription: formData.description.substring(0, 200),
-        eventType: eventTypeMap[formData.category] || 'TRAINING',
-        status: 'DRAFT',
-        startDate: start_date,
-        endDate: end_date,
-        timezone: formData.timezone,
-        venue: formData.venue_name,
-        address: JSON.stringify(addressObj),
-        capacity: formData.capacity ? parseInt(formData.capacity) : undefined,
-        registeredCount: 0,
-        price: formData.ticket_types[0]?.cost || 0,
-        currency: formData.ticket_types[0]?.currency || 'USD',
-        coachId: user.signInDetails?.loginId || user.userId,
-        coachName: `${user.signInDetails?.loginId || user.userId}`, // Will be enriched by coach profile
-        requirements: [],
-        equipment: [],
-        tags: [formData.category],
-        images: [], // TODO: Handle image upload separately if needed
-        isPublic: formData.visibility === 'public',
-        isOnline: false,
-        registrationDeadline: formData.registration_deadline
-          ? formatDateTime(formData.registration_deadline, '23:59')
-          : start_date,
-        ageGroups: [],
-        skillLevel: 'ALL_LEVELS',
-      });
-
-      if (errors) {
-        console.error('GraphQL errors:', errors);
-        throw new Error('Failed to create event');
-      }
-
-      if (!event) {
-        throw new Error('No event returned from creation');
-      }
-
-      console.log('Event created successfully:', event);
-      setCreatedEvent(event);
-      setCurrentUser(user);
-
-      // If user opted to sync to Google Calendar, attempt automatic sync
-      if (syncToGoogleCalendar) {
-        setShowGoogleCalendarCTA(true);
-        // Attempt automatic sync in the background
-        setTimeout(async () => {
-          try {
-            const response = await fetch('/api/events/google-calendar-sync', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                eventId: event.id,
-                enableMeet: true,
-              }),
-            });
-
-            const result = await response.json();
-            if (result.success) {
-              setCreatedEvent(result.event);
-            }
-          } catch (error) {
-            console.log('Background Google Calendar sync failed, user can retry manually');
-          }
-        }, 1000);
-      } else {
-        setShowGoogleCalendarCTA(true);
-      }
-    } catch (error) {
-      console.error('Error creating event:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create event');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleCalendarSync = async () => {
-    if (!createdEvent || !currentUser) return;
-
-    setGoogleCalendarSyncing(true);
-    try {
-      const response = await fetch('/api/events/google-calendar-sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          eventId: createdEvent.id,
-          enableMeet: true,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        alert('✅ Event synced to Google Calendar successfully!');
-        // Refresh the created event with Google Calendar details
-        setCreatedEvent(result.event);
-      } else {
-        throw new Error(result.error || 'Failed to sync to Google Calendar');
-      }
-    } catch (error) {
-      console.error('Error syncing to Google Calendar:', error);
-      alert(
-        `Failed to sync to Google Calendar: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
-    } finally {
-      setGoogleCalendarSyncing(false);
-    }
-  };
-
-  const handleFinishCreation = () => {
-    router.push('/coach/events');
-  };
+  const {
+    formData,
+    loading,
+    error,
+    imagePreview,
+    bannerImagePreview,
+    createdEvent,
+    currentUser,
+    showGoogleCalendarCTA,
+    syncToGoogleCalendar,
+    googleCalendarSyncing,
+    handleInputChange,
+    handleImageChange,
+    handleBannerImageChange,
+    handleAddressSelect,
+    handleSubmit,
+    handleGoogleCalendarSync,
+    handleFinishCreation,
+    handleViewEventDetails,
+    setSyncToGoogleCalendar,
+    setImagePreview,
+    setBannerImagePreview,
+  } = useEventForm();
 
   // Show Google Calendar CTA after successful event creation
   if (showGoogleCalendarCTA && createdEvent) {
@@ -456,10 +128,7 @@ function CreateEventContent() {
 
         {/* Final Actions */}
         <div className="text-center">
-          <Button
-            onClick={() => router.push(`/coach/events/${createdEvent.id}`)}
-            className="mr-4 bg-[#004aad] hover:bg-[#003888]"
-          >
+          <Button onClick={handleViewEventDetails} className="mr-4 bg-[#004aad] hover:bg-[#003888]">
             View Event Details
           </Button>
           <Button onClick={handleFinishCreation} outline>
@@ -475,6 +144,11 @@ function CreateEventContent() {
       <div className="mb-8">
         <Heading>Create New Event</Heading>
         <p className="mt-2 text-gray-600">Fill in the details below to create a new event.</p>
+        {error && (
+          <div className="mt-4 rounded-md bg-red-50 p-4 text-red-700">
+            <p className="text-sm font-medium">Error: {error}</p>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -508,7 +182,7 @@ function CreateEventContent() {
                       type="button"
                       onClick={() => {
                         setBannerImagePreview(null);
-                        setFormData(prev => ({ ...prev, bannerImage: null }));
+                        handleInputChange('bannerImage', null);
                       }}
                       className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600"
                       title="Remove banner image"
@@ -589,7 +263,7 @@ function CreateEventContent() {
                       type="button"
                       onClick={() => {
                         setImagePreview(null);
-                        setFormData(prev => ({ ...prev, image: null }));
+                        handleInputChange('image', null);
                       }}
                       className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white hover:bg-red-600"
                     >
@@ -606,7 +280,6 @@ function CreateEventContent() {
                 value={formData.category}
                 onChange={e => handleInputChange('category', e.target.value)}
               >
-                <option value="">Select category</option>
                 <option value="training">Training</option>
                 <option value="competition">Competition</option>
                 <option value="camp">Camp</option>
@@ -877,7 +550,7 @@ function CreateEventContent() {
 
         {/* Form Actions */}
         <div className="flex flex-col gap-4 pt-6 sm:flex-row">
-          <Button type="button" outline onClick={() => router.back()} className="sm:order-1">
+          <Button type="button" outline onClick={handleFinishCreation} className="sm:order-1">
             Cancel
           </Button>
           <Button
@@ -893,6 +566,9 @@ function CreateEventContent() {
   );
 }
 
+/**
+ * Create Event Page with loading fallback
+ */
 export default function CreateEvent() {
   return (
     <Suspense

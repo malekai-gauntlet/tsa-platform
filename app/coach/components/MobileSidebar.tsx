@@ -29,12 +29,7 @@ export function MobileSidebar({
   return (
     <>
       {/* Mobile sidebar overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/25 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-50 bg-black/25 lg:hidden" onClick={onClose} />}
 
       {/* Mobile sidebar */}
       <div
@@ -46,10 +41,7 @@ export function MobileSidebar({
           <SidebarHeader>
             <div className="flex items-center justify-between px-4 py-3">
               <img src="/logo.png" alt="Texas Sports Academy" className="h-16 w-auto" />
-              <button
-                onClick={onClose}
-                className="rounded-md p-2 text-white hover:bg-white/10"
-              >
+              <button onClick={onClose} className="rounded-md p-2 text-white hover:bg-white/10">
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>

@@ -21,11 +21,7 @@ export function MobileNavbar({ onMenuToggle, profilePhoto }: MobileNavbarProps) 
         <Navbar>
           <NavbarSpacer />
           <NavbarSection>
-            <UserDropdown
-              anchor="bottom end"
-              profilePhoto={profilePhoto}
-              currentUser={null}
-            />
+            <UserDropdown anchor="bottom end" profilePhoto={profilePhoto} currentUser={null} />
           </NavbarSection>
         </Navbar>
       </div>

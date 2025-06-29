@@ -73,10 +73,7 @@ export function CoachLayoutRefactored({ children }: CoachLayoutRefactoredProps) 
       />
 
       {/* Mobile Navbar */}
-      <MobileNavbar
-        onMenuToggle={toggleMobileMenu}
-        profilePhoto={profilePhoto}
-      />
+      <MobileNavbar onMenuToggle={toggleMobileMenu} profilePhoto={profilePhoto} />
 
       {/* Main Content */}
       <main
