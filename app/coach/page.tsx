@@ -5,6 +5,7 @@ import { Heading, Subheading } from '@/components/heading';
 import { ArrowRightIcon, AcademicCapIcon, EnvelopeIcon } from '@heroicons/react/24/solid';
 import { Link } from '@/components/link';
 import { useSearchParams } from 'next/navigation';
+import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 
 // Custom hooks and components
 import { useCoachData } from '@/lib/hooks/useCoachData';
@@ -19,14 +20,35 @@ export default function CoachDashboard() {
   const searchParams = useSearchParams();
   const [showLockedNotification, setShowLockedNotification] = useState(false);
   const [lockedRoute, setLockedRoute] = useState('');
+  const [currentCoachEmail, setCurrentCoachEmail] = useState<string | null>(null);
+
+  // Get authenticated coach email
+  useEffect(() => {
+    const getCoachEmail = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        const session = await fetchAuthSession();
+        const email = currentUser?.signInDetails?.loginId || currentUser?.userId;
+        
+        console.log(`🔑 Authenticated coach email: ${email}`);
+        setCurrentCoachEmail(email || null);
+      } catch (error) {
+        console.error('Error getting coach email:', error);
+        setCurrentCoachEmail(null);
+      }
+    };
+
+    getCoachEmail();
+  }, []);
 
   // Custom hooks for data fetching
   const { coachData, loading: coachLoading } = useCoachData();
   const {
     stats: applicationStats,
     loading: applicationsLoading,
+    error: applicationsError,
   } = useApplications({
-    coachEmail: coachData.currentUser?.signInDetails?.loginId || coachData.currentUser?.userId,
+    coachEmail: currentCoachEmail || undefined,
     currentUserId: coachData.currentUser?.userId,
     coachLocation: coachData.coachLocation,
   });
@@ -73,6 +95,11 @@ export default function CoachDashboard() {
             ? `Manage your Texas Sports Academy location. Track applications, invite families, and grow your school.`
             : 'Welcome to your dashboard. Here you can find all the information you need to manage your school.'}
         </p>
+        {currentCoachEmail && (
+          <p className="mt-1 text-xs text-blue-600">
+            📧 Viewing applications for: {currentCoachEmail}
+          </p>
+        )}
       </div>
 
       {/* Application Management Section */}
@@ -89,6 +116,11 @@ export default function CoachDashboard() {
                   <Subheading className="text-base font-medium text-gray-900">
                     Student Applications
                   </Subheading>
+                  {applicationsError && (
+                    <p className="text-xs text-red-600">
+                      Error loading applications: {applicationsError}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-3">

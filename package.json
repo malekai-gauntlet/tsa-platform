@@ -14,6 +14,8 @@
     "test:e2e": "./tests/run-onboarding-test.sh",
     "test:e2e:headless": "npx playwright test tests/e2e-onboarding.test.js",
     "test:e2e:debug": "npx playwright test tests/e2e-onboarding.test.js --debug",
+    "test:coach-filtering": "node scripts/test-coach-filtering.js",
+    "create-coach": "node scripts/create-coach-account.js",
     "deploy:dev": "./scripts/deploy-dev.sh",
     "seed-invitations": "npx tsx scripts/seed-invitation-codes.ts",
     "seed-invitations:dry-run": "npx tsx scripts/seed-invitation-codes.ts --dry-run",

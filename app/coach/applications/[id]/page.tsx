@@ -104,7 +104,7 @@ export default function StudentApplicationDetailPage(): JSX.Element {
   const router = useRouter();
   const applicationId = params.id as string;
 
-  const [application, setApplication] = useState<StudentApplication | null>(null);
+  const [application, setApplication] = useState<StudentApplication | any>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
@@ -162,10 +162,54 @@ export default function StudentApplicationDetailPage(): JSX.Element {
 
     try {
       setLoading(true);
-      // Fetch all applications and find the specific one
-      const applications = await fetchStudentApplications({ limit: 100 });
-      const foundApplication = applications.find(app => app.id === applicationId);
-      setApplication(foundApplication || null);
+      
+      // Fetch from our webhook API instead of GraphQL
+      const response = await fetch('/api/applications/list');
+      const data = await response.json();
+      
+      if (data.success) {
+        // Find the specific application by ID
+        const foundApplication = data.applications.find((app: any) => app.id === applicationId);
+        
+        if (foundApplication) {
+          // Transform the webhook data to match the expected format
+          const transformedApplication = {
+            id: foundApplication.id,
+            studentName: foundApplication.studentName,
+            studentAge: foundApplication.studentAge,
+            studentGrade: foundApplication.studentGrade,
+            status: foundApplication.status,
+            createdAt: foundApplication.submittedAt,
+            enrollmentType: foundApplication.enrollmentDate ? 'Scheduled' : 'Standard',
+            sportInterest: foundApplication.sportInterest,
+            academicYear: new Date().getFullYear() + '-' + (new Date().getFullYear() + 1),
+            startDate: foundApplication.enrollmentDate,
+            parentId: foundApplication.parent1Email,
+            coachName: foundApplication.coachEmail,
+            // Add more fields as needed
+            parentName: foundApplication.parent1Name,
+            parentEmail: foundApplication.parent1Email,
+            parentPhone: foundApplication.parent1Phone,
+            currentSchool: foundApplication.currentSchool,
+            whyApplying: foundApplication.whyApplying,
+            specialAccommodations: foundApplication.specialAccommodations,
+            // Baseball fields if available
+            ...(foundApplication.primaryPosition && {
+              primaryPosition: foundApplication.primaryPosition,
+              batsThrows: foundApplication.batsThrows,
+              height: foundApplication.height,
+              weight: foundApplication.weight,
+              graduationYear: foundApplication.graduationYear,
+            }),
+          };
+          setApplication(transformedApplication);
+        } else {
+          setApplication(null);
+        }
+      } else {
+        console.error('Error fetching applications:', data.error);
+        setApplication(null);
+      }
     } catch (error) {
       console.error('Error fetching application:', error);
       setApplication(null);
@@ -246,6 +290,11 @@ export default function StudentApplicationDetailPage(): JSX.Element {
                     Age {application.studentAge}
                   </span>
                 )}
+                {application.sportInterest && (
+                  <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                    {application.sportInterest}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -274,7 +323,7 @@ export default function StudentApplicationDetailPage(): JSX.Element {
           )}
         </div>
 
-        {/* Application Details */}
+        {/* Application Details Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Basic Information */}
           <div className="rounded-lg border border-gray-200 bg-white p-6">
@@ -306,6 +355,12 @@ export default function StudentApplicationDetailPage(): JSX.Element {
                   </span>
                 </div>
               )}
+              {application?.currentSchool && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Current School:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.currentSchool}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -313,10 +368,24 @@ export default function StudentApplicationDetailPage(): JSX.Element {
           <div className="rounded-lg border border-gray-200 bg-white p-6">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">Parent Information</h3>
             <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-600">Parent ID:</span>
-                <span className="ml-2 text-sm text-gray-900">{application.parentId}</span>
-              </div>
+              {application?.parentName && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Parent Name:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.parentName}</span>
+                </div>
+              )}
+              {application?.parentEmail && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Email:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.parentEmail}</span>
+                </div>
+              )}
+              {application?.parentPhone && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Phone:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.parentPhone}</span>
+                </div>
+              )}
               {application.coachName && (
                 <div>
                   <span className="text-sm font-medium text-gray-600">Assigned Coach:</span>
@@ -327,26 +396,84 @@ export default function StudentApplicationDetailPage(): JSX.Element {
           </div>
         </div>
 
-        {/* Timeline Information */}
-        {application.timelineSteps && application.timelineSteps.length > 0 && (
+        {/* Baseball Information (if available) */}
+        {application?.primaryPosition && (
           <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">Application Timeline</h3>
-            <div className="space-y-2">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Baseball Information</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div>
-                <span className="text-sm font-medium text-gray-600">Current Step:</span>
-                <span className="ml-2 text-sm text-gray-900">
-                  {application.currentStep || 0} of {application.totalSteps || 0}
-                </span>
+                <span className="text-sm font-medium text-gray-600">Primary Position:</span>
+                <span className="ml-2 text-sm text-gray-900">{application?.primaryPosition}</span>
               </div>
-              <div>
-                <span className="text-sm font-medium text-gray-600">Status:</span>
-                <span className="ml-2 text-sm text-gray-900">
-                  {application.timelineStatus || 'Active'}
-                </span>
-              </div>
+              {application?.batsThrows && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Bats/Throws:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.batsThrows}</span>
+                </div>
+              )}
+              {application?.height && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Height:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.height}</span>
+                </div>
+              )}
+              {application?.weight && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Weight:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.weight}</span>
+                </div>
+              )}
+              {application?.graduationYear && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Graduation Year:</span>
+                  <span className="ml-2 text-sm text-gray-900">{application?.graduationYear}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
+
+        {/* Application Essays */}
+        {(application?.whyApplying || application?.specialAccommodations) && (
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Application Essays</h3>
+            <div className="space-y-4">
+              {application?.whyApplying && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Why are you applying?</h4>
+                  <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{application?.whyApplying}</p>
+                </div>
+              )}
+              {application?.specialAccommodations && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Special Accommodations:</h4>
+                  <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{application?.specialAccommodations}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Application Timeline */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">Application Timeline</h3>
+          <div className="space-y-2">
+            <div>
+              <span className="text-sm font-medium text-gray-600">Application ID:</span>
+              <span className="ml-2 text-sm text-gray-900 font-mono">{application.id}</span>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-600">Submitted:</span>
+              <span className="ml-2 text-sm text-gray-900">{formatDate(application.createdAt)}</span>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-600">Status:</span>
+              <span className="ml-2">
+                <StatusBadge status={application.status} />
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }, [loading, application, handleBack, handleAccept, handleReject, processing]);

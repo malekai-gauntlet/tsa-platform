@@ -374,23 +374,68 @@ export function StudentApplicationsContent() {
       setCurrentCoachEmail(coachEmail);
       console.log(`📧 Fetching applications for coach: ${coachEmail}`);
 
-      // Fetch applications
-      const fetchedApplications = await fetchStudentApplications({
-        limit: 50,
-      });
+      // Build the API URL with coach email parameter for filtering
+      const params = new URLSearchParams();
+      params.append('coachEmail', coachEmail);
+      
+      const url = `/api/applications/list?${params.toString()}`;
+      const response = await fetch(url);
+      const data = await response.json();
 
-      setApplications(fetchedApplications);
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch applications');
+      }
+
+      // Transform Zapier application data to StudentApplication format
+      const transformedApplications: StudentApplication[] = (data.applications || []).map((app: any) => ({
+        id: app.id,
+        parentId: app.parent1Email || 'unknown',
+        studentName: app.studentName || 'Unknown Student',
+        studentAge: app.studentAge || undefined,
+        studentGrade: app.studentGrade || '',
+        enrollmentType: 'FULL_TIME' as const,
+        status: (app.status || 'PENDING') as 'PENDING' | 'APPROVED' | 'WAITLIST' | 'REJECTED',
+        applicationData: {
+          parentName: app.parent1Name,
+          parentEmail: app.parent1Email,
+          parentPhone: app.parent1Phone,
+          address: app.address,
+          city: app.city,
+          state: app.state,
+          zipCode: app.zipCode,
+          currentSchool: app.currentSchool,
+          whyApplying: app.whyApplying,
+          tellUsMore: app.tellUsMore,
+          specialAccommodations: app.specialAccommodations,
+        },
+        documents: undefined,
+        tuitionPlan: undefined,
+        startDate: app.enrollmentDate,
+        academicYear: new Date().getFullYear().toString(),
+        schoolPreferences: undefined,
+        coachName: app.coachEmail,
+        sportInterest: app.sportInterest || 'General',
+        currentStep: 1,
+        totalSteps: 5,
+        timelineSteps: undefined,
+        timelineStatus: 'ACTIVE' as const,
+        createdAt: app.submittedAt || new Date().toISOString(),
+        updatedAt: app.submittedAt || new Date().toISOString(),
+      }));
+
+      setApplications(transformedApplications);
       setDebugInfo({
         fetchSuccess: true,
-        applicationCount: fetchedApplications.length,
+        applicationCount: transformedApplications.length,
         timestamp: new Date().toISOString(),
         coachEmail,
         coachMode: true,
       });
 
       console.log(
-        `✅ Successfully fetched ${fetchedApplications.length} applications for ${coachEmail}`
+        `✅ Successfully fetched ${transformedApplications.length} applications for coach: ${coachEmail}`
       );
+      console.log(`📊 Total applications in system: ${data.totalApplications || 0}`);
     } catch (error) {
       console.error('Error fetching applications:', error);
       setApplications([]);

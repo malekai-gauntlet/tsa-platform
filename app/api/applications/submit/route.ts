@@ -1,10 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
 
-// In-memory storage for applications (resets on deployment)
-let applications: any[] = [];
+// File-based storage path
+const STORAGE_FILE = path.join(process.cwd(), 'data', 'applications.json');
+
+// Ensure data directory exists
+function ensureDataDirectory() {
+  const dataDir = path.dirname(STORAGE_FILE);
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+}
+
+// Read applications from file
+function readApplicationsFromFile(): any[] {
+  try {
+    ensureDataDirectory();
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = fs.readFileSync(STORAGE_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+    return [];
+  } catch (error) {
+    console.error('Error reading applications file:', error);
+    return [];
+  }
+}
+
+// Write applications to file
+function writeApplicationsToFile(applications: any[]) {
+  try {
+    ensureDataDirectory();
+    fs.writeFileSync(STORAGE_FILE, JSON.stringify(applications, null, 2));
+  } catch (error) {
+    console.error('Error writing applications file:', error);
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,10 +107,17 @@ export async function POST(request: NextRequest) {
       sportInterest: body.tsaLocation?.includes('bennett') ? 'Baseball' : 'Sports Training',
     };
     
-    // Store in memory and log
-    applications.unshift(applicationData); // Add to beginning of array
+    // Read existing applications
+    const applications = readApplicationsFromFile();
+    
+    // Add new application to the beginning
+    applications.unshift(applicationData);
+    
+    // Write back to file
+    writeApplicationsToFile(applications);
+    
     console.log('📝 Processed Application Data:', JSON.stringify(applicationData, null, 2));
-    console.log(`📊 Total Applications in Memory: ${applications.length}`);
+    console.log(`📊 Total Applications in File: ${applications.length}`);
     
     return NextResponse.json({
       success: true,
@@ -104,7 +146,7 @@ export async function POST(request: NextRequest) {
 
 // Export function to get applications (for the list endpoint)
 export function getStoredApplications() {
-  return applications;
+  return readApplicationsFromFile();
 }
 
 // Helper function to calculate age from date of birth

@@ -18,7 +18,7 @@ interface UseCoachApplicationsOptions {
  * @returns Applications data, loading state, error state, statistics, and fetch functions
  */
 export function useCoachApplications(options: UseCoachApplicationsOptions = {}) {
-  const { autoFetch = true, coachId } = options;
+  const { autoFetch = true, coachId, coachEmail } = options;
   const { data: session } = useSession();
 
   const [applications, setApplications] = useState<Application[]>([]);
@@ -26,59 +26,43 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Fetches applications from our API endpoint
+   * Fetches applications from our API endpoint with coach email filtering
    */
   const fetchApplications = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/applications/list');
+      // Build the API URL with coach email parameter
+      const params = new URLSearchParams();
+      if (coachEmail) {
+        params.append('coachEmail', coachEmail);
+      }
+      
+      const url = `/api/applications/list${params.toString() ? `?${params.toString()}` : ''}`;
+      console.log(`📧 Fetching applications for coach: ${coachEmail || 'all'} from ${url}`);
+
+      const response = await fetch(url);
       const data = await response.json();
 
-      if (data.success) {
-        // Transform the data to match the expected Application type
-        const transformedApplications = data.applications.map((app: any) => ({
-          id: app.id,
-          parentId: app.parent1Email, // Use email as parent ID for now
-          parentName: app.parent1Name,
-          parentEmail: app.parent1Email,
-          parentPhone: app.parent1Phone,
-          studentName: app.studentName,
-          studentAge: app.studentAge,
-          studentGrade: app.studentGrade,
-          sportInterest: app.sportInterest,
-          coachId: app.coachEmail || 'coach1', // Default coach ID
-          status: app.status,
-          createdAt: app.submittedAt,
-          updatedAt: app.submittedAt,
-          // Additional fields from Zapier
-          enrollmentType: app.enrollmentDate ? 'Scheduled' : 'Standard',
-          startDate: app.enrollmentDate,
-          currentSchool: app.currentSchool,
-          schoolName: app.schoolName,
-          whyApplying: app.whyApplying,
-          // Baseball fields if available
-          ...(app.primaryPosition && {
-            primaryPosition: app.primaryPosition,
-            batsThrows: app.batsThrows,
-            height: app.height,
-            weight: app.weight,
-            graduationYear: app.graduationYear,
-          }),
-        }));
-
-        setApplications(transformedApplications);
-      } else {
-        setError(data.error || 'Failed to load applications');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch applications');
       }
+
+      const fetchedApplications = data.applications || [];
+      setApplications(fetchedApplications);
+      
+      console.log(`✅ Successfully fetched ${fetchedApplications.length} applications for coach: ${coachEmail || 'all'}`);
+      console.log(`📊 Total applications in system: ${data.totalApplications || 0}`);
+
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      setError(errorMessage);
       console.error('Error fetching applications:', err);
-      setError('Failed to load applications. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [coachId]);
+  }, [coachEmail]);
 
   /**
    * Fetches a single application by ID
