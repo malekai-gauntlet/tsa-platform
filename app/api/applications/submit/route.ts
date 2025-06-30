@@ -9,6 +9,7 @@ let applications: any[] = [];
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('🎯 Raw webhook data received:', JSON.stringify(body, null, 2));
     
     // Transform Zapier form data to a simple format
     const applicationData = {
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     
     // Store in memory and log
     applications.unshift(applicationData); // Add to beginning of array
-    console.log('📝 New Application Received:', JSON.stringify(applicationData, null, 2));
+    console.log('📝 Processed Application Data:', JSON.stringify(applicationData, null, 2));
     console.log(`📊 Total Applications in Memory: ${applications.length}`);
     
     return NextResponse.json({
@@ -84,11 +85,12 @@ export async function POST(request: NextRequest) {
         studentName: applicationData.studentName,
         status: applicationData.status,
         submittedAt: applicationData.submittedAt,
+        coachEmail: applicationData.coachEmail,
       },
     });
     
   } catch (error) {
-    console.error('Error processing application:', error);
+    console.error('❌ Error processing application:', error);
     return NextResponse.json(
       { 
         success: false, 

@@ -3,11 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
 
-// In-memory storage for applications (shared with submit endpoint)
-let applications: any[] = [];
+// Import the shared applications array from the submit endpoint
+import { getStoredApplications } from '../submit/route';
 
 export async function GET(request: NextRequest) {
   try {
+    // Get applications from the shared storage
+    const applications = getStoredApplications();
+    
     // Sort by most recent first
     const sortedApplications = [...applications].sort((a: any, b: any) => 
       new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
