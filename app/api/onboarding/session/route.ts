@@ -19,14 +19,15 @@ const SESSION_CONFIG = {
   DEFAULT_TTL_MINUTES: 180, // 3 hours
   MAX_TTL_MINUTES: 1440, // 24 hours
   CLEANUP_INTERVAL_MINUTES: 60, // Clean up expired sessions every hour
-  ENCRYPTION_KEY:
-    process.env.SESSION_ENCRYPTION_KEY ||
-    (() => {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('SESSION_ENCRYPTION_KEY environment variable is required in production');
-      }
-      return 'dev-key-for-local-testing-only';
-    })(),
+  getEncryptionKey: () => {
+    return process.env.SESSION_ENCRYPTION_KEY ||
+      (() => {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('SESSION_ENCRYPTION_KEY environment variable is required in production');
+        }
+        return 'dev-key-for-local-testing-only';
+      })();
+  },
 };
 
 interface SessionData {
@@ -59,7 +60,7 @@ function calculateExpirationTime(ttlMinutes: number = SESSION_CONFIG.DEFAULT_TTL
 
 function encryptData(data: any): string {
   try {
-    return CryptoJS.AES.encrypt(JSON.stringify(data), SESSION_CONFIG.ENCRYPTION_KEY).toString();
+    return CryptoJS.AES.encrypt(JSON.stringify(data), SESSION_CONFIG.getEncryptionKey()).toString();
   } catch (error) {
     console.error('Error encrypting data:', error);
     return JSON.stringify(data); // Fallback to plain text
@@ -91,7 +92,7 @@ function decryptData(data: any, isEncrypted: boolean = true): any {
   }
 
   try {
-    const bytes = CryptoJS.AES.decrypt(dataString, SESSION_CONFIG.ENCRYPTION_KEY);
+    const bytes = CryptoJS.AES.decrypt(dataString, SESSION_CONFIG.getEncryptionKey());
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   } catch (error) {
     console.error('Error decrypting data:', error);
