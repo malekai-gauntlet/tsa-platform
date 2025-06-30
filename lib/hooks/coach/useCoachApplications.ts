@@ -5,66 +5,6 @@ import { useSession } from 'next-auth/react';
 import { Application } from '@/lib/types/coach';
 import { calculateApplicationStats } from '@/lib/utils/coach';
 
-// Mock applications data
-const mockApplications: Application[] = [
-  {
-    id: '1',
-    parentId: 'parent1',
-    parentName: 'Sarah Johnson',
-    parentEmail: 'sarah.johnson@parent.com',
-    parentPhone: '(555) 123-4567',
-    studentName: 'Emma Johnson',
-    studentAge: 12,
-    sportInterest: 'Basketball',
-    coachId: 'coach1',
-    status: 'PENDING',
-    createdAt: '2024-01-15T10:30:00.000Z',
-    updatedAt: '2024-01-15T10:30:00.000Z',
-  },
-  {
-    id: '2',
-    parentId: 'parent2',
-    parentName: 'Michael Davis',
-    parentEmail: 'michael.davis@parent.com',
-    parentPhone: '(555) 234-5678',
-    studentName: 'Alex Davis',
-    studentAge: 10,
-    sportInterest: 'Soccer',
-    coachId: 'coach1',
-    status: 'APPROVED',
-    createdAt: '2024-01-14T14:20:00.000Z',
-    updatedAt: '2024-01-14T16:45:00.000Z',
-  },
-  {
-    id: '3',
-    parentId: 'parent3',
-    parentName: 'Lisa Martinez',
-    parentEmail: 'lisa.martinez@parent.com',
-    parentPhone: '(555) 345-6789',
-    studentName: 'Sofia Martinez',
-    studentAge: 14,
-    sportInterest: 'Tennis',
-    coachId: 'coach1',
-    status: 'WAITLIST',
-    createdAt: '2024-01-12T09:15:00.000Z',
-    updatedAt: '2024-01-13T11:30:00.000Z',
-  },
-  {
-    id: '4',
-    parentId: 'parent4',
-    parentName: 'Robert Wilson',
-    parentEmail: 'robert.wilson@parent.com',
-    parentPhone: '(555) 456-7890',
-    studentName: 'Jake Wilson',
-    studentAge: 11,
-    sportInterest: 'Basketball',
-    coachId: 'coach1',
-    status: 'PENDING',
-    createdAt: '2024-01-11T16:45:00.000Z',
-    updatedAt: '2024-01-11T16:45:00.000Z',
-  },
-];
-
 interface UseCoachApplicationsOptions {
   autoFetch?: boolean;
   coachEmail?: string;
@@ -86,22 +26,52 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Fetches applications from mock data
+   * Fetches applications from our API endpoint
    */
   const fetchApplications = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/applications/list');
+      const data = await response.json();
 
-      // Filter applications by coach if needed
-      const filteredApplications = coachId
-        ? mockApplications.filter(app => app.coachId === coachId)
-        : mockApplications;
+      if (data.success) {
+        // Transform the data to match the expected Application type
+        const transformedApplications = data.applications.map((app: any) => ({
+          id: app.id,
+          parentId: app.parent1Email, // Use email as parent ID for now
+          parentName: app.parent1Name,
+          parentEmail: app.parent1Email,
+          parentPhone: app.parent1Phone,
+          studentName: app.studentName,
+          studentAge: app.studentAge,
+          studentGrade: app.studentGrade,
+          sportInterest: app.sportInterest,
+          coachId: app.coachEmail || 'coach1', // Default coach ID
+          status: app.status,
+          createdAt: app.submittedAt,
+          updatedAt: app.submittedAt,
+          // Additional fields from Zapier
+          enrollmentType: app.enrollmentDate ? 'Scheduled' : 'Standard',
+          startDate: app.enrollmentDate,
+          currentSchool: app.currentSchool,
+          schoolName: app.schoolName,
+          whyApplying: app.whyApplying,
+          // Baseball fields if available
+          ...(app.primaryPosition && {
+            primaryPosition: app.primaryPosition,
+            batsThrows: app.batsThrows,
+            height: app.height,
+            weight: app.weight,
+            graduationYear: app.graduationYear,
+          }),
+        }));
 
-      setApplications(filteredApplications);
+        setApplications(transformedApplications);
+      } else {
+        setError(data.error || 'Failed to load applications');
+      }
     } catch (err) {
       console.error('Error fetching applications:', err);
       setError('Failed to load applications. Please try again.');
@@ -120,10 +90,7 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
       setLoading(true);
       setError(null);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const application = mockApplications.find(app => app.id === id);
+      const application = applications.find(app => app.id === id);
       return application || null;
     } catch (err) {
       console.error('Error fetching application:', err);
@@ -132,7 +99,7 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applications]);
 
   /**
    * Updates an application status
@@ -146,10 +113,7 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
         setLoading(true);
         setError(null);
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Update local state
+        // Update local state immediately for better UX
         setApplications(prevApplications =>
           prevApplications.map(app => 
             app.id === id 
@@ -158,6 +122,9 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
           )
         );
 
+        // In a real implementation, you'd make an API call here
+        // For now, just update the local state
+        
         const updatedApplication = applications.find(app => app.id === id);
         return updatedApplication ? { ...updatedApplication, status } : null;
       } catch (err) {
@@ -185,10 +152,10 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
    * Fetches applications on mount if autoFetch is true
    */
   useEffect(() => {
-    if (autoFetch && session) {
+    if (autoFetch) {
       fetchApplications();
     }
-  }, [autoFetch, session, fetchApplications]);
+  }, [autoFetch, fetchApplications]);
 
   return {
     applications,
