@@ -5,8 +5,10 @@ import path from 'path';
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
 
-// File-based storage path
-const STORAGE_FILE = path.join(process.cwd(), 'data', 'applications.json');
+// File-based storage path - Use /tmp for Vercel compatibility
+const STORAGE_FILE = process.env.NODE_ENV === 'production' 
+  ? '/tmp/applications.json'
+  : path.join(process.cwd(), 'data', 'applications.json');
 
 // Ensure data directory exists
 function ensureDataDirectory() {
