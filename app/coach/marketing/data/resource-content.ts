@@ -13,153 +13,233 @@ interface ResourceContentMap {
  * Map of resource IDs to their content
  */
 export const resourceContent: ResourceContentMap = {
-  'website-copy': `═══ WEBSITE COPY THAT CONVERTS PARENTS ═══
+  'jamal-pitch-video': `═══ JAMAL PITCH VIDEO - KEY TAKEAWAYS ═══
 
-🎯 PRO TIP: Most coaches write generic copy about "excellence." Parents want specifics about results and methodology.
+🎯 This video shows you exactly how to present to parents effectively.
 
-═══ HEADLINE ═══
-We are partnering with Alpha School to launch Houston's first breaking school!
+═══ WHAT TO WATCH FOR ═══
 
-═══ BODY ═══
-Alpha School (alpha.school) is a leading private school based in Austin with students that consistently test in the top 2% in the nation (see press coverage). They are partnering with us to provide top academics at our breaking school, while our team leads the breaking training.
+1. 📈 OPENING WITH RESULTS
+   • Leads with academic success data (top 2% test scores)
+   • Shows concrete proof points, not just promises
+   • References external validation (press coverage)
 
-═══ DAY IN THE LIFE ═══
-Here's what a typical day looks like:
-• 9am - 11:30am: Academics with Alpha School's learning technology
-• 12pm - 3:30pm: Professional breaking training
+2. 🎓 ADDRESSING ACADEMIC CONCERNS
+   • Explains the 2 Hour Learning methodology clearly
+   • Compares to traditional education limitations
+   • Shows how accelerated learning works in practice
 
-═══ OUR WHY ═══
-Traditional education systems aren't setting students up for success. Alpha School has an innovative way to accelerate student learning, and by partnering with them, we can create Houston's first breaking school that helps students succeed in all areas.
+3. ⚽ ATHLETIC INTEGRATION
+   • Demonstrates how academics and athletics complement each other
+   • Shows daily schedule and time management benefits
+   • Explains competitive advantage of more training time
 
-═══ CTA ═══
-We'll be hosting an event (part breaking training, part information session) in the weeks ahead to share more about our new school. Drop your email to stay updated on event announcements.
+4. 💰 VALUE PROPOSITION
+   • Breaks down cost vs. benefit clearly
+   • Mentions scholarship opportunities
+   • Positions as investment in child's future
 
-⚠️ CUSTOMIZATION REQUIRED:
-- Replace "Houston's first breaking school" with your city/sport
-- Add your personal education background in the "OUR WHY" section
-- Include specific examples of your athletic credentials`,
+═══ APPLY TO YOUR PITCH ═══
+• Practice the same confident, data-driven approach
+• Lead with your strongest academic results
+• Address parent concerns before they ask
+• End with clear next steps for enrollment
 
-  'event-marketing': `═══ EVENT FORMATS THAT WORK ═══
+Watch this video before using your presentation template!`,
 
-If you host events to recruit parents, there are a few options. These are general recommendations for event types we've seen work well for Texas Sports Academy and other Alpha Schools:
+  'webinar-example': `═══ LIVE PARENT PITCH WEBINAR ═══
 
-═══ 2 HOUR EVENT ═══
-First hour = Parent pitch 
-Second hour = Athletic training
+🎯 This webinar recording shows a complete parent presentation in action.
 
-═══ DAY-LONG EVENT ═══
-Morning = Athletic training
-Afternoon = Competition (parents come in)
-Last 30 mins = Parent pitch
+═══ WEBINAR STRUCTURE TO COPY ═══
 
-═══ FULL SHADOW DAY ═══
-Replicate of what a day at your school will be
-Morning = Academics with Alpha's Software
-Afternoon = Athletic training
-Last 30 mins = Parent pitch`,
+1. 🏆 OPENING (5 minutes)
+   • Welcome and introductions
+   • Quick overview of what parents will learn
+   • Credibility establishment
 
-  'marketing-strategy': `🎯 ═══ MARKETING STRATEGY ═══
+2. 📊 PROBLEM IDENTIFICATION (10 minutes)
+   • Traditional education challenges
+   • Why most schools can't offer this combination
+   • Parent frustrations with current options
 
-Goal: 5 students by Fall 2025
+3. 🎯 SOLUTION PRESENTATION (15 minutes)
+   • 2 Hour Learning methodology explanation
+   • Daily schedule walkthrough
+   • Academic + Athletic integration benefits
 
-1. 🏠 ═══ TARGET HOMESCHOOL FAMILIES ═══
-   • Start with kids you already train
-   • Ask about other homeschool students they know
+4. 📈 RESULTS & PROOF (10 minutes)
+   • Test score data and achievements
+   • Student success stories
+   • Parent testimonials
 
-2. 💬 ═══ FOCUS ON WORD-OF-MOUTH ═══
-   • Personal referrals beat social media
-   • Ask families: "Who else might benefit?"
+5. 🤝 ENROLLMENT PROCESS (10 minutes)
+   • Tuition and scholarship information
+   • Next steps for interested families
+   • Q&A session
 
-3. 🤝 ═══ MAKE REFERRALS EASY ═══
+═══ KEY WEBINAR TIPS ═══
+• Keep slides simple and visual
+• Use real data and specific examples
+• Allow plenty of time for questions
+• Have enrollment materials ready
    • Follow up within 24 hours
-   • Consider tuition credit incentives`,
 
-  'pitch-delivery': `═══ YOUR CLOSING CONVERSATION TOOLKIT ═══
+This format works for both in-person and virtual presentations.`,
 
-🎯 REMEMBER: Parents at your events are already interested. Your job is to give them confidence to say yes.
+  'white-paper': `═══ 2 HOUR LEARNING WHITE PAPER - PARENT TALKING POINTS ═══
 
-═══ KEY MESSAGE #1: ACADEMIC SUPERIORITY ═══
-"Our academics will be best-in-class using the same technology that helps students test in the top 2% nationally. This isn't just tutoring - it's the actual learning system used at Alpha School in Austin." 
+🎯 This white paper contains the core methodology you're offering. Here are the key points to share with parents:
 
-📰 Reference: Fox News coverage of Alpha School results
+═══ THE CORE CONCEPT ═══
+• Students achieve mastery-level learning in just 2 hours per day
+• AI-powered personalized learning adapts to each student's pace
+• Frees up time for specialized athletic training and life skills
 
-💡 WHY THIS WORKS: Parents' #1 concern is always academics. Lead with strength.
+═══ RESEARCH-BACKED RESULTS ═══
+• Students consistently test in top 1-2% nationally
+• Accelerated learning without academic compromise
+• Better retention and deeper understanding than traditional methods
 
-═══ KEY MESSAGE #2: COMPETITIVE ADVANTAGE ═══
-"In our program, we train from 11:30am-3:30pm every day while other kids are in traditional classrooms. That's 20 extra hours of focused training per week that gives your child a massive competitive advantage."
+═══ HOW IT WORKS FOR PARENTS ═══
+• Morning academics (9am-11:30am) using proven technology
+• Afternoon athletics (12pm-3:30pm) for specialized training
+• More family time in evenings and weekends
+• No homework burden - learning happens during school hours
 
-💡 WHY THIS WORKS: Quantifies the advantage in terms parents understand.
+═══ PARENT OBJECTION RESPONSES ═══
 
-═══ KEY MESSAGE #3: VALUE PROPOSITION ═══
-"Our tuition is $15,000/year, but through our partnership with Alpha School, families receive $10,000 scholarships. So you're paying about $500/month for both elite academics and professional training."
+❓ "How can 2 hours be enough for full academics?"
+✅ "The AI system ensures mastery before moving forward, making learning more efficient than traditional 6-hour school days where students often don't retain information."
 
-💡 WHY THIS WORKS: Addresses cost concerns upfront with the scholarship benefit.
+❓ "What about socialization?"
+✅ "Students interact during athletics, group projects, and have more time for community activities and family relationships."
 
-═══ COMMON OBJECTIONS & RESPONSES ═══
+❓ "Is this too good to be true?"
+✅ "The results speak for themselves - here's the independent press coverage and test score data from other schools using this system."
 
-❓ "How do we know the academics really work?"
-✅ "The same system is used at Alpha School where students consistently test in the top 2%. Here's the press coverage and test score data..."
+Read the full white paper to understand the complete methodology before parent meetings.`,
 
-❓ "What if my child falls behind socially?"
-✅ "Our students actually develop stronger social skills through team training and diverse age interactions, plus they have more time for family and community activities."
+  'deep-dive-video': `═══ 2HL DEEP DIVE VIDEO - ESSENTIAL VIEWING ═══
 
-❓ "This seems too good to be true."
-✅ "I understand the skepticism. That's why we offer shadow days - come see it in action before making any commitment."
+🎯 This video gives you the complete understanding of 2 Hour Learning that you need to confidently answer parent questions.
 
-🎯 ALWAYS END WITH: "What questions do you have about getting [child's name] started with us?"
+═══ VIDEO BREAKDOWN ═══
 
-⚠️ AVOID: Pressuring for immediate decisions. Give them 48 hours to discuss as a family, then follow up.`,
+1. 📚 LEARNING SCIENCE FOUNDATION
+   • Why traditional education is inefficient
+   • How AI personalization accelerates learning
+   • The research behind accelerated mastery
 
-  'template-deck': `═══ PRESENTATION CUSTOMIZATION CHECKLIST ═══
+2. 🎯 PRACTICAL IMPLEMENTATION
+   • What a typical learning session looks like
+   • How students progress through subjects
+   • Real student examples and case studies
 
-🎯 CRITICAL: Don't just use the template as-is. Parents can tell when presentations are generic.
+3. 📈 RESULTS AND VALIDATION
+   • Test score improvements and trends
+   • Student engagement and motivation increases
+   • Parent satisfaction and feedback
 
-═══ REQUIRED CUSTOMIZATIONS ═══
+4. 🔮 FUTURE OF EDUCATION
+   • Why this approach is becoming mainstream
+   • Advantages for college and career preparation
+   • Long-term benefits for students
 
-1. ═══ YOUR CREDIBILITY SECTION ═══
-   Add specific examples of your breaking expertise:
-   - Competition wins and rankings
-   - Years of experience training students  
-   - Student success stories and achievements
-   - Reviews from current families (screenshot from your website)
+═══ KEY TAKEAWAYS FOR PARENT CONVERSATIONS ═══
+• This isn't experimental - it's proven and tested
+• Students learn more effectively, not just faster
+• Frees time for specialized skill development
+• Prepares students for modern learning environments
 
-2. ═══ LOCAL RELEVANCE ═══
-   - Replace "Houston" with your specific city/area
-   - Include local school district comparisons
-   - Reference local competition and training opportunities
-   - Add photos of your actual training space
+Watch this video completely before your first parent meeting. Take notes on the specific data points and examples you can reference.`,
 
-3. ═══ SUCCESS STORIES ═══
-   Replace generic examples with YOUR student stories:
-   - Before/after skill progression videos
-   - Academic improvement testimonials
-   - College acceptance or scholarship stories
-   - Character development examples
+  '2hl-results': `═══ 2HL RESULTS PAGE - YOUR CREDIBILITY FOUNDATION ═══
 
-4. ═══ PARTNERSHIP DETAILS ═══
-   Customize the Alpha School partnership slides:
-   - Your specific relationship timeline
-   - How you discovered Alpha School methodology
-   - Your personal education background/credentials
+🎯 This results page contains all the proof points you need to build parent confidence.
 
-💡 PRO TIPS:
-- Practice the presentation at least 3 times before your first event
-- Time it - should be 20-25 minutes max with Q&A
-- Have enrollment forms and calendars ready
-- End with a clear call-to-action (schedule shadow day)
+═══ KEY STATISTICS TO REFERENCE ═══
 
-⚠️ COMMON MISTAKES:
-- Reading directly from slides (memorize key points)
-- Going over 30 minutes total (parents get restless)
-- Forgetting to ask for questions/enrollment
-- Not having next steps clearly defined
+📊 ACADEMIC PERFORMANCE
+• Students score in top 1-2% across all subjects
+• Consistent results across different age groups
+• Spring '23 and Fall '24 data showing sustained success
 
-═══ BEFORE YOUR FIRST PRESENTATION ═══
-□ Customize all placeholder content
-□ Add your photos and videos
-□ Practice timing and transitions
-□ Prepare for common questions
-□ Set up enrollment process`,
+🎓 GRADE-LEVEL BREAKDOWNS
+• Kindergarten: Almost all students in top 1% of MAP scores
+• Elementary: Mastery-level academic progress + life skills
+• Middle School: Every student ranks in top 5%
+• High School: Average SAT score of 1470+, multiple AP 5's
+
+🏆 COLLEGE ACCEPTANCES
+• Stanford, Vanderbilt, USC, UCL, NYU Shanghai
+• Texas (Honors), Austin, Howard, Northeastern
+• Parsons, FIT, and other prestigious institutions
+
+═══ CASE STUDIES TO SHARE ═══
+
+📈 STUDENT CATCHING UP
+• 8th grader 3 years behind caught up to grade level in 1 year
+• Built confidence and became academically prepared for high school
+• Shows the system works for struggling students
+
+🚀 ADVANCED LEARNER
+• Highly intelligent student who was bored in traditional school
+• Challenged appropriately and remained engaged
+• Demonstrates system works for gifted students too
+
+═══ HOW TO USE THIS DATA ═══
+• Print key statistics for parent meetings
+• Reference specific examples during presentations
+• Use college acceptance list as proof of preparation quality
+• Share case studies that match prospective families' situations
+
+This data is your strongest selling point - use it confidently!`,
+
+  'fox-news-article': `═══ FOX NEWS ARTICLE - THIRD-PARTY VALIDATION ═══
+
+🎯 Major news coverage that proves this isn't just marketing - it's recognized success.
+
+═══ KEY ARTICLE HIGHLIGHTS ═══
+
+📺 MEDIA CREDIBILITY
+• Fox News national coverage of the program
+• Independent journalism validating the results
+• Third-party verification of student success
+
+📊 SPECIFIC RESULTS MENTIONED
+• Students rocket to top 2% of test scores nationally
+• AI tutor technology driving unprecedented results
+• Texas private schools leading the innovation
+
+🎯 WHAT THIS MEANS FOR PARENTS
+• External validation from trusted news source
+• Proof that results aren't just internal claims
+• National recognition of the methodology
+
+═══ HOW TO USE THIS PRESS COVERAGE ═══
+
+🗣️ IN CONVERSATIONS
+"This program has been featured on Fox News for the incredible results students are achieving - it's not just us saying it works."
+
+📧 IN EMAIL FOLLOW-UPS
+Include link to the article as credibility proof
+
+📋 IN PRESENTATIONS
+Reference the press coverage when discussing results
+
+📱 ON SOCIAL MEDIA
+Share the article as third-party validation
+
+═══ PARENT OBJECTION RESPONSES ═══
+
+❓ "How do we know this really works?"
+✅ "It's been covered by Fox News and other major outlets because of the documented results. Here's the independent reporting."
+
+❓ "Is this just experimental?"
+✅ "Major news outlets don't cover experimental programs - they cover proven success stories that are already working."
+
+Keep this article bookmarked and reference it regularly in parent communications. Third-party validation is incredibly powerful for building trust.`,
 };
 
 /**
@@ -168,5 +248,5 @@ Goal: 5 students by Fall 2025
  * @returns The content of the resource, or a default message if not found
  */
 export function getResourceContent(resourceId: string): string {
-  return resourceContent[resourceId] || 'Content not available.';
+  return resourceContent[resourceId] || 'This resource opens in a new tab. Click the resource button to access it directly.';
 }

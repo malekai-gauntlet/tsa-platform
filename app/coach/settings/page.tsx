@@ -232,7 +232,7 @@ function SettingsContent() {
     } catch (error) {
       // No profile photo exists yet, use default
       console.log('No profile photo found, using default');
-      setProfilePhoto('/default-profile.png');
+      setProfilePhoto('/coach.png');
     }
   };
 
@@ -307,20 +307,20 @@ function SettingsContent() {
       await remove({ key: photoKey });
 
       // Update local state to default
-      setProfilePhoto('/default-profile.png');
+      setProfilePhoto('/coach.png');
 
       // Dispatch event to update sidebar photo
       window.dispatchEvent(
-        new CustomEvent('profilePhotoChange', { detail: '/default-profile.png' })
+        new CustomEvent('profilePhotoChange', { detail: '/coach.png' })
       );
 
       console.log('✅ Photo removed successfully');
     } catch (error) {
       console.error('❌ Error removing photo:', error);
       // Still update local state as fallback
-      setProfilePhoto('/default-profile.png');
+      setProfilePhoto('/coach.png');
       window.dispatchEvent(
-        new CustomEvent('profilePhotoChange', { detail: '/default-profile.png' })
+        new CustomEvent('profilePhotoChange', { detail: '/coach.png' })
       );
     }
   };
@@ -516,7 +516,7 @@ function SettingsContent() {
         </div>
         <div className="flex items-center gap-6">
           <Avatar
-            src={profilePhoto || '/default-profile.png'}
+            src={profilePhoto || '/coach.png'}
             className="size-20"
             square
             alt="Profile photo"
@@ -531,11 +531,11 @@ function SettingsContent() {
               loading={isUploading}
               icon={<PhotoIcon className="h-4 w-4" />}
             >
-              {profilePhoto && profilePhoto !== '/default-profile.png'
+              {profilePhoto && profilePhoto !== '/coach.png'
                 ? 'Change Photo'
                 : 'Upload Photo'}
             </Button>
-            {profilePhoto && profilePhoto !== '/default-profile.png' && !isUploading && (
+            {profilePhoto && profilePhoto !== '/coach.png' && !isUploading && (
               <Button
                 type="button"
                 onClick={handleRemovePhoto}

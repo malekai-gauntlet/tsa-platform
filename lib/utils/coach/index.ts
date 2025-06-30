@@ -31,7 +31,7 @@ export function createSchoolApplicationURL(location?: string): string {
  * @returns Avatar URL
  */
 export function getUserAvatar(userId?: string, name?: string): string {
-  if (!userId && !name) return '/default-profile.png';
+  if (!userId && !name) return '/coach.png';
 
   // Use Gravatar-style fallback
   const identifier = userId || name || '';

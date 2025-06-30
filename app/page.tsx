@@ -1,15 +1,13 @@
 'use client';
 
-import { signOut } from 'aws-amplify/auth';
+import { signOut } from 'next-auth/react';
 import '@/app/app.css';
-import '@aws-amplify/ui-react/styles.css';
 import Link from 'next/link';
 
 export default function App() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      // AuthWrapper will handle the redirect to login
     } catch (error) {
       console.error('Error signing out:', error);
     }

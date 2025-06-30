@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { getCurrentUser } from 'aws-amplify/auth';
-import { client } from '@/lib/api/graphql-client';
+import { useSession } from 'next-auth/react';
 import { extractDisplayNameFromEmail } from '@/lib/utils';
 import { generateGreeting } from '@/lib/utils/coach';
 import type { CoachData } from '@/lib/types/coach';
 
 export function useCoachData() {
+  const { data: session } = useSession();
   const [coachData, setCoachData] = useState<CoachData>({
     currentUser: null,
     coachRecord: null,
@@ -22,43 +22,43 @@ export function useCoachData() {
       try {
         setLoading(true);
 
-        // Get current user from Cognito
-        const user = await getCurrentUser();
-        if (!isMounted) return;
+        if (!session?.user) return;
 
-        const email = user.signInDetails?.loginId || user.userId || '';
-
-        // Load Coach and Profile records in parallel
-        const [coachRecord, profileRecord] = await Promise.all([
-          loadCoachRecord(email, user.userId),
-          loadProfileRecord(user.userId),
-        ]);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         if (!isMounted) return;
 
-        // Extract coach name and school name
-        let firstName = 'Coach';
-        let schoolName = 'Texas Sports Academy';
+        const email = session.user.email || '';
+        const firstName = session.user.name || extractDisplayNameFromEmail(email) || 'Coach';
+        const schoolName = 'Texas Sports Academy';
 
-        if (coachRecord?.firstName) {
-          firstName = coachRecord.firstName;
-        } else if (user.signInDetails?.loginId) {
-          firstName = extractDisplayNameFromEmail(user.signInDetails.loginId);
-        }
+        // Mock coach and profile records
+        const mockCoachRecord = {
+          id: '1',
+          email: email,
+          firstName: firstName,
+          lastName: 'User',
+          role: 'COACH' as const,
+          status: 'ACTIVE' as const,
+          amplifyUserId: 'mock-user-id',
+        };
 
-        // Get school name from profile preferences
-        if (
-          profileRecord?.preferences &&
-          typeof profileRecord.preferences === 'object' &&
-          'schoolName' in profileRecord.preferences
-        ) {
-          schoolName = (profileRecord.preferences as any).schoolName || schoolName;
-        }
+        const mockProfileRecord = {
+          id: '1',
+          userId: 'mock-user-id',
+          profileType: 'COACH' as const,
+          preferences: {
+            schoolName: schoolName,
+            googleCalendarEnabled: false,
+          },
+          onboardingComplete: true,
+        };
 
         setCoachData({
-          currentUser: user,
-          coachRecord,
-          profileRecord,
+          currentUser: session.user,
+          coachRecord: mockCoachRecord,
+          profileRecord: mockProfileRecord,
           coachLocation: schoolName,
           greeting: generateGreeting(firstName),
         });
@@ -77,62 +77,14 @@ export function useCoachData() {
       }
     };
 
-    loadUserData();
+    if (session) {
+      loadUserData();
+    }
 
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  const loadCoachRecord = async (email: string, amplifyUserId: string) => {
-    try {
-      const { data: users } = await client.models.User.list({
-        filter: { email: { eq: email } },
-      });
-
-      if (users.length > 0) {
-        return users[0];
-      } else {
-        const displayName = extractDisplayNameFromEmail(email);
-        const newUser = await client.models.User.create({
-          email: email,
-          amplifyUserId: amplifyUserId,
-          firstName: displayName,
-          role: 'COACH',
-          status: 'ACTIVE',
-        });
-        return newUser.data;
-      }
-    } catch (error) {
-      console.error('Error loading user record:', error);
-      return null;
-    }
-  };
-
-  const loadProfileRecord = async (userId: string) => {
-    try {
-      const { data: profiles } = await client.models.Profile.list({
-        filter: { userId: { eq: userId } },
-      });
-
-      if (profiles.length > 0) {
-        return profiles[0];
-      } else {
-        const newProfile = await client.models.Profile.create({
-          userId: userId,
-          profileType: 'COACH',
-          preferences: {
-            googleCalendarEnabled: false,
-          },
-          onboardingComplete: false,
-        });
-        return newProfile.data;
-      }
-    } catch (error) {
-      console.error('Error loading profile record:', error);
-      return null;
-    }
-  };
+  }, [session]);
 
   return { coachData, loading };
 }

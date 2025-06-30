@@ -3,22 +3,6 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import ClientWrapper from '@/lib/components/ClientWrapper';
 
-// Amplify configuration at root level
-import { Amplify } from 'aws-amplify';
-import '@aws-amplify/ui-react/styles.css';
-
-// Configure Amplify as early as possible in the application lifecycle
-let amplifyConfigured = false;
-try {
-  const outputs = require('../amplify_outputs.json');
-  Amplify.configure(outputs);
-  amplifyConfigured = true;
-} catch (error) {
-  console.warn('amplify_outputs.json not found. Backend resources may not be deployed yet.');
-  // Configure with minimal setup to prevent errors
-  Amplify.configure({});
-}
-
 export const metadata: Metadata = {
   title: {
     template: '%s - Texas Sports Academy',

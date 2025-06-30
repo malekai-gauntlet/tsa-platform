@@ -49,7 +49,11 @@ export function DesktopSidebar({
         <SidebarHeader>
           <div className="flex items-center justify-center px-2 py-3">
             {!isCollapsed && (
-              <img src="/logo.png" alt="Texas Sports Academy" className="h-16 w-auto" />
+              <img 
+                src="/logo.svg" 
+                alt="Texas Sports Academy" 
+                className="h-16 w-auto brightness-0 invert" 
+              />
             )}
           </div>
         </SidebarHeader>

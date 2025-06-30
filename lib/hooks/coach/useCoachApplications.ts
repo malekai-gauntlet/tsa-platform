@@ -1,10 +1,69 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import { Application } from '@/lib/types/coach';
-import { handleApiError } from '@/lib/utils/coach/errorHandler';
-import { applicationOperations } from '@/lib/api/graphql-client';
 import { calculateApplicationStats } from '@/lib/utils/coach';
+
+// Mock applications data
+const mockApplications: Application[] = [
+  {
+    id: '1',
+    parentId: 'parent1',
+    parentName: 'Sarah Johnson',
+    parentEmail: 'sarah.johnson@parent.com',
+    parentPhone: '(555) 123-4567',
+    studentName: 'Emma Johnson',
+    studentAge: 12,
+    sportInterest: 'Basketball',
+    coachId: 'coach1',
+    status: 'PENDING',
+    createdAt: '2024-01-15T10:30:00.000Z',
+    updatedAt: '2024-01-15T10:30:00.000Z',
+  },
+  {
+    id: '2',
+    parentId: 'parent2',
+    parentName: 'Michael Davis',
+    parentEmail: 'michael.davis@parent.com',
+    parentPhone: '(555) 234-5678',
+    studentName: 'Alex Davis',
+    studentAge: 10,
+    sportInterest: 'Soccer',
+    coachId: 'coach1',
+    status: 'APPROVED',
+    createdAt: '2024-01-14T14:20:00.000Z',
+    updatedAt: '2024-01-14T16:45:00.000Z',
+  },
+  {
+    id: '3',
+    parentId: 'parent3',
+    parentName: 'Lisa Martinez',
+    parentEmail: 'lisa.martinez@parent.com',
+    parentPhone: '(555) 345-6789',
+    studentName: 'Sofia Martinez',
+    studentAge: 14,
+    sportInterest: 'Tennis',
+    coachId: 'coach1',
+    status: 'WAITLIST',
+    createdAt: '2024-01-12T09:15:00.000Z',
+    updatedAt: '2024-01-13T11:30:00.000Z',
+  },
+  {
+    id: '4',
+    parentId: 'parent4',
+    parentName: 'Robert Wilson',
+    parentEmail: 'robert.wilson@parent.com',
+    parentPhone: '(555) 456-7890',
+    studentName: 'Jake Wilson',
+    studentAge: 11,
+    sportInterest: 'Basketball',
+    coachId: 'coach1',
+    status: 'PENDING',
+    createdAt: '2024-01-11T16:45:00.000Z',
+    updatedAt: '2024-01-11T16:45:00.000Z',
+  },
+];
 
 interface UseCoachApplicationsOptions {
   autoFetch?: boolean;
@@ -19,49 +78,36 @@ interface UseCoachApplicationsOptions {
  * @returns Applications data, loading state, error state, statistics, and fetch functions
  */
 export function useCoachApplications(options: UseCoachApplicationsOptions = {}) {
-  const { autoFetch = true, coachEmail, coachId, coachLocation } = options;
+  const { autoFetch = true, coachId } = options;
+  const { data: session } = useSession();
 
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Fetches applications from the API
+   * Fetches applications from mock data
    */
   const fetchApplications = useCallback(async () => {
-    // Create an AbortController for cleanup
-    const abortController = new AbortController();
-
     try {
       setLoading(true);
       setError(null);
 
-      // Use GraphQL client for fetching
-      const applicationsData = await applicationOperations.getApplications();
-
-      // Check if the request was aborted
-      if (abortController.signal.aborted) return;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Filter applications by coach if needed
       const filteredApplications = coachId
-        ? (applicationsData as Application[]).filter(app => app.coachId === coachId)
-        : (applicationsData as Application[]);
+        ? mockApplications.filter(app => app.coachId === coachId)
+        : mockApplications;
 
       setApplications(filteredApplications);
     } catch (err) {
-      // Check if the request was aborted
-      if (abortController.signal.aborted) return;
-
-      handleApiError(err, setError);
+      console.error('Error fetching applications:', err);
+      setError('Failed to load applications. Please try again.');
     } finally {
-      if (!abortController.signal.aborted) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-
-    return () => {
-      abortController.abort();
-    };
   }, [coachId]);
 
   /**
@@ -74,10 +120,14 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
       setLoading(true);
       setError(null);
 
-      const application = await applicationOperations.getApplicationById(id);
-      return application as Application;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const application = mockApplications.find(app => app.id === id);
+      return application || null;
     } catch (err) {
-      handleApiError(err, setError);
+      console.error('Error fetching application:', err);
+      setError('Failed to load application. Please try again.');
       return null;
     } finally {
       setLoading(false);
@@ -96,22 +146,29 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
         setLoading(true);
         setError(null);
 
-        const updatedApplication = await applicationOperations.updateApplicationStatus(id, status);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Update local state
         setApplications(prevApplications =>
-          prevApplications.map(app => (app.id === id ? { ...app, status } : app))
+          prevApplications.map(app => 
+            app.id === id 
+              ? { ...app, status, updatedAt: new Date().toISOString() }
+              : app
+          )
         );
 
-        return updatedApplication as Application;
+        const updatedApplication = applications.find(app => app.id === id);
+        return updatedApplication ? { ...updatedApplication, status } : null;
       } catch (err) {
-        handleApiError(err, setError);
+        console.error('Error updating application:', err);
+        setError('Failed to update application. Please try again.');
         return null;
       } finally {
         setLoading(false);
       }
     },
-    []
+    [applications]
   );
 
   // Memoized application statistics
@@ -128,23 +185,10 @@ export function useCoachApplications(options: UseCoachApplicationsOptions = {}) 
    * Fetches applications on mount if autoFetch is true
    */
   useEffect(() => {
-    if (autoFetch) {
-      let cleanupFunction: (() => void) | undefined;
-      
-      // Use async IIFE and handle the Promise properly
-      (async () => {
-        const result = await fetchApplications();
-        if (typeof result === 'function') {
-          cleanupFunction = result;
-        }
-      })();
-      
-      // Return cleanup function
-      return () => {
-        if (cleanupFunction) cleanupFunction();
-      };
+    if (autoFetch && session) {
+      fetchApplications();
     }
-  }, [autoFetch, fetchApplications]);
+  }, [autoFetch, session, fetchApplications]);
 
   return {
     applications,

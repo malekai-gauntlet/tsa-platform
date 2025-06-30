@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Button } from '@/components/button';
-import { XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/20/solid';
+import { XMarkIcon, ClipboardDocumentIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import type { ResourceMaterial } from '../types';
 import { getResourceContent } from '../data/resource-content';
 
@@ -10,6 +10,68 @@ interface ResourceModalProps {
   onClose: () => void;
 }
 
+function getVideoEmbedUrl(url: string): string | null {
+  // YouTube URL patterns
+  if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1]?.split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  
+  // Vimeo URL patterns
+  if (url.includes('vimeo.com/')) {
+    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+    return `https://player.vimeo.com/video/${videoId}`;
+  }
+  
+  return null;
+}
+
+function isTestimonialVideo(resourceId: string): boolean {
+  return resourceId.includes('testimonial-video');
+}
+
+function shouldEmbedResource(resource: ResourceMaterial): boolean {
+  // Don't embed testimonial videos - they should open externally
+  if (isTestimonialVideo(resource.id)) {
+    return false;
+  }
+  
+  if (!resource.url) return true; // Has local content
+  
+  // Embed YouTube and Vimeo videos for non-testimonials
+  if (resource.type === 'video') {
+    return getVideoEmbedUrl(resource.url) !== null;
+  }
+  
+  // Embed certain document types
+  if (resource.type === 'guide' && resource.url.includes('heyzine.com')) {
+    return true;
+  }
+  
+  // Embed Google Slides presentations
+  if (resource.type === 'template' && resource.url.includes('docs.google.com/presentation')) {
+    return true;
+  }
+  
+  return false;
+}
+
+function getGoogleSlidesEmbedUrl(url: string): string | null {
+  if (url.includes('docs.google.com/presentation')) {
+    // Convert Google Slides URL to embeddable format
+    if (url.includes('/edit')) {
+      return url.replace('/edit', '/embed');
+    } else if (url.includes('/copy')) {
+      return url.replace('/copy', '/embed');
+    }
+    return url + '/embed';
+  }
+  return null;
+}
 
 export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen, resource, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -58,6 +120,61 @@ export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen,
     }
   };
 
+  const handleOpenExternal = (): void => {
+    if (resource.url) {
+      window.open(resource.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const shouldEmbed = shouldEmbedResource(resource);
+  const videoEmbedUrl = resource.type === 'video' && resource.url && shouldEmbed ? getVideoEmbedUrl(resource.url) : null;
+  const slidesEmbedUrl = resource.type === 'template' && resource.url && shouldEmbed ? getGoogleSlidesEmbedUrl(resource.url) : null;
+
+  // For testimonials, just show a message and open externally
+  if (isTestimonialVideo(resource.id)) {
+    return (
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4"
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="resource-modal-title"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
+      >
+        <div 
+          className="max-h-[90vh] w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl"
+          ref={modalRef}
+          tabIndex={-1}
+        >
+          <div className="p-8 text-center">
+            <h2 className="mb-4 text-xl font-bold text-gray-900">{resource.title}</h2>
+            <p className="mb-6 text-gray-600">
+              This testimonial video will open in a new tab. You can show this video directly to parents during presentations or share the link with them.
+            </p>
+            <div className="flex justify-center space-x-3">
+              <Button
+                className="cursor-pointer bg-[#004aad] text-white hover:bg-[#003888]"
+                onClick={handleOpenExternal}
+              >
+                <ArrowTopRightOnSquareIcon className="mr-1 h-4 w-4" />
+                Watch Video
+              </Button>
+              <Button
+                className="cursor-pointer border border-gray-200 hover:bg-gray-50"
+                onClick={onClose}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4"
@@ -72,7 +189,7 @@ export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen,
       }}
     >
       <div 
-        className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl"
+        className="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-xl bg-white shadow-2xl"
         ref={modalRef}
         tabIndex={-1}
       >
@@ -83,6 +200,21 @@ export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen,
               <div>
                 <h2 id="resource-modal-title" className="text-2xl font-bold text-gray-900">{resource.title}</h2>
                 <p className="mt-1 text-gray-600">{resource.description}</p>
+                {resource.type === 'video' && (
+                  <span className="mt-2 inline-block rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">
+                    Video Resource
+                  </span>
+                )}
+                {resource.type === 'template' && (
+                  <span className="mt-2 inline-block rounded-full bg-purple-100 px-2 py-1 text-xs text-purple-800">
+                    Template Resource
+                  </span>
+                )}
+                {resource.type === 'guide' && (
+                  <span className="mt-2 inline-block rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                    Guide Resource
+                  </span>
+                )}
               </div>
               <Button
                 className="cursor-pointer border border-gray-200 hover:bg-gray-50"
@@ -95,6 +227,66 @@ export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen,
 
             {/* Content */}
             <div className="prose max-w-none">
+              {/* Embedded Video */}
+              {videoEmbedUrl && (
+                <div className="mb-6">
+                  <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+                    <iframe
+                      src={videoEmbedUrl}
+                      title={resource.title}
+                      className="h-full w-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Embedded Google Slides */}
+              {slidesEmbedUrl && (
+                <div className="mb-6">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border">
+                    <iframe
+                      src={slidesEmbedUrl}
+                      title={resource.title}
+                      className="h-full w-full"
+                      frameBorder="0"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Embedded Flipbook */}
+              {resource.type === 'guide' && resource.url?.includes('heyzine.com') && (
+                <div className="mb-6">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border">
+                    <iframe
+                      src={resource.url}
+                      title={resource.title}
+                      className="h-full w-full"
+                      frameBorder="0"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Embedded 2HL Results Page */}
+              {resource.id === '2hl-results' && resource.url && (
+                <div className="mb-6">
+                  <div className="relative min-h-[600px] w-full overflow-hidden rounded-lg border">
+                    <iframe
+                      src={resource.url}
+                      title={resource.title}
+                      className="h-full w-full"
+                      frameBorder="0"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Text Content */}
               <pre 
                 className="whitespace-pre-wrap rounded-lg border border-gray-200 bg-white p-8 font-sans text-base leading-7 text-gray-900 shadow-sm"
                 ref={contentRef}
@@ -105,15 +297,27 @@ export const ResourceModal: React.FC<ResourceModalProps> = React.memo(({ isOpen,
             </div>
 
             {/* Footer Actions */}
-            <div className="mt-8 flex items-center justify-end space-x-3 border-t border-gray-200 pt-6">
-              <Button
-                className="cursor-pointer border border-gray-200 hover:bg-gray-50"
-                onClick={handleCopyContent}
-                aria-label={copied ? 'Content copied' : 'Copy content'}
-              >
-                <ClipboardDocumentIcon className="mr-1 h-4 w-4" />
-                {copied ? 'Copied!' : 'Copy Content'}
-              </Button>
+            <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
+              <div className="flex items-center space-x-3">
+                {resource.url && (
+                  <Button
+                    className="cursor-pointer border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                    onClick={handleOpenExternal}
+                    aria-label="Open in new tab"
+                  >
+                    <ArrowTopRightOnSquareIcon className="mr-1 h-4 w-4" />
+                    Open Original
+                  </Button>
+                )}
+                <Button
+                  className="cursor-pointer border border-gray-200 hover:bg-gray-50"
+                  onClick={handleCopyContent}
+                  aria-label={copied ? 'Content copied' : 'Copy content'}
+                >
+                  <ClipboardDocumentIcon className="mr-1 h-4 w-4" />
+                  {copied ? 'Copied!' : 'Copy Notes'}
+                </Button>
+              </div>
               <Button
                 className="cursor-pointer bg-[#004aad] text-white hover:bg-[#003888]"
                 onClick={onClose}

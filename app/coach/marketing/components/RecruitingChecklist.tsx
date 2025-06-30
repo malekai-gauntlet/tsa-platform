@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { CheckCircleIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon, ArrowTopRightOnSquareIcon, PlayCircleIcon, PhotoIcon, DocumentTextIcon } from '@heroicons/react/20/solid';
 import type { RecruitingStep, ResourceMaterial } from '../types';
 
 interface RecruitingChecklistProps {
@@ -9,6 +9,99 @@ interface RecruitingChecklistProps {
   onStepComplete: (stepId: string) => Promise<void>;
   onResourceClick: (resource: ResourceMaterial) => void;
 }
+
+const EmbeddedPreview: React.FC<{ resource: ResourceMaterial }> = ({ resource }) => {
+  const getEmbedUrl = (url: string, type: string): string | null => {
+    // YouTube
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1]?.split('&')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Vimeo
+    if (url.includes('vimeo.com/')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+      return `https://player.vimeo.com/video/${videoId}`;
+    }
+    
+    // Google Slides
+    if (url.includes('docs.google.com/presentation')) {
+      if (url.includes('/edit')) {
+        return url.replace('/edit', '/embed');
+      } else if (url.includes('/copy')) {
+        return url.replace('/copy', '/embed');
+      }
+      return url + '/embed';
+    }
+    
+    // Heyzine flipbook
+    if (url.includes('heyzine.com')) {
+      return url;
+    }
+    
+    // 2HL Results page
+    if (url.includes('2hourlearning.com/results')) {
+      return url;
+    }
+    
+    return null;
+  };
+
+  const embedUrl = resource.url ? getEmbedUrl(resource.url, resource.type) : null;
+  
+  if (!embedUrl) return null;
+
+  const aspectRatio = resource.type === 'video' ? 'aspect-video' : 
+                     resource.type === 'template' ? 'aspect-[4/3]' : 
+                     'aspect-[3/4]';
+
+  return (
+    <div className="mb-4">
+      <div className={`relative ${aspectRatio} w-full overflow-hidden rounded-lg border border-gray-200`}>
+        <iframe
+          src={embedUrl}
+          title={resource.title}
+          className="h-full w-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      <div className="mt-2 flex items-center justify-between">
+        <div>
+          <h4 className="font-medium text-gray-900">{resource.title}</h4>
+          <p className="text-sm text-gray-600">{resource.description}</p>
+        </div>
+        <button
+          onClick={() => window.open(resource.url, '_blank')}
+          className="text-sm text-blue-600 hover:text-blue-800"
+        >
+          Open Original ↗
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MarketingMaterialCard: React.FC<{ resource: ResourceMaterial }> = ({ resource }) => {
+  return (
+    <div className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+      <div className="flex h-full items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+        <PhotoIcon className="h-16 w-16 text-purple-400" />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 transition-opacity group-hover:opacity-100">
+        <ArrowTopRightOnSquareIcon className="h-8 w-8 text-white" />
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2">
+        <p className="text-xs font-medium text-white">{resource.title}</p>
+      </div>
+    </div>
+  );
+};
 
 export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
   steps,
@@ -22,9 +115,9 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Student Recruiting Plan</h2>
+            <h2 className="text-xl font-bold text-gray-900">Your Marketing Toolkit</h2>
             <p className="mt-2 text-zinc-500">
-              Step-by-step checklist to attract and convert families to your program.
+              Everything you need to confidently pitch parents and market your school effectively.
             </p>
           </div>
           <div className="text-right">
@@ -41,12 +134,17 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
         </div>
       </div>
 
-      {/* Recruiting Checklist */}
+      {/* Marketing Toolkit */}
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
         {steps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id);
           const isNext = !isCompleted && (index === 0 || completedSteps.has(steps[index - 1].id));
           const isProcessing = processingSteps.has(step.id);
+
+          // Special handling for different sections
+          const isTestimonialsSection = step.id === 'testimonials';
+          const isMarketingMaterialsSection = step.id === 'marketing-materials';
+          const shouldShowEmbeddedPreviews = step.id === 'how-to-pitch-parents' || step.id === 'information-about-2hl';
 
           return (
             <div
@@ -111,21 +209,79 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
 
                 {/* Resources */}
                 <div className="ml-9">
-                  <div className="flex flex-wrap gap-3">
-                    {step.resources.map(resource => (
-                      <button
-                        key={resource.id}
-                        onClick={() => onResourceClick(resource)}
-                        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50"
-                      >
-                        <div style={{ color: resource.color }}>
-                          <resource.icon className="h-4 w-4" />
+                  {/* Embedded Previews for Informational Content */}
+                  {shouldShowEmbeddedPreviews ? (
+                    <div className="space-y-6">
+                      {step.resources.map(resource => (
+                        <div key={resource.id}>
+                          <EmbeddedPreview resource={resource} />
+                          <button
+                            onClick={() => onResourceClick(resource)}
+                            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50"
+                          >
+                            <div style={{ color: resource.color }}>
+                              <resource.icon className="h-4 w-4" />
+                            </div>
+                            <span>View Details & Notes</span>
+                            <DocumentTextIcon className="h-3 w-3 text-gray-400" />
+                          </button>
                         </div>
-                        <span>{resource.title}</span>
-                        <ArrowTopRightOnSquareIcon className="h-3 w-3 text-gray-400" />
-                      </button>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : isTestimonialsSection ? (
+                    /* Simple Buttons for Testimonials */
+                    <div>
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">Testimonial Videos to Show Parents</h4>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {step.resources.map(resource => (
+                          <button
+                            key={resource.id}
+                            onClick={() => onResourceClick(resource)}
+                            className="flex items-center justify-between rounded-lg border border-gray-200 p-4 text-left transition-colors hover:border-gray-300 hover:bg-gray-50"
+                          >
+                            <div>
+                              <h5 className="font-medium text-gray-900">{resource.title}</h5>
+                              <p className="text-sm text-gray-600">Click to watch testimonial</p>
+                            </div>
+                            <PlayCircleIcon className="h-6 w-6 text-gray-400" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : isMarketingMaterialsSection ? (
+                    /* Visual Grid for Marketing Materials */
+                    <div>
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">Professional Marketing Graphics</h4>
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                        {step.resources.map(resource => (
+                          <button
+                            key={resource.id}
+                            onClick={() => onResourceClick(resource)}
+                            className="text-left transition-transform hover:scale-105"
+                          >
+                            <MarketingMaterialCard resource={resource} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Default Layout for Other Resources */
+                    <div className="flex flex-wrap gap-3">
+                      {step.resources.map(resource => (
+                        <button
+                          key={resource.id}
+                          onClick={() => onResourceClick(resource)}
+                          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50"
+                        >
+                          <div style={{ color: resource.color }}>
+                            <resource.icon className="h-4 w-4" />
+                          </div>
+                          <span>{resource.title}</span>
+                          <ArrowTopRightOnSquareIcon className="h-3 w-3 text-gray-400" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -139,7 +295,7 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
           <div className="flex items-center gap-2">
             <CheckCircleIcon className="h-5 w-5 text-green-500" />
             <span className="font-medium text-green-800">
-              🎉 Congratulations! You've completed the student recruiting plan.
+              🎉 Congratulations! You've reviewed all your marketing resources and are ready to pitch parents.
             </span>
           </div>
         </div>

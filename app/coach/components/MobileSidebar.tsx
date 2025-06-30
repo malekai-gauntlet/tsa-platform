@@ -40,7 +40,11 @@ export function MobileSidebar({
         <Sidebar className="h-full w-full">
           <SidebarHeader>
             <div className="flex items-center justify-between px-4 py-3">
-              <img src="/logo.png" alt="Texas Sports Academy" className="h-16 w-auto" />
+              <img 
+                src="/logo.svg" 
+                alt="Texas Sports Academy" 
+                className="h-16 w-auto brightness-0 invert" 
+              />
               <button onClick={onClose} className="rounded-md p-2 text-white hover:bg-white/10">
                 <XMarkIcon className="h-6 w-6" />
               </button>

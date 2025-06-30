@@ -8,42 +8,51 @@ interface ApplicationStatsProps {
 }
 
 export function ApplicationStats({ stats, loading }: ApplicationStatsProps) {
+  const navigateToApplications = () => {
+    window.location.href = '/coach/applications';
+  };
+
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center">
-          <div className="rounded-lg bg-purple-100 p-2">
-            <DocumentTextIcon className="h-5 w-5 text-purple-600" />
+    <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+      <div className="flex items-center gap-8">
+        <button
+          onClick={navigateToApplications}
+          className="flex items-center gap-3 hover:bg-gray-50 rounded p-2 transition-colors"
+        >
+          <div className="rounded bg-purple-100 p-1.5">
+            <DocumentTextIcon className="h-4 w-4 text-purple-600" />
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Total Applications</p>
-            <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.total}</p>
+          <div>
+            <span className="text-sm text-gray-500">Total</span>
+            <div className="text-lg font-semibold text-gray-900 hover:text-[#004aad]">{loading ? '...' : stats.total}</div>
           </div>
-        </div>
-      </div>
+        </button>
 
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center">
-          <div className="rounded-lg bg-amber-100 p-2">
-            <ClockIcon className="h-5 w-5 text-amber-600" />
+        <button
+          onClick={navigateToApplications}
+          className="flex items-center gap-3 hover:bg-gray-50 rounded p-2 transition-colors"
+        >
+          <div className="rounded bg-amber-100 p-1.5">
+            <ClockIcon className="h-4 w-4 text-amber-600" />
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Pending Review</p>
-            <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.pending}</p>
+          <div>
+            <span className="text-sm text-gray-500">Pending</span>
+            <div className="text-lg font-semibold text-gray-900 hover:text-[#004aad]">{loading ? '...' : stats.pending}</div>
           </div>
-        </div>
-      </div>
+        </button>
 
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center">
-          <div className="rounded-lg bg-green-100 p-2">
-            <CheckCircleIcon className="h-5 w-5 text-green-600" />
+        <button
+          onClick={navigateToApplications}
+          className="flex items-center gap-3 hover:bg-gray-50 rounded p-2 transition-colors"
+        >
+          <div className="rounded bg-green-100 p-1.5">
+            <CheckCircleIcon className="h-4 w-4 text-green-600" />
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Accepted</p>
-            <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.accepted}</p>
+          <div>
+            <span className="text-sm text-gray-500">Accepted</span>
+            <div className="text-lg font-semibold text-gray-900 hover:text-[#004aad]">{loading ? '...' : stats.accepted}</div>
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );

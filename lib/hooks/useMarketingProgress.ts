@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { marketingService } from '../services/marketing';
 import type { MarketingProgress, MarketingMaterial } from '../types/marketing';
 
 interface UseMarketingProgressResult {
@@ -19,49 +18,79 @@ interface UseMarketingProgressResult {
 
 /**
  * Hook for managing marketing progress
+ * Simplified to work without user authentication since marketing resources are the same for all coaches
  */
 export function useMarketingProgress(): UseMarketingProgressResult {
-  const [userId, setUserId] = useState<string | null>(null);
   const [progress, setProgress] = useState<MarketingProgress | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
 
-  // Get the current user ID and load initial data
+  // Load initial data from localStorage
   useEffect(() => {
     async function init() {
       try {
         setLoading(true);
-        const currentUserId = await marketingService.getCurrentUserId();
         
-        if (!currentUserId) {
-          throw new Error('Failed to get user ID');
-        }
+        // Load marketing progress from localStorage
+        const storedProgress = localStorage.getItem('marketing-toolkit-progress');
         
-        setUserId(currentUserId);
-        
-        // Migrate any existing localStorage data
-        await marketingService.migrateFromLocalStorage(currentUserId);
-        
-        // Load marketing progress
-        const result = await marketingService.getMarketingProgress(currentUserId);
-        if (result.success && result.data) {
-          setProgress(result.data);
-          setCompletedSteps(new Set(result.data.completedSteps));
-        } else if (result.error) {
-          throw new Error(result.error.message);
+        if (storedProgress) {
+          try {
+            const parsedProgress = JSON.parse(storedProgress) as MarketingProgress;
+            setProgress(parsedProgress);
+            setCompletedSteps(new Set(parsedProgress.completedSteps));
+          } catch (parseError) {
+            console.error('Error parsing stored progress:', parseError);
+            // Initialize with empty progress if parsing fails
+            const emptyProgress: MarketingProgress = {
+              completedSteps: [],
+              materialsCreated: [],
+              lastUpdated: new Date().toISOString()
+            };
+            setProgress(emptyProgress);
+            setCompletedSteps(new Set());
+          }
+        } else {
+          // Initialize with empty progress
+          const emptyProgress: MarketingProgress = {
+            completedSteps: [],
+            materialsCreated: [],
+            lastUpdated: new Date().toISOString()
+          };
+          setProgress(emptyProgress);
+          setCompletedSteps(new Set());
         }
         
         setError(null);
       } catch (err) {
         console.error('Error initializing marketing progress:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
+        
+        // Fallback to empty progress
+        const emptyProgress: MarketingProgress = {
+          completedSteps: [],
+          materialsCreated: [],
+          lastUpdated: new Date().toISOString()
+        };
+        setProgress(emptyProgress);
+        setCompletedSteps(new Set());
       } finally {
         setLoading(false);
       }
     }
     
     init();
+  }, []);
+
+  // Save progress to localStorage
+  const saveProgress = useCallback((updatedProgress: MarketingProgress) => {
+    try {
+      localStorage.setItem('marketing-toolkit-progress', JSON.stringify(updatedProgress));
+      setProgress(updatedProgress);
+    } catch (err) {
+      console.error('Error saving progress to localStorage:', err);
+    }
   }, []);
 
   // Check if a step is completed
@@ -71,38 +100,23 @@ export function useMarketingProgress(): UseMarketingProgressResult {
 
   // Complete a step
   const completeStep = useCallback(async (stepId: string): Promise<boolean> => {
-    if (!userId) {
-      setError('User not authenticated');
-      return false;
-    }
-    
     try {
+      if (!progress) return false;
+      
       // Optimistically update UI
       const newCompletedSteps = new Set(completedSteps);
       newCompletedSteps.add(stepId);
       setCompletedSteps(newCompletedSteps);
       
-      // Update progress in database
-      if (progress) {
-        const updatedProgress: MarketingProgress = {
-          ...progress,
-          completedSteps: Array.from(newCompletedSteps),
-          lastUpdated: new Date().toISOString()
-        };
-        
-        const result = await marketingService.updateMarketingProgress(userId, updatedProgress);
-        if (result.success && result.data) {
-          setProgress(result.data);
-          return true;
-        } else {
-          // Rollback optimistic update
-          setCompletedSteps(completedSteps);
-          setError(result.error?.message || 'Failed to complete step');
-          return false;
-        }
-      }
+      // Update progress
+      const updatedProgress: MarketingProgress = {
+        ...progress,
+        completedSteps: Array.from(newCompletedSteps),
+        lastUpdated: new Date().toISOString()
+      };
       
-      return false;
+      saveProgress(updatedProgress);
+      return true;
     } catch (err) {
       // Rollback optimistic update
       setCompletedSteps(completedSteps);
@@ -110,42 +124,27 @@ export function useMarketingProgress(): UseMarketingProgressResult {
       setError(err instanceof Error ? err.message : 'Unknown error');
       return false;
     }
-  }, [userId, progress, completedSteps]);
+  }, [progress, completedSteps, saveProgress]);
 
   // Uncomplete a step
   const uncompleteStep = useCallback(async (stepId: string): Promise<boolean> => {
-    if (!userId) {
-      setError('User not authenticated');
-      return false;
-    }
-    
     try {
+      if (!progress) return false;
+      
       // Optimistically update UI
       const newCompletedSteps = new Set(completedSteps);
       newCompletedSteps.delete(stepId);
       setCompletedSteps(newCompletedSteps);
       
-      // Update progress in database
-      if (progress) {
-        const updatedProgress: MarketingProgress = {
-          ...progress,
-          completedSteps: Array.from(newCompletedSteps),
-          lastUpdated: new Date().toISOString()
-        };
-        
-        const result = await marketingService.updateMarketingProgress(userId, updatedProgress);
-        if (result.success && result.data) {
-          setProgress(result.data);
-          return true;
-        } else {
-          // Rollback optimistic update
-          setCompletedSteps(completedSteps);
-          setError(result.error?.message || 'Failed to uncomplete step');
-          return false;
-        }
-      }
+      // Update progress
+      const updatedProgress: MarketingProgress = {
+        ...progress,
+        completedSteps: Array.from(newCompletedSteps),
+        lastUpdated: new Date().toISOString()
+      };
       
-      return false;
+      saveProgress(updatedProgress);
+      return true;
     } catch (err) {
       // Rollback optimistic update
       setCompletedSteps(completedSteps);
@@ -153,7 +152,7 @@ export function useMarketingProgress(): UseMarketingProgressResult {
       setError(err instanceof Error ? err.message : 'Unknown error');
       return false;
     }
-  }, [userId, progress, completedSteps]);
+  }, [progress, completedSteps, saveProgress]);
 
   // Track material creation
   const trackMaterialCreation = useCallback(async (materialData: {
@@ -161,34 +160,36 @@ export function useMarketingProgress(): UseMarketingProgressResult {
     title: string;
     description?: string;
   }): Promise<MarketingMaterial | null> => {
-    if (!userId) {
-      setError('User not authenticated');
-      return null;
-    }
-    
     try {
-      const result = await marketingService.trackMaterialCreation(userId, materialData);
-      if (result.success && result.data) {
-        // Update local progress state
-        if (progress) {
-          const updatedProgress: MarketingProgress = {
-            ...progress,
-            materialsCreated: [...progress.materialsCreated, result.data],
-            lastUpdated: new Date().toISOString()
-          };
-          setProgress(updatedProgress);
-        }
-        return result.data;
-      } else {
-        setError(result.error?.message || 'Failed to track material creation');
-        return null;
-      }
+      if (!progress) return null;
+      
+      // Generate a unique ID for the material
+      const newMaterial: MarketingMaterial = {
+        id: `material_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        type: materialData.type as any,
+        title: materialData.title,
+        description: materialData.description || '',
+        thumbnail: '',
+        category: 'general',
+        lastModified: new Date().toISOString(),
+        status: 'draft'
+      };
+      
+      // Update progress with new material
+      const updatedProgress: MarketingProgress = {
+        ...progress,
+        materialsCreated: [...progress.materialsCreated, newMaterial],
+        lastUpdated: new Date().toISOString()
+      };
+      
+      saveProgress(updatedProgress);
+      return newMaterial;
     } catch (err) {
       console.error('Error tracking material creation:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       return null;
     }
-  }, [userId, progress]);
+  }, [progress, saveProgress]);
 
   return {
     progress,

@@ -63,7 +63,7 @@ export function UserDropdown({ anchor, profilePhoto, currentUser, className }: U
     <Dropdown>
       <DropdownButton className={className}>
         <span className="flex min-w-0 items-center gap-3">
-          <Avatar src={profilePhoto || '/default-profile.png'} className="size-10" square alt="" />
+          <Avatar src={profilePhoto || '/coach.png'} className="size-10" square alt="" />
           <span className="min-w-0">
             <span className="block truncate text-sm/5 font-medium text-white dark:text-white">
               Coach

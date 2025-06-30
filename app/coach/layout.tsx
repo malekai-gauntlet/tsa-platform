@@ -25,7 +25,7 @@ import {
   SidebarLabel,
   SidebarSection,
 } from '@/components/sidebar';
-import { getCurrentUser, signOut } from 'aws-amplify/auth';
+import { useSession, signOut } from 'next-auth/react';
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronUpIcon,
@@ -150,6 +150,7 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const { data: session } = useSession();
 
   const toggleSidebar = useCallback(() => {
     setIsCollapsed(!isCollapsed);
@@ -194,17 +195,11 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Get current user on component mount
-    const loadUser = async () => {
-      try {
-        const user = await getCurrentUser();
-        setCurrentUser(user);
-      } catch (error) {
-        console.error('Error loading user:', error);
-      }
-    };
-    loadUser();
-  }, []);
+    // Set current user from NextAuth session
+    if (session?.user) {
+      setCurrentUser(session.user);
+    }
+  }, [session]);
 
   // Listen for toggle events from main content
   useEffect(() => {
@@ -235,7 +230,11 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
         <Sidebar className="h-full w-full">
           <SidebarHeader>
             <div className="flex items-center justify-between px-4 py-3">
-              <img src="/logo.png" alt="Texas Sports Academy" className="h-16 w-auto" />
+              <img 
+                src="/logo.svg" 
+                alt="Texas Sports Academy" 
+                className="h-16 w-auto brightness-0 invert" 
+              />
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="rounded-md p-2 text-white hover:bg-white/10"
@@ -328,7 +327,7 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
               <DropdownButton as={SidebarItem}>
                 <span className="flex min-w-0 items-center gap-3">
                   <Avatar
-                    src={profilePhoto || '/default-profile.png'}
+                    src={profilePhoto || '/coach.png'}
                     className="size-10"
                     square
                     alt=""
@@ -371,7 +370,11 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
           <SidebarHeader>
             <div className="flex items-center justify-center px-2 py-3">
               {!isCollapsed && (
-                <img src="/logo.png" alt="Texas Sports Academy" className="h-16 w-auto" />
+                <img 
+                  src="/logo.svg" 
+                  alt="Texas Sports Academy" 
+                  className="h-16 w-auto brightness-0 invert" 
+                />
               )}
             </div>
           </SidebarHeader>
@@ -472,7 +475,7 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
                 <DropdownButton as={SidebarItem} data-tour="profile-dropdown">
                   <span className="flex min-w-0 items-center gap-3">
                     <Avatar
-                      src={profilePhoto || '/default-profile.png'}
+                      src={profilePhoto || '/coach.png'}
                       className="size-10"
                       square
                       alt=""
@@ -508,7 +511,7 @@ function OriginalCoachLayout({ children }: { children: React.ReactNode }) {
             <NavbarSection>
               <Dropdown>
                 <DropdownButton as={NavbarItem}>
-                  <Avatar src={profilePhoto || '/default-profile.png'} square />
+                  <Avatar src={profilePhoto || '/coach.png'} square />
                 </DropdownButton>
                 <AccountDropdownMenu anchor="bottom end" />
               </Dropdown>
