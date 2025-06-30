@@ -10,7 +10,7 @@ interface RecruitingChecklistProps {
   onResourceClick: (resource: ResourceMaterial) => void;
 }
 
-const EmbeddedPreview: React.FC<{ resource: ResourceMaterial }> = ({ resource }) => {
+const CompactEmbeddedPreview: React.FC<{ resource: ResourceMaterial; onResourceClick: (resource: ResourceMaterial) => void }> = ({ resource, onResourceClick }) => {
   const getEmbedUrl = (url: string, type: string): string | null => {
     // YouTube
     if (url.includes('youtube.com/watch?v=')) {
@@ -43,25 +43,65 @@ const EmbeddedPreview: React.FC<{ resource: ResourceMaterial }> = ({ resource })
       return url;
     }
     
-    // 2HL Results page
-    if (url.includes('2hourlearning.com/results')) {
-      return url;
-    }
-    
     return null;
   };
 
   const embedUrl = resource.url ? getEmbedUrl(resource.url, resource.type) : null;
   
-  if (!embedUrl) return null;
+  // For 2HL results, don't embed - just show as regular resource
+  if (resource.id === '2hl-results') {
+    return (
+      <div className="rounded-lg border border-gray-200 p-4">
+        <div className="mb-3 flex items-center justify-center rounded-lg bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
+          <div style={{ color: resource.color }}>
+            <resource.icon className="h-12 w-12" />
+          </div>
+        </div>
+        <div className="text-center">
+          <h4 className="font-medium text-gray-900">{resource.title}</h4>
+          <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
+          <button
+            onClick={() => onResourceClick(resource)}
+            className="mt-3 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+          >
+            View Results Data
+            <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!embedUrl) {
+    return (
+      <div className="rounded-lg border border-gray-200 p-4">
+        <div className="mb-3 flex items-center justify-center rounded-lg bg-gray-50 p-6">
+          <div style={{ color: resource.color }}>
+            <resource.icon className="h-12 w-12" />
+          </div>
+        </div>
+        <div className="text-center">
+          <h4 className="font-medium text-gray-900">{resource.title}</h4>
+          <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
+          <button
+            onClick={() => onResourceClick(resource)}
+            className="mt-3 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+          >
+            View Details
+            <DocumentTextIcon className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const aspectRatio = resource.type === 'video' ? 'aspect-video' : 
                      resource.type === 'template' ? 'aspect-[4/3]' : 
                      'aspect-[3/4]';
 
   return (
-    <div className="mb-4">
-      <div className={`relative ${aspectRatio} w-full overflow-hidden rounded-lg border border-gray-200`}>
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className={`relative ${aspectRatio} w-full`}>
         <iframe
           src={embedUrl}
           title={resource.title}
@@ -71,17 +111,23 @@ const EmbeddedPreview: React.FC<{ resource: ResourceMaterial }> = ({ resource })
           allowFullScreen
         />
       </div>
-      <div className="mt-2 flex items-center justify-between">
-        <div>
-          <h4 className="font-medium text-gray-900">{resource.title}</h4>
-          <p className="text-sm text-gray-600">{resource.description}</p>
+      <div className="p-3">
+        <h4 className="font-medium text-gray-900 text-sm">{resource.title}</h4>
+        <p className="text-xs text-gray-600 mt-1">{resource.description}</p>
+        <div className="mt-2 flex items-center justify-between">
+          <button
+            onClick={() => onResourceClick(resource)}
+            className="text-xs text-blue-600 hover:text-blue-800"
+          >
+            View Notes
+          </button>
+          <button
+            onClick={() => window.open(resource.url, '_blank')}
+            className="text-xs text-gray-500 hover:text-gray-700"
+          >
+            Open Original ↗
+          </button>
         </div>
-        <button
-          onClick={() => window.open(resource.url, '_blank')}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
-          Open Original ↗
-        </button>
       </div>
     </div>
   );
@@ -209,23 +255,15 @@ export const RecruitingChecklist: React.FC<RecruitingChecklistProps> = memo(({
 
                 {/* Resources */}
                 <div className="ml-9">
-                  {/* Embedded Previews for Informational Content */}
+                  {/* Compact 3-Card Grid for Informational Content */}
                   {shouldShowEmbeddedPreviews ? (
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {step.resources.map(resource => (
-                        <div key={resource.id}>
-                          <EmbeddedPreview resource={resource} />
-                          <button
-                            onClick={() => onResourceClick(resource)}
-                            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50"
-                          >
-                            <div style={{ color: resource.color }}>
-                              <resource.icon className="h-4 w-4" />
-                            </div>
-                            <span>View Details & Notes</span>
-                            <DocumentTextIcon className="h-3 w-3 text-gray-400" />
-                          </button>
-                        </div>
+                        <CompactEmbeddedPreview 
+                          key={resource.id} 
+                          resource={resource} 
+                          onResourceClick={onResourceClick}
+                        />
                       ))}
                     </div>
                   ) : isTestimonialsSection ? (

@@ -43,3 +43,7 @@ amplifyconfiguration*
 # playwright
 test-results/
 playwright/.cache/
+
+# application data
+/data/
+applications.json
