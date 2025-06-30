@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
       sportInterest: body.tsaLocation?.includes('bennett') ? 'Baseball' : 'Sports Training',
     };
     
-    // Save to JSON file
-    await saveApplication(applicationData);
+    // Log the application instead of saving to file (for now)
+    console.log('📝 New Application Received:', JSON.stringify(applicationData, null, 2));
     
     return NextResponse.json({
       success: true,
@@ -96,37 +96,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Save application to JSON file
-async function saveApplication(applicationData: any) {
-  const dataDir = path.join(process.cwd(), 'data');
-  const filePath = path.join(dataDir, 'applications.json');
-  
-  // Ensure data directory exists
-  if (!existsSync(dataDir)) {
-    await mkdir(dataDir, { recursive: true });
-  }
-  
-  // Read existing applications or create empty array
-  let applications = [];
-  if (existsSync(filePath)) {
-    try {
-      const fileContent = await readFile(filePath, 'utf-8');
-      applications = JSON.parse(fileContent);
-    } catch (error) {
-      console.error('Error reading applications file:', error);
-      applications = [];
-    }
-  }
-  
-  // Add new application
-  applications.push(applicationData);
-  
-  // Write back to file
-  await writeFile(filePath, JSON.stringify(applications, null, 2));
-  
-  console.log(`✅ Application saved: ${applicationData.id}`);
 }
 
 // Helper function to calculate age from date of birth

@@ -51,18 +51,18 @@ const CompactEmbeddedPreview: React.FC<{ resource: ResourceMaterial; onResourceC
   // For 2HL results, don't embed - just show as regular resource
   if (resource.id === '2hl-results') {
     return (
-      <div className="rounded-lg border border-gray-200 p-4">
-        <div className="mb-3 flex items-center justify-center rounded-lg bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
+      <div className="h-80 rounded-lg border border-gray-200 p-4 flex flex-col">
+        <div className="flex-1 flex items-center justify-center rounded-lg bg-gradient-to-br from-yellow-50 to-orange-50">
           <div style={{ color: resource.color }}>
-            <resource.icon className="h-12 w-12" />
+            <resource.icon className="h-16 w-16" />
           </div>
         </div>
-        <div className="text-center">
-          <h4 className="font-medium text-gray-900">{resource.title}</h4>
-          <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
+        <div className="mt-4 text-center">
+          <h4 className="font-medium text-gray-900 text-sm">{resource.title}</h4>
+          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{resource.description}</p>
           <button
             onClick={() => onResourceClick(resource)}
-            className="mt-3 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
           >
             View Results Data
             <ArrowTopRightOnSquareIcon className="h-3 w-3" />
@@ -74,18 +74,18 @@ const CompactEmbeddedPreview: React.FC<{ resource: ResourceMaterial; onResourceC
   
   if (!embedUrl) {
     return (
-      <div className="rounded-lg border border-gray-200 p-4">
-        <div className="mb-3 flex items-center justify-center rounded-lg bg-gray-50 p-6">
+      <div className="h-80 rounded-lg border border-gray-200 p-4 flex flex-col">
+        <div className="flex-1 flex items-center justify-center rounded-lg bg-gray-50">
           <div style={{ color: resource.color }}>
-            <resource.icon className="h-12 w-12" />
+            <resource.icon className="h-16 w-16" />
           </div>
         </div>
-        <div className="text-center">
-          <h4 className="font-medium text-gray-900">{resource.title}</h4>
-          <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
+        <div className="mt-4 text-center">
+          <h4 className="font-medium text-gray-900 text-sm">{resource.title}</h4>
+          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{resource.description}</p>
           <button
             onClick={() => onResourceClick(resource)}
-            className="mt-3 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
           >
             View Details
             <DocumentTextIcon className="h-3 w-3" />
@@ -95,13 +95,9 @@ const CompactEmbeddedPreview: React.FC<{ resource: ResourceMaterial; onResourceC
     );
   }
 
-  const aspectRatio = resource.type === 'video' ? 'aspect-video' : 
-                     resource.type === 'template' ? 'aspect-[4/3]' : 
-                     'aspect-[3/4]';
-
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
-      <div className={`relative ${aspectRatio} w-full`}>
+    <div className="h-80 rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+      <div className="h-48 w-full">
         <iframe
           src={embedUrl}
           title={resource.title}
@@ -111,9 +107,11 @@ const CompactEmbeddedPreview: React.FC<{ resource: ResourceMaterial; onResourceC
           allowFullScreen
         />
       </div>
-      <div className="p-3">
-        <h4 className="font-medium text-gray-900 text-sm">{resource.title}</h4>
-        <p className="text-xs text-gray-600 mt-1">{resource.description}</p>
+      <div className="flex-1 p-3 flex flex-col justify-between">
+        <div>
+          <h4 className="font-medium text-gray-900 text-sm line-clamp-1">{resource.title}</h4>
+          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{resource.description}</p>
+        </div>
         <div className="mt-2 flex items-center justify-between">
           <button
             onClick={() => onResourceClick(resource)}
