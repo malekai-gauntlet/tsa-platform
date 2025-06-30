@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
+
+// In-memory storage for applications (resets on deployment)
+let applications: any[] = [];
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,8 +71,10 @@ export async function POST(request: NextRequest) {
       sportInterest: body.tsaLocation?.includes('bennett') ? 'Baseball' : 'Sports Training',
     };
     
-    // Log the application instead of saving to file (for now)
+    // Store in memory and log
+    applications.unshift(applicationData); // Add to beginning of array
     console.log('📝 New Application Received:', JSON.stringify(applicationData, null, 2));
+    console.log(`📊 Total Applications in Memory: ${applications.length}`);
     
     return NextResponse.json({
       success: true,
@@ -96,6 +98,11 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Export function to get applications (for the list endpoint)
+export function getStoredApplications() {
+  return applications;
 }
 
 // Helper function to calculate age from date of birth
